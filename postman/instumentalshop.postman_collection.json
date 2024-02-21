@@ -1,0 +1,3079 @@
+{
+	"info": {
+		"_postman_id": "ec671f3e-7f61-4478-8924-3e93b7dfdedd",
+		"name": "instumentalshop",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24023228"
+	},
+	"item": [
+		{
+			"name": "scenarious",
+			"item": [
+				{
+					"name": "registration",
+					"item": [
+						{
+							"name": "customer",
+							"item": [
+								{
+									"name": "customer1 registarion",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer1\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/customers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"customers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer2 registarion",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer2\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/customers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"customers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer3 registarion",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer3\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/customers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"customers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer4 registarion",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer4\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/customers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"customers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer5 registarion",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer5\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/customers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"customers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer6 registarion",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer6\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/customers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"customers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer7 registarion",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer7\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/customers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"customers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer8 registarion",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer8\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/customers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"customers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer9 registarion",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer9\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/customers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"customers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer10 registarion",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer10\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/customers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"customers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer10 registarion Copy",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer10\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/customers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"customers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "producer",
+							"item": [
+								{
+									"name": "producer1 registration",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer1\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/producers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer2 registration",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer2\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/producers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer3 registration",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer3\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/producers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer4 registration",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer4\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/producers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer5 registration",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer5\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/producers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer6 registration",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer6\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/producers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer7 registration",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer7\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/producers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer8 registration",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer8\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/producers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer9 registration",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer9\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/producers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer10 registration",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer10\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/producers/register",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers",
+												"register"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "authentication",
+					"item": [
+						{
+							"name": "customer",
+							"item": [
+								{
+									"name": "customer1 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer1\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer2 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer2\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer2 login UPDATED",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer2upd\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer3 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer3\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer4 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer4\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer5 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer5\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer6 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer6\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer7 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer7\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer8 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer8\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer9 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer9\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer10 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer10\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "producer",
+							"item": [
+								{
+									"name": "producer1 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer1update\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer2 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer2\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer2 login UPDATED",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer2\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer3 login",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjMiLCJpYXQiOjE3MDM1NTM5OTEsImV4cCI6MTcwMzY0MDM5MX0.YYylzq_N0rrFzFzLnvniM_qKl0EB7s3m957iy9WKgqg",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer3\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer4 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer4\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer5 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer5\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer6 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer6\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer7 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer7\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer8 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer8\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer9 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer9\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer10 login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer10\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/auth/login",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "users",
+					"item": [
+						{
+							"name": "customer",
+							"item": [
+								{
+									"name": "customer1 get by ID",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/customers/2",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"customers",
+												"2"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer2 get by ID",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/customers/3",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"customers",
+												"3"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer3 get by ID",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/customers/4",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"customers",
+												"4"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer increase balance (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjdXN0b21lcjUiLCJpYXQiOjE3MDM2MTcxMTYsImV4cCI6MTcwMzcwMzUxNn0.waWPtNuvdMg6Sq_BQFUH-FTNdpc_Dx72cuorFEF9SgQ",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"balanceRecharge\": \"1500\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/customers/increase-balance",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"customers",
+												"increase-balance"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer get balance (TOKEN)",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjdXN0b21lcjEiLCJpYXQiOjE3MDM1NDQzMzMsImV4cCI6MTcwMzYzMDczM30.fo4p5SXZmMpkgO7tAKQVJw2w4hOg9qa8Ted-4KcNF5A",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"balanceRecharge\": \"300\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/customers/balance",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"customers",
+												"balance"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "customer update (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjdXN0b21lcjN1cGQiLCJpYXQiOjE3MDM2ODY3ODIsImV4cCI6MTcwMzc3MzE4Mn0.Tde6wYwfDzt32qLE7FrONq8ulDqCOAIgdBO36bV7BWE",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"customer2upd\",\r\n    \"password\": \"P!W&Ig#IHh8M\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/customers/update",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"customers",
+												"update"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "delete customer (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjdXN0b21lcjQiLCJpYXQiOjE3MDM1NDY0MjYsImV4cCI6MTcwMzYzMjgyNn0.Hhb1j4PPcYjHxbGXeeBl5bkkRn1nxLyvZIpS5ZrlJQg",
+													"type": "string"
+												}
+											]
+										},
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/customers/delete",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"customers",
+												"delete"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "producer",
+							"item": [
+								{
+									"name": "producer get ALL",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/producers",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer get by ID",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/producers/13",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers",
+												"13"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer get balance (TOKEN)",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjUiLCJpYXQiOjE3MDM1NTE3MDQsImV4cCI6MTcwMzYzODEwNH0.fLrA8tj3SrW7hZqUvTmbv1Ez-Fsb-wEpY3fvCHOXcmA",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/producers/balance",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers",
+												"balance"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer get incomes (TOKEN)",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjUiLCJpYXQiOjE3MDM1NTE3MDQsImV4cCI6MTcwMzYzODEwNH0.fLrA8tj3SrW7hZqUvTmbv1Ez-Fsb-wEpY3fvCHOXcmA",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/producers/{producerId}/incomes",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers",
+												"{producerId}",
+												"incomes"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "TODO producer2 get customer purchases statistics with TOKEN",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjIiLCJpYXQiOjE3MDM2NDQwOTUsImV4cCI6MTcwMzczMDQ5NX0.JHOM9aMrb2-bejAi6yHkGL3aL8X-AwEjpQGx_rijM0Y",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/producers/customer-purchase-statistics",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers",
+												"customer-purchase-statistics"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "TODO producer3 get customer purchases statistics with TOKEN",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjIiLCJpYXQiOjE3MDM2NDQwOTUsImV4cCI6MTcwMzczMDQ5NX0.JHOM9aMrb2-bejAi6yHkGL3aL8X-AwEjpQGx_rijM0Y",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/producers/customer-purchase-statistics",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers",
+												"customer-purchase-statistics"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "TODO producer4 get customer purchases statistics with TOKEN",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjIiLCJpYXQiOjE3MDM2NDQwOTUsImV4cCI6MTcwMzczMDQ5NX0.JHOM9aMrb2-bejAi6yHkGL3aL8X-AwEjpQGx_rijM0Y",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/producers/customer-purchase-statistics",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers",
+												"customer-purchase-statistics"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer update (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjEiLCJpYXQiOjE3MDM1NDc4OTksImV4cCI6MTcwMzYzNDI5OX0.-fpQGWThPU5CSbpDuVkF4UUbTmC8XYUq1ki4DZBg9Po",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\": \"producer2update\",\r\n    \"password\": \"Pasaca12@\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/producers/update",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers",
+												"update"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer delete (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjciLCJpYXQiOjE3MDM1NTA4NjcsImV4cCI6MTcwMzYzNzI2N30.Qea_nXbAt_dPx_AWx0HpULFvgrNA1kR2NsfGEHV-l-0",
+													"type": "string"
+												}
+											]
+										},
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/producers/delete",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"producers",
+												"delete"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "tracks",
+					"item": [
+						{
+							"name": "creation",
+							"item": [
+								{
+									"name": "producer2 create track multiply owners TOKEN",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjIiLCJpYXQiOjE3MDM1NTM4NTcsImV4cCI6MTcwMzY0MDI1N30._VkSrJoLcgr-NzWVi70ey99b_GHJf24l0h5TzFiPpTA",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\": \"BUDA TYPE BEAT\",\r\n    \"genreType\": \"DNB\",\r\n    \"bpm\": 100,\r\n    \"mainProducerPercentage\": 70,\r\n    \"producerShares\": [\r\n        {\r\n            \"producerName\": \"producer3\",\r\n            \"profitPercentage\": 15\r\n        },\r\n        {\r\n            \"producerName\": \"producer4\",\r\n            \"profitPercentage\": 15\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/tracks/create",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"tracks",
+												"create"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer2 create track multiply owners TOKEN",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjIiLCJpYXQiOjE3MDM1NTM4NTcsImV4cCI6MTcwMzY0MDI1N30._VkSrJoLcgr-NzWVi70ey99b_GHJf24l0h5TzFiPpTA",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\": \"MOBI TYPE BEAT\",\r\n    \"genreType\": \"ELECTRO\",\r\n    \"bpm\": 100,\r\n    \"mainProducerPercentage\": 70,\r\n    \"producerShares\": [\r\n        {\r\n            \"producerName\": \"producer3\",\r\n            \"profitPercentage\": 15\r\n        },\r\n        {\r\n            \"producerName\": \"producer4\",\r\n            \"profitPercentage\": 15\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/tracks/create",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"tracks",
+												"create"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer2 create track multiply owners TOKEN",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjIiLCJpYXQiOjE3MDM1NTM4NTcsImV4cCI6MTcwMzY0MDI1N30._VkSrJoLcgr-NzWVi70ey99b_GHJf24l0h5TzFiPpTA",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\": \"YEAT TYPE BEAT\",\r\n    \"genreType\": \"ELECTRO\",\r\n    \"bpm\": 100,\r\n    \"mainProducerPercentage\": 70,\r\n    \"producerShares\": [\r\n        {\r\n            \"producerName\": \"producer3\",\r\n            \"profitPercentage\": 15\r\n        },\r\n        {\r\n            \"producerName\": \"producer4\",\r\n            \"profitPercentage\": 15\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/tracks/create",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"tracks",
+												"create"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer3 create track single owner TOKEN Copy",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjMiLCJpYXQiOjE3MDM1NTM5OTEsImV4cCI6MTcwMzY0MDM5MX0.YYylzq_N0rrFzFzLnvniM_qKl0EB7s3m957iy9WKgqg",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\": \"LOLI TYPE BEAT\",\r\n    \"genreType\": \"DNB\",\r\n    \"bpm\": 172\r\n    \r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/tracks/create",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"tracks",
+												"create"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer3 create track single owner TOKEN Copy 2",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjMiLCJpYXQiOjE3MDM1NTM5OTEsImV4cCI6MTcwMzY0MDM5MX0.YYylzq_N0rrFzFzLnvniM_qKl0EB7s3m957iy9WKgqg",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\": \"SIDEWEST TYPE BEAT\",\r\n    \"genreType\": \"DNB\",\r\n    \"bpm\": 160\r\n    \r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/tracks/create",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"tracks",
+												"create"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer3 create track single owner TOKEN Copy 3",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjMiLCJpYXQiOjE3MDM1NTM5OTEsImV4cCI6MTcwMzY0MDM5MX0.YYylzq_N0rrFzFzLnvniM_qKl0EB7s3m957iy9WKgqg",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\": \"DEFTONES TYPE INSTRUMENTAL\",\r\n    \"genreType\": \"DNB\",\r\n    \"bpm\": 170\r\n    \r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/tracks/create",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"tracks",
+												"create"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "publish approvals",
+							"item": [
+								{
+									"name": "producer3 get All Approvals",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjMiLCJpYXQiOjE3MDM1NTUyMTEsImV4cCI6MTcwMzY0MTYxMX0.CUtz3PDMlRDqswoQTs0hK01xR5UVGBoF6T6GzQpniG0",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/tracks/track-approvals-list",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"tracks",
+												"track-approvals-list"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer4 get All Approvals",
+									"request": {
+										"method": "GET",
+										"header": []
+									},
+									"response": []
+								},
+								{
+									"name": "producer3 agree",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjMiLCJpYXQiOjE3MDM1NTM5OTEsImV4cCI6MTcwMzY0MDM5MX0.YYylzq_N0rrFzFzLnvniM_qKl0EB7s3m957iy9WKgqg",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/tracks/2/confirm-agreement",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"tracks",
+												"2",
+												"confirm-agreement"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "producer4 agree",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjQiLCJpYXQiOjE3MDM1NTUyMzYsImV4cCI6MTcwMzY0MTYzNn0.z9YdmrdKl7tHk9puADIijyTgqbhCP8IhQo2s1l0J0oY",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/tracks/2/confirm-agreement",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"tracks",
+												"2",
+												"confirm-agreement"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "get track1",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/v1/tracks/1",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"tracks",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get track2",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/v1/tracks/2",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"tracks",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get all tracks",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/v1/tracks/",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"tracks",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get all tracks by producer",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/v1/tracks/by-producer/13",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"tracks",
+										"by-producer",
+										"13"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get all producer tracks bought by cust(TOKEN )",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjgiLCJpYXQiOjE3MDM2NDc1MjksImV4cCI6MTcwMzczMzkyOX0.C5EArHKCGsVa7N7cAK25qiSvYvmg_BQ9whJenqwMPbY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/v1/tracks/bought-by-customer/3",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"tracks",
+										"bought-by-customer",
+										"3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "track 1 update by owner (TOKEN)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjIiLCJpYXQiOjE3MDM1NTM4NTcsImV4cCI6MTcwMzY0MDI1N30._VkSrJoLcgr-NzWVi70ey99b_GHJf24l0h5TzFiPpTA",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"UPDATED TYPE BEAT\",\r\n    \"genreType\": \"ELECTRO\",\r\n    \"bpm\": 160\r\n    \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/api/v1/tracks/2",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"tracks",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "track 1 delete by owner (TOKEN)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjIiLCJpYXQiOjE3MDM1NTM4NTcsImV4cCI6MTcwMzY0MDI1N30._VkSrJoLcgr-NzWVi70ey99b_GHJf24l0h5TzFiPpTA",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/api/v1/tracks/1",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"tracks",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "licence",
+					"item": [
+						{
+							"name": "template",
+							"item": [
+								{
+									"name": "create STANDARD template by owner (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjIiLCJpYXQiOjE3MDM2NDE1MjEsImV4cCI6MTcwMzcyNzkyMX0.fHVhOddLEAWCSvUdCnTbyo9hCPt7gjph8PUG2BYSWLs",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"licenceType\": \"STANDARD\",\r\n  \"validityPeriodDays\": 180,\r\n  \"price\": 100.00,\r\n  \"platforms\": [\"SPOTIFY\", \"APPLE_MUSIC\", \"YOUTUBE\"]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/tracks/2/licence-templates",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"tracks",
+												"2",
+												"licence-templates"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "create EXLUSIVE template by owner (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjIiLCJpYXQiOjE3MDM2NDE1MjEsImV4cCI6MTcwMzcyNzkyMX0.fHVhOddLEAWCSvUdCnTbyo9hCPt7gjph8PUG2BYSWLs",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"licenceType\": \"EXCLUSIVE\",\r\n  \"price\": 200.00\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/tracks/2/licence-templates",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"tracks",
+												"2",
+												"licence-templates"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get template by type",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/tracks/2/licence-templates/STANDARD",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"tracks",
+												"2",
+												"licence-templates",
+												"STANDARD"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get all templates by trackId",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/tracks/2/licence-templates",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"tracks",
+												"2",
+												"licence-templates"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "update STANDARD template by trackId (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjJ1cGRhdGUiLCJpYXQiOjE3MDM2ODgyMzMsImV4cCI6MTcwMzc3NDYzM30.l68yzDlMERJuIZb27DoFo4DQWYuAZtCBPxQmT3-WTt0",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"validityPeriodDays\": 200,\r\n    \"price\": 1000.00,\r\n    \"platforms\": [\"TIKTOK\", \"YOUTUBE\"]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/tracks/2/licence-templates/STANDARD",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"tracks",
+												"2",
+												"licence-templates",
+												"STANDARD"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "update EXLUSIVE template by trackId (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjIiLCJpYXQiOjE3MDM2MTM4NTEsImV4cCI6MTcwMzcwMDI1MX0.9Wi2sQAT3xnTIAWbs_fFoyh2EKQXmquyc7epDDfHdkY",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"price\": 2500.00\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/tracks/2/licence-templates/EXCLUSIVE",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"tracks",
+												"2",
+												"licence-templates",
+												"EXCLUSIVE"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "delete template by trackId (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjIiLCJpYXQiOjE3MDM2MTM4NTEsImV4cCI6MTcwMzcwMDI1MX0.9Wi2sQAT3xnTIAWbs_fFoyh2EKQXmquyc7epDDfHdkY",
+													"type": "string"
+												}
+											]
+										},
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/tracks/2/licence-templates/EXCLUSIVE",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"tracks",
+												"2",
+												"licence-templates",
+												"EXCLUSIVE"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "purchase",
+							"item": [
+								{
+									"name": "create STANDARD purchase (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjdXN0b21lcjIiLCJpYXQiOjE3MDM2NDE1MzEsImV4cCI6MTcwMzcyNzkzMX0.PbBgKZGo1cTeq80ChUxt0poyiw3r1_CnRPrbjfE_fB8",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"licenceType\": \"STANDARD\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/tracks/2/purchase",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"tracks",
+												"2",
+												"purchase"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "create EXLUSIVE purchase (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjdXN0b21lcjIiLCJpYXQiOjE3MDM2NDE1MzEsImV4cCI6MTcwMzcyNzkzMX0.PbBgKZGo1cTeq80ChUxt0poyiw3r1_CnRPrbjfE_fB8",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"licenceType\": \"EXCLUSIVE\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/tracks/2/purchase",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"tracks",
+												"2",
+												"purchase"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get producer purchase by ID (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjMiLCJpYXQiOjE3MDM2MjUxMDEsImV4cCI6MTcwMzcxMTUwMX0._wgP2CC3WGgEuDL27X3PbKShOQj9fVkDEf-R8KkK_og",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/licence-purchases/2",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"licence-purchases",
+												"2"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get customer purchase by ID (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjdXN0b21lcjUiLCJpYXQiOjE3MDM2MTcxMTYsImV4cCI6MTcwMzcwMzUxNn0.waWPtNuvdMg6Sq_BQFUH-FTNdpc_Dx72cuorFEF9SgQ",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/licence-purchases/2",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"licence-purchases",
+												"2"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get all customer purchases (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjdXN0b21lcjUiLCJpYXQiOjE3MDM2MTcxMTYsImV4cCI6MTcwMzcwMzUxNn0.waWPtNuvdMg6Sq_BQFUH-FTNdpc_Dx72cuorFEF9SgQ",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/licence-purchases",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"licence-purchases"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get all producer purchases (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjdXN0b21lcjUiLCJpYXQiOjE3MDM2MTcxMTYsImV4cCI6MTcwMzcwMzUxNn0.waWPtNuvdMg6Sq_BQFUH-FTNdpc_Dx72cuorFEF9SgQ",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/licence-purchases",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"licence-purchases"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "reports",
+							"item": [
+								{
+									"name": "create report purch.licence (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjMiLCJpYXQiOjE3MDM4MTUzNTQsImV4cCI6MTcwMzkwMTc1NH0.X1LF4lFarqgKzTpyhtmNkZ_ShEUjaEapxcpAFicN_d8",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"description\": \"downloaded on yandex music\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/licence-purchases/7/create-report",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"licence-purchases",
+												"7",
+												"create-report"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get report for customer (TOKEN)",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjdXN0b21lcjIiLCJpYXQiOjE3MDM2NDE1MzEsImV4cCI6MTcwMzcyNzkzMX0.PbBgKZGo1cTeq80ChUxt0poyiw3r1_CnRPrbjfE_fB8",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "localhost:8080/api/v1/reports/1",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"reports",
+												"1"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get report for producer (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjIiLCJpYXQiOjE3MDM2NDk0NTIsImV4cCI6MTcwMzczNTg1Mn0.TeriR8OLonRmM07tF2sLFxs5vY_tH6H9QkduPDvJ754",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/reports/1",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"reports",
+												"1"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "update report by producer (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjMiLCJpYXQiOjE3MDM2NDE2NTYsImV4cCI6MTcwMzcyODA1Nn0.P5TRVe2rFzX9qi0IYMiPSBW9fl_kuuiI-b5fBtzS6y4",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/reports/1/SOLVED",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"reports",
+												"1",
+												"SOLVED"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "delete report by producer (TOKEN)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdWNlcjJ1cGRhdGUiLCJpYXQiOjE3MDM4MTU2ODcsImV4cCI6MTcwMzkwMjA4N30.2XpfNoc9xk4Et15Jqjq1JIUAhVnzh2YphZcGTutEopI",
+													"type": "string"
+												}
+											]
+										},
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "localhost:8080/api/v1/reports/4",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"api",
+												"v1",
+												"reports",
+												"4"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}
