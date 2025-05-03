@@ -8,11 +8,11 @@
         <version>3.1.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.cvut.cz.fel.ear</groupId>
+    <groupId>com.cz.cvut.fel</groupId>
     <artifactId>instumentalshop</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>instumentalshop</name>
-    <description>EAR semestral project</description>
+    <description>Diplomova prace</description>
     <properties>
         <java.version>17</java.version>
 
