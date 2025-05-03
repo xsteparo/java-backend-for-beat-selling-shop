@@ -4,6 +4,7 @@ import com.cz.cvut.fel.instumentalshop.domain.enums.GenreType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.cz.cvut.fel.instumentalshop.util.query.QuerySqlDefinitions.FIND_BOUGHT_TRACKS_BY_CUSTOMER_ID;
@@ -39,6 +40,16 @@ public class Track {
     @Column(nullable = false)
     private Integer bpm;
 
+    private int likes;
+
+    private int plays;
+
+    private double rating;
+
+    private LocalDateTime createdAt;
+
+    private double lastRatingDelta;
+
     @OneToMany(mappedBy = "track", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProducerTrackInfo> producerTrackInfos;
 
@@ -52,5 +63,10 @@ public class Track {
 
     @OneToMany(mappedBy = "track")
     private List<PurchasedLicence> purchasedLicence;
+
+    public double getNormalizedScore() {
+        if (plays == 0) return 0;
+        return (double) likes / plays;
+    }
 
 }
