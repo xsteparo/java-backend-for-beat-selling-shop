@@ -41,4 +41,8 @@ public class Producer extends User {
     )
     private List<LicenceReport> licenceReports;
 
+    @Column(precision = 5, scale = 2, nullable = false)
+    private double rating = 0.0;
+
+
 }

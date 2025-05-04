@@ -1,11 +1,14 @@
 package com.cz.cvut.fel.instumentalshop.service.impl;
 
 import com.cz.cvut.fel.instumentalshop.domain.Producer;
+import com.cz.cvut.fel.instumentalshop.domain.ProducerTrackInfo;
+import com.cz.cvut.fel.instumentalshop.domain.Track;
 import com.cz.cvut.fel.instumentalshop.domain.enums.Role;
 import com.cz.cvut.fel.instumentalshop.dto.balance.out.BalanceResponseDto;
 import com.cz.cvut.fel.instumentalshop.dto.mapper.BalanceMapper;
 import com.cz.cvut.fel.instumentalshop.dto.mapper.ProducerMapper;
 import com.cz.cvut.fel.instumentalshop.dto.mapper.UserMapper;
+import com.cz.cvut.fel.instumentalshop.dto.producer.in.TopProducerRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.producer.out.ProducerPurchaseStatisticDto;
 import com.cz.cvut.fel.instumentalshop.dto.user.in.UserCreationRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.user.in.UserUpdateRequestDto;
@@ -18,7 +21,11 @@ import com.cz.cvut.fel.instumentalshop.util.validator.UserValidator;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +57,21 @@ public class ProducerServiceImpl implements ProducerService {
     private final PasswordEncoder passwordEncoder;
 
     private final UserValidator userValidator;
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<TopProducerRequestDto> getTopProducers(int limit) {
+        Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "rating"));
+        List<Producer> producers = producerRepository.findAll(pageable).getContent();
+
+        return producers.stream()
+                .map(p -> TopProducerRequestDto.builder()
+                        .id(p.getId())
+                        .username(p.getUsername())
+                        .rating(p.getRating())
+                        .build())
+                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional
@@ -133,6 +156,25 @@ public class ProducerServiceImpl implements ProducerService {
         }
         if (requestDto.getPassword() != null) {
             producer.setPassword(passwordEncoder.encode(requestDto.getPassword()));
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updateProducerRatings() {
+        List<Producer> allProducers = producerRepository.findAll();
+
+        for (Producer producer : allProducers) {
+            double avgRating = producer.getTracks().stream()
+                    .map(ProducerTrackInfo::getTrack)
+                    .sorted((t1, t2) -> t2.getCreatedAt().compareTo(t1.getCreatedAt()))
+                    .limit(10)
+                    .mapToDouble(Track::getRating)
+                    .average()
+                    .orElse(0.0);
+
+            producer.setRating(avgRating);
+            producerRepository.save(producer);
         }
     }
 

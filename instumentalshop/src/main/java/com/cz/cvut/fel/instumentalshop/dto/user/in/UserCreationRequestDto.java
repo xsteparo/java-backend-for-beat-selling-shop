@@ -3,9 +3,11 @@ package com.cz.cvut.fel.instumentalshop.dto.user.in;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class UserCreationRequestDto {
     @NotBlank(message = "Username cannot be blank")
     @Size(min = 3, max = 15, message = "Username must be between 3 and 15 characters")

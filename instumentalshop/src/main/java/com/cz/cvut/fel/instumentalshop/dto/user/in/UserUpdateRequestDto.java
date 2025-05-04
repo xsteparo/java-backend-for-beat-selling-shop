@@ -3,9 +3,11 @@ package com.cz.cvut.fel.instumentalshop.dto.user.in;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class UserUpdateRequestDto {
 
     @NotBlank(message = "Username cannot be blank")
