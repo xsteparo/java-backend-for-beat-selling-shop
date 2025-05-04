@@ -1,0 +1,48 @@
+# Variables (настрой их под свой порт/хост)
+@host = http://localhost:8080/api/v1
+
+### 1. Register Customer
+POST {{host}}/customers/register
+Content-Type: application/json
+
+{
+  "username": "TestTestUser",
+  "password": "Testtest1234"
+}
+
+###
+
+### 2. Login (получаем access + refresh токены)
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "TestTestUser",
+  "password": "Testtest1234"
+}
+
+# — в ответе будет JSON вроде:
+# {
+#   "accessToken": "eyJhbGci…",
+#   "refreshToken": "dGhpc2lzcmVmcmVzaHRva2Vu…",
+#   "expiresIn": 3600,
+#   …
+# }
+
+###
+
+### 3. Refresh Token
+# Скопируй refreshToken из предыдущего шага и подставь в тело
+POST {{host}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+###
+
+### 4. Protected endpoint example
+# Теперь можно использовать полученный accessToken в заголовке
+GET {{host}}/customers/balance
+Authorization: Bearer {{accessToken}}
