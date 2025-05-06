@@ -15,8 +15,7 @@ export const Home: React.FC = () => {
         <main>
             <div className="container">
 
-                {/* Секция поиска */}
-                <section className="home-section">
+                    <section className="home-section">
                     <div className="search-content">
                         <h1 className="search-title">YOUR FIRST HIT STARTS HERE</h1>
                         <div className="search-box">

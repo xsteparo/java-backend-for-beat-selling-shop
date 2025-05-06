@@ -1,127 +1,197 @@
-import React, { FormEvent, useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { FC, FormEvent, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
-interface RegisterFormState {
-    username: string
-    email: string
-    password: string
-    confirmPassword: string
-    role: 'producer' | 'performer'
-    avatar?: File
-}
-
-export const Register: React.FC = () => {
+export const Register: FC = () => {
     const navigate = useNavigate()
-    const [form, setForm] = useState<RegisterFormState>({
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        role: 'producer',
-    })
-    const [errors, setErrors] = useState<Partial<Record<keyof RegisterFormState | 'form', string>>>({})
+    const [username, setUsername] = useState('')
+    const [email, setEmail]       = useState('')
+    const [password, setPassword] = useState('')
+    const [confirm, setConfirm]   = useState('')
+    const [role, setRole]         = useState<'producer'|'performer'>('producer')
+    const [avatar, setAvatar]     = useState<File | null>(null)
+    const [error, setError]       = useState<string | null>(null)
+    const [success, setSuccess]   = useState<string | null>(null)
 
-    const handleChange = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            const { name, value, files, type } = e.target
-            setForm(prev => ({
-                ...prev,
-                [name]: type === 'file' && files ? files[0] : value,
-            } as any))
-        },
-        []
-    )
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault()
+        setError(null)
+        setSuccess(null)
+        if (password !== confirm) {
+            setError("Passwords don’t match")
+            return
+        }
+        const formData = new FormData()
+        formData.append('username', username)
+        formData.append('email', email)
+        formData.append('password', password)
+        formData.append('role', role)
+        if (avatar) formData.append('avatar', avatar)
 
-    const validate = (): boolean => {
-        const errs: typeof errors = {}
-        if (!form.username) errs.username = 'Username is required'
-        if (!form.email) errs.email = 'Email is required'
-        if (!form.password) errs.password = 'Password is required'
-        if (form.password !== form.confirmPassword) errs.confirmPassword = 'Passwords do not match'
-        if (!form.role) errs.role = 'Role is required'
-        setErrors(errs)
-        return Object.keys(errs).length === 0
+        try {
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                body: formData,
+            })
+            if (!res.ok) throw new Error(await res.text() || 'Registration failed')
+            setSuccess('Registration successful! Redirecting…')
+            setTimeout(() => navigate('/login'), 1500)
+        } catch (err: any) {
+            setError(err.message)
+        }
     }
 
-    const handleSubmit = useCallback(
-        async (e: FormEvent) => {
-            e.preventDefault()
-            if (!validate()) return
-            const data = new FormData()
-            Object.entries(form).forEach(([key, val]) => {
-                if (val !== undefined) data.append(key, val as any)
-            })
-            try {
-                const res = await fetch('/api/auth/register', { method: 'POST', body: data })
-                if (!res.ok) throw new Error(await res.text())
-                navigate('/login')
-            } catch (err: any) {
-                setErrors({ form: err.message })
-            }
-        },
-        [form, navigate]
-    )
-
     return (
-        <main className="form-page form-page--register">
-            <div className="form-container">
-                <h1 className="form-container__title">Registration</h1>
-                {errors.form && <p className="form__error">{errors.form}</p>}
-                <form className="form" onSubmit={handleSubmit} noValidate encType="multipart/form-data">
-                    {(['username', 'email', 'password', 'confirmPassword'] as const).map(field => (
-                        <div key={field} className="form__group">
-                            <label htmlFor={field} className="form__label">
-                                {field === 'confirmPassword' ? 'Confirm password *' : `${field.charAt(0).toUpperCase() + field.slice(1)} *`}
-                            </label>
-                            <input
-                                id={field}
-                                name={field}
-                                type={field.includes('password') ? 'password' : 'text'}
-                                className="form__input"
-                                value={form[field] as string}
-                                onChange={handleChange}
-                                required
-                            />
-                            <p className="form__error">{errors[field]}</p>
-                        </div>
-                    ))}
+        <main
+            className="form-page flex items-center justify-center min-h-screen p-5
+                 bg-gradient-to-b from-transparent via-[rgba(20,20,20,0.5)] to-[#01202e]
+                 bg-[#141414]"
+        >
+            <div
+                className="form-container w-full max-w-[400px] p-10
+                   bg-[#1e1e1e] rounded-[10px]
+                   shadow-[0_4px_20px_rgba(0,0,0,0.5)] text-white"
+            >
+                <h1 className="form-container__title text-center text-xl font-semibold mb-8">
+                    Registration
+                </h1>
 
-                    <div className="form__group">
-                        <label className="form__label">Choose role *</label>
-                        <div className="role-options">
-                            {(['producer', 'performer'] as const).map(r => (
-                                <label key={r} className="role-options__label">
-                                    <input
-                                        type="radio"
-                                        name="role"
-                                        value={r}
-                                        className="role-options__radio"
-                                        checked={form.role === r}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                    {r === 'producer' ? 'Producer' : 'Artist'}
-                                </label>
-                            ))}
-                        </div>
-                        <p className="form__error">{errors.role}</p>
-                    </div>
+                {error && (
+                    <p className="form-container__error text-red-500 text-sm mb-4">
+                        {error}
+                    </p>
+                )}
+                {success && (
+                    <p className="form-container__success text-green-400 text-sm mb-4">
+                        {success}
+                    </p>
+                )}
 
-                    <div className="form__group">
-                        <label htmlFor="avatar" className="form__label">Avatar (profile picture)</label>
+                <form onSubmit={handleSubmit} encType="multipart/form-data" className="grid gap-1.5">
+                    <div className="form__group flex flex-col">
+                        <label htmlFor="username" className="form__label mb-2 text-sm font-medium">
+                            Username *
+                        </label>
                         <input
-                            type="file"
-                            id="avatar"
-                            name="avatar"
-                            accept="image/*"
-                            className="form__input"
-                            onChange={handleChange}
+                            id="username"
+                            type="text"
+                            required
+                            minLength={4}
+                            maxLength={16}
+                            className="form__input w-full p-3 bg-[#2e2e2e] rounded-[5px]
+                         text-white placeholder-gray-400
+                         focus:bg-[#3e3e3e] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={username}
+                            onChange={e => setUsername(e.target.value)}
                         />
-                        <p className="form__error">{errors.avatar}</p>
                     </div>
 
-                    <button type="submit" className="form__button">Continue</button>
+                    <div className="form__group flex flex-col">
+                        <label htmlFor="email" className="form__label mb-2 text-sm font-medium">
+                            Email *
+                        </label>
+                        <input
+                            id="email"
+                            type="email"
+                            required
+                            className="form__input w-full p-3 bg-[#2e2e2e] rounded-[5px]
+                         text-white placeholder-gray-400
+                         focus:bg-[#3e3e3e] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="form__group flex flex-col">
+                        <label htmlFor="password" className="form__label mb-2 text-sm font-medium">
+                            Password *
+                        </label>
+                        <input
+                            id="password"
+                            type="password"
+                            required
+                            minLength={6}
+                            maxLength={24}
+                            className="form__input w-full p-3 bg-[#2e2e2e] rounded-[5px]
+                         text-white placeholder-gray-400
+                         focus:bg-[#3e3e3e] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="form__group flex flex-col">
+                        <label htmlFor="confirm" className="form__label mb-2 text-sm font-medium">
+                            Confirm password *
+                        </label>
+                        <input
+                            id="confirm"
+                            type="password"
+                            required
+                            className="form__input w-full p-3 bg-[#2e2e2e] rounded-[5px]
+                         text-white placeholder-gray-400
+                         focus:bg-[#3e3e3e] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={confirm}
+                            onChange={e => setConfirm(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="form__group flex flex-col">
+                        <span className="form__label mb-2 text-sm font-medium">Choose role *</span>
+                        <div className="role-options flex gap-5">
+                            <label className="role-options__label inline-flex items-center text-white">
+                                <input
+                                    type="radio"
+                                    name="role"
+                                    value="producer"
+                                    checked={role === 'producer'}
+                                    onChange={() => setRole('producer')}
+                                    className="form-radio text-blue-500"
+                                />
+                                <span className="ml-2">Producer</span>
+                            </label>
+                            <label className="role-options__label inline-flex items-center text-white">
+                                <input
+                                    type="radio"
+                                    name="role"
+                                    value="performer"
+                                    checked={role === 'performer'}
+                                    onChange={() => setRole('performer')}
+                                    className="form-radio text-blue-500"
+                                />
+                                <span className="ml-2">Artist</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div className="form__group flex flex-col">
+                        <label htmlFor="avatar" className="form__label mb-2 text-sm font-medium">
+                            Avatar (profile picture)
+                        </label>
+                        <input
+                            id="avatar"
+                            type="file"
+                            accept="image/*"
+                            onChange={e => setAvatar(e.target.files?.[0] || null)}
+                            className="form__input block w-full text-gray-300 bg-[#2e2e2e] rounded-[5px]
+                         cursor-pointer focus:outline-none"
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="form__button w-full py-4 bg-[#2f2f2f] rounded-[5px]
+                       text-white font-medium transition-colors hover:bg-[#00aaff]"
+                    >
+                        Continue
+                    </button>
                 </form>
+
+                <p className="form__footer mt-8 text-sm text-gray-400">
+                    Already have an account?{' '}
+                    <Link to="/login" className="form-container__link text-[#1db954] hover:text-[#17a44a] hover:underline">
+                        Sign In
+                    </Link>
+                </p>
             </div>
         </main>
     )

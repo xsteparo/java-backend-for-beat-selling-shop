@@ -1,84 +1,101 @@
-import React, { FormEvent, useState, useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import { FC, FormEvent, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-interface LoginFormState {
-    email: string
-    password: string
-}
-
-export const Login: React.FC = () => {
+export const Login: FC = () => {
     const { login } = useAuth()
-    const [form, setForm] = useState<LoginFormState>({ email: '', password: '' })
+    const navigate = useNavigate()
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
     const [error, setError] = useState<string | null>(null)
 
-    const handleChange = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            const { name, value } = e.target
-            setForm(prev => ({ ...prev, [name]: value }))
-        },
-        []
-    )
-
-    const handleSubmit = useCallback(
-        async (e: FormEvent) => {
-            e.preventDefault()
-            setError(null)
-            try {
-                const res = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(form),
-                })
-                if (!res.ok) {
-                    const message = await res.text()
-                    throw new Error(message || 'Login failed')
-                }
-                const { token } = await res.json()
-                login(token)
-            } catch (err: any) {
-                setError(err.message)
-            }
-        },
-        [form, login]
-    )
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault()
+        setError(null)
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            })
+            if (!res.ok) throw new Error(await res.text() || 'Login failed')
+            const { token } = await res.json()
+            login(token)
+            navigate('/')
+        } catch (err: any) {
+            setError(err.message)
+        }
+    }
 
     return (
-        <main className="form-page form-page--login">
-            <div className="form-container">
-                <h1 className="form-container__title">Sign In</h1>
-                {error && <p className="form__error">{error}</p>}
-                <form className="form" onSubmit={handleSubmit} noValidate>
-                    <div className="form__group">
-                        <label htmlFor="email" className="form__label">Email</label>
+        <main
+            className="form-page flex items-center justify-center min-h-screen p-5
+                 bg-gradient-to-b from-transparent via-[rgba(20,20,20,0.5)] to-[#0B2918]
+                 bg-[#141414]"
+        >
+            <div
+                className="form-container w-full max-w-[400px] p-10
+                   bg-[#1e1e1e] rounded-[10px]
+                   shadow-[0_4px_20px_rgba(0,0,0,0.5)] text-white"
+            >
+                <h1 className="form-container__title text-center text-xl font-semibold mb-8">
+                    Sign In
+                </h1>
+
+                {error && (
+                    <p className="form-container__error text-red-500 text-sm mb-4">
+                        {error}
+                    </p>
+                )}
+
+                <form onSubmit={handleSubmit} className="grid gap-1.5">
+                    <div className="form__group flex flex-col">
+                        <label htmlFor="email" className="form__label mb-2 text-sm font-medium">
+                            Email
+                        </label>
                         <input
-                            type="email"
                             id="email"
-                            name="email"
-                            className="form__input"
-                            value={form.email}
-                            onChange={handleChange}
+                            type="email"
                             required
+                            className="form__input w-full p-3 bg-[#2e2e2e] rounded-[5px]
+                         text-white placeholder-gray-400
+                         focus:bg-[#3e3e3e] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
                         />
                     </div>
-                    <div className="form__group">
-                        <label htmlFor="password" className="form__label">Password</label>
+
+                    <div className="form__group flex flex-col">
+                        <label htmlFor="password" className="form__label mb-2 text-sm font-medium">
+                            Password
+                        </label>
                         <input
-                            type="password"
                             id="password"
-                            name="password"
-                            className="form__input"
-                            value={form.password}
-                            onChange={handleChange}
+                            type="password"
                             required
+                            className="form__input w-full p-3 bg-[#2e2e2e] rounded-[5px]
+                         text-white placeholder-gray-400
+                         focus:bg-[#3e3e3e] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
                         />
                     </div>
-                    <button type="submit" className="form__button">Continue</button>
-                    <p className="form__footer">Don't have an account?</p>
-                    <Link to="/register" className="form-container__link">
+
+                    <button
+                        type="submit"
+                        className="form__button w-full py-4 bg-[#2f2f2f] rounded-[5px]
+                       text-white font-medium transition-colors hover:bg-[#00aaff]"
+                    >
+                        Continue
+                    </button>
+                </form>
+
+                <p className="form__footer mt-8 text-sm text-gray-400">
+                    Don’t have an account?{' '}
+                    <Link to="/register" className="form-container__link text-[#1db954] hover:text-[#17a44a] hover:underline">
                         Create an account
                     </Link>
-                </form>
+                </p>
             </div>
         </main>
     )
