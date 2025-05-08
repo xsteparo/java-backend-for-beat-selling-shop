@@ -22,9 +22,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 class ProducerServiceImplTest {
@@ -57,31 +61,65 @@ class ProducerServiceImplTest {
         );
     }
 
-    // Test: register a new producer
     @Test
     void testRegisterProducer() {
-        UserCreationRequestDto requestDto = new UserCreationRequestDto("testUser", "Password123");
-
+        // --- arrange ---
+        UserCreationRequestDto requestDto =
+                new UserCreationRequestDto(
+                        "testUser",
+                        "test@example.com",
+                        "Password123",
+                        null
+                );
+        LocalDateTime now = LocalDateTime.now();
         Producer savedProducer = Producer.builder()
                 .id(1L)
                 .username("testUser")
-                .registrationDate(LocalDateTime.now())
+                .email("test@example.com")
+                .registrationDate(now)
                 .role(Role.PRODUCER)
                 .salary(BigDecimal.ZERO)
                 .build();
+        UserDto expectedDto = new UserDto(
+                1L,
+                "PRODUCER",
+                "testUser",
+                "test@example.com",
+                now,
+                BigDecimal.ZERO
+        );
 
-        UserDto expectedDto = new UserDto(1L, "PRODUCER", "testUser", savedProducer.getRegistrationDate(), BigDecimal.ZERO);
+        // stub password encoding
+        when(passwordEncoder.encode("Password123"))
+                .thenReturn("encodedPassword");
+        // stub user validation
+        doNothing().when(userValidator)
+                .validateUserCreationRequest(
+                        userRepository,
+                        "testUser"
+                );
+        // stub save producer
+        when(producerRepository.save(any(Producer.class)))
+                .thenReturn(savedProducer);
+        // stub response mapping
+        when(userMapper.toProducerResponseDto(any(Producer.class)))
+                .thenReturn(expectedDto);
 
-        when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
-        when(producerRepository.save(any())).thenReturn(savedProducer);
-        when(userMapper.toProducerResponseDto(any())).thenReturn(expectedDto);
-
+        // --- act ---
         UserDto result = producerService.register(requestDto);
 
-        assertNotNull(result);
-        assertEquals("testUser", result.getUsername());
-        assertEquals("PRODUCER", result.getRole());
-        verify(producerRepository, times(1)).save(any());
+        // --- assert ---
+        assertNotNull(result, "Result should not be null");
+        assertEquals(expectedDto.getUserId(), result.getUserId());
+        assertEquals(expectedDto.getUsername(), result.getUsername());
+        assertEquals(expectedDto.getEmail(), result.getEmail());
+        assertEquals(expectedDto.getRole(), result.getRole());
+        assertEquals(expectedDto.getRegistrationDate(), result.getRegistrationDate());
+        assertEquals(expectedDto.getBalance(), result.getBalance());
+
+        // verify interactions
+        verify(producerRepository, times(1)).save(any(Producer.class));
+        verify(passwordEncoder, times(1)).encode("Password123");
     }
 
     // Test: get balance for the current producer
@@ -111,7 +149,7 @@ class ProducerServiceImplTest {
         );
 
         List<UserDto> dtoList = List.of(
-                new UserDto(1L, "PRODUCER", "producer1", LocalDateTime.now(), null)
+                new UserDto(1L, "PRODUCER", "producer1", "producer@email.com", LocalDateTime.now(), BigDecimal.ZERO)
         );
 
         when(producerRepository.findAll()).thenReturn(producers);
@@ -131,7 +169,7 @@ class ProducerServiceImplTest {
                 .username("producerX")
                 .build();
 
-        UserDto expectedDto = new UserDto(1L, "PRODUCER", "producerX", LocalDateTime.now(), null);
+        UserDto expectedDto = new UserDto(1L, "PRODUCER", "producerX", "producer@email.com", LocalDateTime.now(), null);
 
         when(producerRepository.findById(1L)).thenReturn(Optional.of(producer));
         when(producerMapper.toResponseDto(producer)).thenReturn(expectedDto);
@@ -152,7 +190,7 @@ class ProducerServiceImplTest {
 
         UserUpdateRequestDto updateDto = new UserUpdateRequestDto("newName", "NewPass123");
 
-        UserDto expectedDto = new UserDto(1L, "PRODUCER", "newName", LocalDateTime.now(), null);
+        UserDto expectedDto = new UserDto(1L, "PRODUCER", "newName", "producer@email.com", LocalDateTime.now(), null);
 
         when(authenticationService.getRequestingProducerFromSecurityContext()).thenReturn(producer);
         when(passwordEncoder.encode("NewPass123")).thenReturn("encodedPass");
@@ -217,4 +255,3 @@ class ProducerServiceImplTest {
         assertEquals(expectedAvg, savedProducer.getRating(), 0.001);
     }
 }
-

@@ -42,7 +42,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 loginRequestDto.getPassword()));
 
         User user = userRepository.findByUsername(loginRequestDto.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("Invalid email or password"));
+                .orElseThrow(() -> new UsernameNotFoundException("Invalid username or password"));
 
         String jwt = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);

@@ -1,46 +1,154 @@
-import {Link} from "react-router-dom";
+import { FC } from 'react'
+import { Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
-export function Header() {
+export const Header: FC = () => {
+    const { token, role, logout, user } = useAuth()
+
     return (
-        <header className="header">
-            <div className="header__container">
-                <div className="header__logo">
-                    <Link to="/" className="header__logo-link">
+        <header className="bg-[#141414]">
+            <div className="relative container mx-auto max-w-[1400px] px-5 h-[80px] flex items-center">
+                <div className="flex items-center">
+                    <Link to="/" className="flex items-center">
                         <img
-                            src="../../public/images/logo.png"
+                            src="/images/logo.png"
                             alt="Logo"
-                            className="header__logo-image"
+                            className="h-14 w-auto"
                         />
                     </Link>
                 </div>
 
-                <nav className="header__nav">
-                    <ul className="header__nav-list">
-                        <li className="header__nav-item">
-                            <Link to="/" className="header__nav-link">
+                <nav className="absolute inset-x-0 flex justify-center pointer-events-none">
+                    <ul className="flex space-x-8 gap-x-4 pointer-events-auto">
+                        {/* Public */}
+                        <li>
+                            <Link
+                                to="/"
+                                className="text-[#edf0f1] text-base font-medium hover:text-[#0088a9] transition-colors"
+                            >
                                 Home
                             </Link>
                         </li>
-                        <li className="header__nav-item">
-                            <Link to="/tracks" className="header__nav-link">
+                        <li>
+                            <Link
+                                to="/tracks"
+                                className="text-[#edf0f1] text-base font-medium hover:text-[#0088a9] transition-colors"
+                            >
                                 All Tracks
                             </Link>
                         </li>
-                        <li className="header__nav-item">
-                            <Link to="/about" className="header__nav-link">
+                        <li>
+                            <Link
+                                to="/about"
+                                className="text-[#edf0f1] text-base font-medium hover:text-[#0088a9] transition-colors"
+                            >
                                 About
                             </Link>
                         </li>
+
+                        {token && (
+                            <>
+                                <li>
+                                    <Link
+                                        to="/profile"
+                                        className="text-[#edf0f1] text-base font-medium hover:text-[#0088a9] transition-colors"
+                                    >
+                                        Profile
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        to="/purchases"
+                                        className="text-[#edf0f1] text-base font-medium hover:text-[#0088a9] transition-colors"
+                                    >
+                                        Purchases
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        to="/chats"
+                                        className="text-[#edf0f1] text-base font-medium hover:text-[#0088a9] transition-colors"
+                                    >
+                                        Chats
+                                    </Link>
+                                </li>
+                            </>
+                        )}
+
+                        {/* Producer-only */}
+                        {token && role === 'producer' && (
+                            <>
+                                <li>
+                                    <Link
+                                        to="/upload"
+                                        className="text-[#edf0f1] text-base font-medium hover:text-[#0088a9] transition-colors"
+                                    >
+                                        Upload
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        to="/sales"
+                                        className="text-[#edf0f1] text-base font-medium hover:text-[#0088a9] transition-colors"
+                                    >
+                                        Sales
+                                    </Link>
+                                </li>
+                            </>
+                        )}
+
+                        {token && role === 'admin' && (
+                            <li>
+                                <Link
+                                    to="/admin/purchases"
+                                    className="text-[#edf0f1] text-base font-medium hover:text-[#0088a9] transition-colors"
+                                >
+                                    Admin Purchases
+                                </Link>
+                            </li>
+                        )}
                     </ul>
                 </nav>
 
-                <div className="header__auth">
-                    <Link to="/login" className="header__auth-link">
-                        Sign In
-                    </Link>
-                    <Link to="/register" className="header__auth-link">
-                        Sign Up
-                    </Link>
+                <div className="ml-auto flex items-center space-x-4 relative z-10">
+                    {!token ? (
+                        <>
+                            <Link
+                                to="/login"
+                                className="px-5 py-1 bg-[#0088a9] rounded-full text-white text-base hover:bg-[#0088a9]/80 transition"
+                            >
+                                Sign In
+                            </Link>
+                            <Link
+                                to="/register"
+                                className="px-5 py-1 bg-[#0088a9] rounded-full text-white text-base hover:bg-[#0088a9]/80 transition"
+                            >
+                                Sign Up
+                            </Link>
+                        </>
+                    ) : (
+                        <div className="flex items-center space-x-4">
+                            <Link
+                                to="/profile"
+                                className="flex items-center space-x-2"
+                            >
+                                <img
+                                    src={user?.avatarUrl || "/images/default-avatar.png"}
+                                    alt={user?.username || "User Avatar"}
+                                    className="w-10 h-10 rounded-full object-cover"
+                                />
+                                <span className="text-white text-base">
+                  {user?.username || 'User'}
+                </span>
+                            </Link>
+                            <button
+                                onClick={logout}
+                                className="text-base text-[#edf0f1] hover:text-[#0088a9] transition"
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </header>

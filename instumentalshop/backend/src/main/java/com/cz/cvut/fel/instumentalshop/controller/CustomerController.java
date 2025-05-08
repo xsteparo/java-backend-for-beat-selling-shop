@@ -9,9 +9,11 @@ import com.cz.cvut.fel.instumentalshop.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,11 +22,23 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-    @PostMapping("/customers/register")
+    @PostMapping(
+            path = "customers/register",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     @PreAuthorize("permitAll()")
-    public ResponseEntity<UserDto> register(@Valid @RequestBody UserCreationRequestDto requestDto) {
-        UserDto createdCustomer = customerService.register(requestDto);
-        return new ResponseEntity<>(createdCustomer, HttpStatus.CREATED);
+    public ResponseEntity<UserDto> register(
+            @Valid @ModelAttribute UserCreationRequestDto dto,
+            @RequestPart(name = "avatar", required = false) MultipartFile avatar
+    ) {
+        if (avatar != null && !avatar.isEmpty()) {
+            dto.setAvatar(avatar);
+        }
+
+        UserDto created = customerService.register(dto);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(created);
     }
 
     @PutMapping("/customers/increase-balance")

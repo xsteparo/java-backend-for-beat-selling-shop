@@ -2,7 +2,7 @@ import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 interface RequireAuthProps {
-    allowedRoles: Array<'user' | 'producer' | 'admin'>
+    allowedRoles: Array<'customer' | 'producer' | 'admin'>
 }
 
 export function RequireAuth({ allowedRoles }: RequireAuthProps) {

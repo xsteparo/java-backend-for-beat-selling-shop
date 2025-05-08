@@ -1,25 +1,22 @@
 import { FC, FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import {AuthController} from "../controller/AuthConrtoller.ts";
 
 export const Login: FC = () => {
     const { login } = useAuth()
     const navigate = useNavigate()
-    const [email, setEmail] = useState('')
+    const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState<string | null>(null)
+
+
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
         setError(null)
         try {
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
-            })
-            if (!res.ok) throw new Error(await res.text() || 'Login failed')
-            const { token } = await res.json()
+            const { token } = await AuthController.login(username, password)
             login(token)
             navigate('/')
         } catch (err: any) {
@@ -50,18 +47,18 @@ export const Login: FC = () => {
 
                 <form onSubmit={handleSubmit} className="grid gap-1.5">
                     <div className="form__group flex flex-col">
-                        <label htmlFor="email" className="form__label mb-2 text-sm font-medium">
-                            Email
+                        <label htmlFor="username" className="form__label mb-2 text-sm font-medium">
+                            Username
                         </label>
                         <input
-                            id="email"
-                            type="email"
+                            id="username"
+                            type="text"
                             required
                             className="form__input w-full p-3 bg-[#2e2e2e] rounded-[5px]
                          text-white placeholder-gray-400
                          focus:bg-[#3e3e3e] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
+                            value={username}
+                            onChange={e => setUsername(e.target.value)}
                         />
                     </div>
 

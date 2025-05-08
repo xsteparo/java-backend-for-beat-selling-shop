@@ -1,5 +1,8 @@
 import { FC, FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import {CustomerController} from "../controller/CustomerController.ts";
+import {UserCreationRequestDto} from "../dto/UserCreationRequestDto.ts";
+import {UserDto} from "../dto/UserDto.ts";
 
 export const Register: FC = () => {
     const navigate = useNavigate()
@@ -7,7 +10,7 @@ export const Register: FC = () => {
     const [email, setEmail]       = useState('')
     const [password, setPassword] = useState('')
     const [confirm, setConfirm]   = useState('')
-    const [role, setRole]         = useState<'producer'|'performer'>('producer')
+    const [role, setRole]         = useState<'producer'|'artist'>('producer')
     const [avatar, setAvatar]     = useState<File | null>(null)
     const [error, setError]       = useState<string | null>(null)
     const [success, setSuccess]   = useState<string | null>(null)
@@ -16,23 +19,25 @@ export const Register: FC = () => {
         e.preventDefault()
         setError(null)
         setSuccess(null)
+
+        // client-side password match check
         if (password !== confirm) {
             setError("Passwords don’t match")
             return
         }
-        const formData = new FormData()
-        formData.append('username', username)
-        formData.append('email', email)
-        formData.append('password', password)
-        formData.append('role', role)
-        if (avatar) formData.append('avatar', avatar)
+
+        // build DTO for controller
+        const dto: UserCreationRequestDto = {
+            username,
+            email,
+            password,
+            confirmPassword: confirm,
+            role,
+            avatar: avatar || undefined,
+        }
 
         try {
-            const res = await fetch('/api/auth/register', {
-                method: 'POST',
-                body: formData,
-            })
-            if (!res.ok) throw new Error(await res.text() || 'Registration failed')
+            const user: UserDto = await CustomerController.register(dto)
             setSuccess('Registration successful! Redirecting…')
             setTimeout(() => navigate('/login'), 1500)
         } catch (err: any) {
@@ -154,8 +159,8 @@ export const Register: FC = () => {
                                     type="radio"
                                     name="role"
                                     value="performer"
-                                    checked={role === 'performer'}
-                                    onChange={() => setRole('performer')}
+                                    checked={role === 'artist'}
+                                    onChange={() => setRole('artist')}
                                     className="form-radio text-blue-500"
                                 />
                                 <span className="ml-2">Artist</span>

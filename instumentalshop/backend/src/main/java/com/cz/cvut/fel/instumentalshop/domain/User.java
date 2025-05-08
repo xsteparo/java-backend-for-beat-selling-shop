@@ -34,6 +34,9 @@ public class User implements UserDetails {
     private String username;
 
     @Column(nullable = false)
+    private String email;
+
+    @Column(nullable = false)
     private String password;
 
     @Column(name = "registration_date", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
@@ -42,6 +45,8 @@ public class User implements UserDetails {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    private String avatarUrl;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
