@@ -3,6 +3,8 @@ package com.cz.cvut.fel.instumentalshop.service.impl;
 import com.cz.cvut.fel.instumentalshop.domain.Producer;
 import com.cz.cvut.fel.instumentalshop.domain.ProducerTrackInfo;
 import com.cz.cvut.fel.instumentalshop.domain.Track;
+import com.cz.cvut.fel.instumentalshop.domain.enums.GenreType;
+import com.cz.cvut.fel.instumentalshop.domain.enums.KeyType;
 import com.cz.cvut.fel.instumentalshop.dto.mapper.ProducerTrackInfoMapper;
 import com.cz.cvut.fel.instumentalshop.dto.mapper.TrackMapper;
 import com.cz.cvut.fel.instumentalshop.dto.track.in.TrackRequestDto;
@@ -19,6 +21,11 @@ import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -75,6 +82,65 @@ public class TrackServiceImpl implements TrackService {
             throw new RuntimeException(
                     "Failed to store file " + file.getOriginalFilename(), e
             );
+        }
+    }
+
+    @Override
+    public Page<TrackDto> listTracks(String tab, String search, String genre, String tempoRange, String key, String sort, int page, int size) {
+        Specification<Track> spec = Specification.where(null);
+
+        if (!search.isBlank()) {
+            spec = spec.and((root, q, cb) ->
+                    cb.or(
+                            cb.like(cb.lower(root.get("title")), "%" + search.toLowerCase() + "%"),
+                            cb.like(cb.lower(root.get("producer").get("username")), "%" + search.toLowerCase() + "%")
+                    )
+            );
+        }
+        if (!genre.isBlank()) {
+            spec = spec.and((root, q, cb) ->
+                    cb.equal(root.get("genre"), GenreType.valueOf(genre.toUpperCase()))
+            );
+        }
+        if (!tempoRange.isBlank()) {
+            String[] parts = tempoRange.split("-");
+            int low = Integer.parseInt(parts[0]), high = Integer.parseInt(parts[1]);
+            spec = spec.and((root, q, cb) ->
+                    cb.between(root.get("bpm"), low, high)
+            );
+        }
+        if (!key.isBlank()) {
+            spec = spec.and((root, q, cb) ->
+                    cb.equal(root.get("key"), KeyType.fromString(key.toUpperCase()))
+            );
+        }
+
+        Sort.Direction dir = sort.startsWith("-") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        String sortField = sort.replaceFirst("^-", "");
+        Sort springSort = Sort.by(dir, sortField.isBlank() ? defaultSortBy(tab) : sortField);
+        Pageable pageable = PageRequest.of(page, size, springSort);
+
+        if (tab.equals("trending")) {
+            Double avg = trackRepository.findAll()
+                    .stream()
+                    .mapToDouble(Track::getRating)
+                    .average().orElse(0);
+            spec = spec.and((root, q, cb) ->
+                    cb.greaterThan(root.get("rating"), avg)
+            );
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "lastRatingDelta"));
+        }
+
+        Page<Track> tracks = trackRepository.findAll(spec, pageable);
+        return tracks.map(trackMapper::toResponseDto);
+    }
+
+    private String defaultSortBy(String tab) {
+        switch (tab) {
+            case "top":     return "rating";
+            case "new":     return "createdAt";
+            case "trending":return "lastRatingDelta";
+            default:        return "createdAt";
         }
     }
 

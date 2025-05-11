@@ -9,13 +9,50 @@ export class TrackController {
      * Всегда возвращает объект string→string,
      * даже если токена нет — просто пустой.
      */
+    // private static getAuthHeader(): Record<string, string> {
+    //     const token = localStorage.getItem('beatshop_jwt')
+    //     if (!token) {
+    //         return {}
+    //     }
+    //     return {Authorization: `Bearer ${token}`}
+    // }
+
     private static getAuthHeader(): Record<string, string> {
-        const token = localStorage.getItem('beatshop_jwt')
-        if (!token) {
-            return {}
-        }
-        return {Authorization: `Bearer ${token}`}
+        const token = localStorage.getItem('beatshop_jwt');
+        return token ? { Authorization: `Bearer ${token}` } : {};
     }
+
+    /** Универсальный list: таб, поиск, фильтры, пагинация */
+    static async listTracks(params: {
+        tab: 'top' | 'trending' | 'new';
+        search: string;
+        genre: string;
+        tempoRange: string;
+        key: string;
+        sort: string;
+        page: number;  // фронт 1-based
+        size: number;
+    }): Promise<{ content: TrackDto[]; totalPages: number }> {
+        const { tab, search, genre, tempoRange, key, sort, page, size } = params;
+        const query = new URLSearchParams({
+            tab,
+            search,
+            genre,
+            tempoRange,
+            key,
+            sort,
+            page: String(page - 1),  // преобразуем в 0-based
+            size: String(size),
+        });
+        const res = await fetch(`${this.BASE}?${query}`, {
+            headers: this.getAuthHeader(),
+        });
+        if (!res.ok) {
+            throw new Error(`Fetch tracks failed: ${res.status}`);
+        }
+        return res.json();
+    }
+
 
     /** Producer only: create (multipart/form-data) */
     static async createTrack(

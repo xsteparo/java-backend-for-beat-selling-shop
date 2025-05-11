@@ -2,71 +2,66 @@
 import { FC, useState, useEffect, FormEvent } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { Filters } from '../components/Filters'
-import '../index.css'  // Tailwind
+import '../index.css'
+import {TrackController} from "../controller/TrackController.tsx";
+import {TrackDto} from "../dto/TrackDto.ts";  // Tailwind
 
-interface Track {
-    id: string
-    title: string
-    producer: string
-    rating: number
-    genre: string
-    length: string
-    key: string
-    bpm: number
-    mp3Url: string
-    purchased?: boolean
-}
+
 
 export const Tracks: FC = () => {
-    const { role } = useAuth()
-    const tabs = [
-        { key: 'top',      label: 'Nejlepší beaty',    endpoint: '/api/top-tracks' },
-        { key: 'trending', label: 'Na vzestupu',        endpoint: '/api/trending-tracks' },
-        { key: 'new',      label: 'Novinky',            endpoint: '/api/new-tracks' },
-    ]
+    const { role } = useAuth();
 
-    const [activeTab, setActiveTab]   = useState<'top'|'trending'|'new'>('trending')
-    const [tracks, setTracks]         = useState<Track[]>([])
-    const [search, setSearch]         = useState('')
-    const [page, setPage]             = useState(1)
-    const [totalPages, setTotalPages] = useState(1)
-    const [filters, setFilters]       = useState({ genre:'', bpm:'', key:'', sort:'' })
+    const tabs = [
+        { key: 'top',      label: 'Nejlepší beaty' },
+        { key: 'trending', label: 'Na vzestupu' },
+        { key: 'new',      label: 'Novinky' },
+    ] as const;
+
+    const [activeTab, setActiveTab]   = useState<typeof tabs[number]['key']>('trending');
+    const [tracks, setTracks]         = useState<TrackDto[]>([]);
+    const [search, setSearch]         = useState('');
+    const [page, setPage]             = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [filters, setFilters]       = useState({ genre:'', bpm:'', key:'', sort:'' });
 
     useEffect(() => {
         async function load() {
-            const { endpoint } = tabs.find(t => t.key === activeTab)!
-            const params = new URLSearchParams({
-                count: '10', page: String(page), search,
-                genre: filters.genre, tempo_range: filters.bpm,
-                key: filters.key, sort: filters.sort
-            })
-            const res = await fetch(`${endpoint}?${params}`)
-            const data: { tracks: Track[]; totalPages: number } = await res.json()
-            setTracks(data.tracks)
-            setTotalPages(data.totalPages)
+            try {
+                const data = await TrackController.listTracks({
+                    tab:        activeTab,
+                    search,
+                    genre:      filters.genre,
+                    tempoRange: filters.bpm,
+                    key:        filters.key,
+                    sort:       filters.sort,
+                    page,
+                    size: 10,
+                });
+                setTracks(data.content);
+                setTotalPages(data.totalPages);
+            } catch (err) {
+                console.error(err);
+            }
         }
-        load()
-    }, [activeTab, page, search, filters])
+        load();
+    }, [activeTab, page, search, filters]);
 
     const onSearch = (e: FormEvent) => {
-        e.preventDefault()
-        setPage(1)
-    }
+        e.preventDefault();
+        setPage(1);
+    };
 
-    const play   = (id: string) => (document.getElementById(`audio-${id}`) as HTMLAudioElement)?.play()
-    const buy    = async (id: string) => { /* ... */ }
-    const remove = async (id: string) => { /* ... */ }
+    const play   = (id: string) => (document.getElementById(`audio-${id}`) as HTMLAudioElement)?.play();
+    const buy    = async (id: string) => { /* … */ };
+    const remove = async (id: string) => { /* … */ };
 
     return (
         <main className="flex flex-col bg-gray-900 min-h-screen p-6">
             <h1 className="text-3xl text-white text-center mb-6">All beats</h1>
 
-            {/* -------- Табы по центру, поиск справа -------- */}
+            {/* Табы + Поиск */}
             <div className="mb-6 grid grid-cols-[1fr_auto_1fr] items-center">
-                {/* пустой блок — чтобы центрировать табы */}
-                <div />
-
-                {/* сами табы */}
+                <div/>
                 <div className="flex space-x-4">
                     {tabs.map(t => (
                         <button
@@ -76,18 +71,13 @@ export const Tracks: FC = () => {
                                     ? 'bg-green-600 text-white'
                                     : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                             }`}
-                            onClick={() => { setActiveTab(t.key as 'top' | 'trending' | 'new'); setPage(1) }}
+                            onClick={() => { setActiveTab(t.key); setPage(1); }}
                         >
                             {t.label}
                         </button>
                     ))}
                 </div>
-
-                {/* поиск, прижатый вправо */}
-                <form
-                    onSubmit={onSearch}
-                    className="justify-self-end flex space-x-2"
-                >
+                <form onSubmit={onSearch} className="justify-self-end flex space-x-2">
                     <input
                         type="text"
                         placeholder="Search…"
@@ -108,7 +98,7 @@ export const Tracks: FC = () => {
                 {/* Фильтры */}
                 <Filters onChange={setFilters} />
 
-                {/* Список битов + пагинация */}
+                {/* Список */}
                 <div className="flex-1 flex flex-col">
                     {tracks.length === 0 ? (
                         <div className="flex-1 flex items-center justify-center text-gray-400">
@@ -124,28 +114,50 @@ export const Tracks: FC = () => {
                                     <button onClick={() => play(t.id)} className="p-1">▶</button>
                                     <img src="/images/note-icon.svg" alt="" className="w-6 h-6" />
                                     <div className="pl-2">
-                                        <div className="text-white font-semibold">{t.title}</div>
-                                        <div className="text-gray-400 text-sm">{t.producer}</div>
+                                        <div className="text-white font-semibold">{t.name}</div>
+                                        <div className="text-gray-400 text-sm">{t.producerUsername}</div>
                                     </div>
                                     <div className="text-center text-gray-300">{t.rating}</div>
-                                    <div className="text-center text-gray-300">{t.genre}</div>
+                                    <div className="text-center text-gray-300">{t.genreType}</div>
                                     <div className="text-center text-gray-300">{t.length}</div>
                                     <div className="text-center text-gray-300">{t.key}</div>
                                     <div className="text-center text-gray-300">{t.bpm}</div>
                                     <div className="flex space-x-2">
                                         {role === 'admin' ? (
                                             <>
-                                                <a href={`/api/tracks/${t.id}/download`} className="px-2 py-1 bg-green-600 text-white rounded text-xs">Download</a>
-                                                <button className="px-2 py-1 bg-yellow-500 text-black rounded text-xs">Edit</button>
-                                                <button className="px-2 py-1 bg-red-600 text-white rounded text-xs" onClick={() => remove(t.id)}>Delete</button>
+                                                <a
+                                                    href={`/api/v1/tracks/${t.id}/download`}
+                                                    className="px-2 py-1 bg-green-600 text-white rounded text-xs"
+                                                >
+                                                    Download
+                                                </a>
+                                                <button className="px-2 py-1 bg-yellow-500 text-black rounded text-xs">
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => remove(t.id)}
+                                                    className="px-2 py-1 bg-red-600 text-white rounded text-xs"
+                                                >
+                                                    Delete
+                                                </button>
                                             </>
                                         ) : t.purchased ? (
-                                            <a href={`/api/tracks/${t.id}/download`} className="px-2 py-1 bg-green-600 text-white rounded text-xs">Download</a>
+                                            <a
+                                                href={`/api/v1/tracks/${t.id}/download`}
+                                                className="px-2 py-1 bg-green-600 text-white rounded text-xs"
+                                            >
+                                                Download
+                                            </a>
                                         ) : (
-                                            <button onClick={() => buy(t.id)} className="px-2 py-1 bg-green-500 text-white rounded text-xs">Buy</button>
+                                            <button
+                                                onClick={() => buy(t.id)}
+                                                className="px-2 py-1 bg-green-500 text-white rounded text-xs"
+                                            >
+                                                Buy
+                                            </button>
                                         )}
                                     </div>
-                                    <audio id={`audio-${t.id}`} src={t.mp3Url} preload="none" />
+                                    <audio id={`audio-${t.id}`} src={t.urlNonExclusive} preload="none" />
                                 </div>
                             ))}
                         </div>
@@ -153,24 +165,36 @@ export const Tracks: FC = () => {
 
                     {/* Пагинация */}
                     <div className="flex justify-center mt-4 space-x-2">
-                        <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="px-3 py-1 bg-gray-700 text-gray-300 rounded disabled:opacity-50">‹</button>
+                        <button
+                            disabled={page <= 1}
+                            onClick={() => setPage(page - 1)}
+                            className="px-3 py-1 bg-gray-700 text-gray-300 rounded disabled:opacity-50"
+                        >
+                            ‹
+                        </button>
                         {Array.from({ length: totalPages }, (_, i) => (
                             <button
-                                key={i + 1}
-                                onClick={() => setPage(i + 1)}
+                                key={i+1}
+                                onClick={() => setPage(i+1)}
                                 className={`px-3 py-1 rounded ${
-                                    page === i + 1
+                                    page === i+1
                                         ? 'bg-green-600 text-white'
                                         : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                                 }`}
                             >
-                                {i + 1}
+                                {i+1}
                             </button>
                         ))}
-                        <button disabled={page >= totalPages} onClick={() => setPage(page + 1)} className="px-3 py-1 bg-gray-700 text-gray-300 rounded disabled:opacity-50">›</button>
+                        <button
+                            disabled={page >= totalPages}
+                            onClick={() => setPage(page + 1)}
+                            className="px-3 py-1 bg-gray-700 text-gray-300 rounded disabled:opacity-50"
+                        >
+                            ›
+                        </button>
                     </div>
                 </div>
             </div>
         </main>
-    )
-}
+    );
+};

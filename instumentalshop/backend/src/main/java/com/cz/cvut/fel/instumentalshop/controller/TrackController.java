@@ -6,6 +6,7 @@ import com.cz.cvut.fel.instumentalshop.dto.track.out.TrackDto;
 import com.cz.cvut.fel.instumentalshop.service.TrackService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +17,29 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/tracks/")
+@RequestMapping("/api/v1/tracks")
 @CrossOrigin(origins = "http://localhost:5173")
 public class TrackController {
 
     private final TrackService trackService;
+
+    @GetMapping("")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<Page<TrackDto>> listTracks(
+            @RequestParam(defaultValue = "new") String tab,          // "top", "trending" или "new"
+            @RequestParam(defaultValue = "") String search,          // поиск по названию/продюсеру
+            @RequestParam(defaultValue = "") String genre,           // жанр
+            @RequestParam(defaultValue = "") String tempoRange,      // например "80-120"
+            @RequestParam(defaultValue = "") String key,
+            @RequestParam(defaultValue = "") String sort,            // e.g. "rating", "bpm"
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<TrackDto> result = trackService.listTracks(
+                tab, search, genre, tempoRange, key, sort, page, size
+        );
+        return ResponseEntity.ok(result);
+    }
 
     @PostMapping(
             path = "/create",
@@ -57,12 +76,12 @@ public class TrackController {
         return new ResponseEntity<>(track, HttpStatus.OK);
     }
 
-    @GetMapping("")
-    @PreAuthorize("permitAll()")
-    public ResponseEntity<List<TrackDto>> getAllTracks() {
-        List<TrackDto> tracks = trackService.getAllTracks();
-        return new ResponseEntity<>(tracks, HttpStatus.OK);
-    }
+//    @GetMapping("")
+//    @PreAuthorize("permitAll()")
+//    public ResponseEntity<List<TrackDto>> getAllTracks() {
+//        List<TrackDto> tracks = trackService.getAllTracks();
+//        return new ResponseEntity<>(tracks, HttpStatus.OK);
+//    }
 
     @GetMapping("/by-producer/{producerId}")
     @PreAuthorize("permitAll()")

@@ -1,6 +1,7 @@
 package com.cz.cvut.fel.instumentalshop.domain;
 
 import com.cz.cvut.fel.instumentalshop.domain.enums.GenreType;
+import com.cz.cvut.fel.instumentalshop.domain.enums.KeyType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,6 +40,8 @@ public class Track {
 
     @Column(nullable = false)
     private Integer bpm;
+
+    private KeyType keyType;
 
     private int likes;
 

@@ -31,5 +31,20 @@ public interface TrackMapper {
     @Mapping(target = "trackId", source = "id")
     @Mapping(target = "genreType" , source = "genre")
     @Mapping(target = "producerTrackInfoDtoList", ignore = true)
+
+    @Mapping(target = "rating",                source = "rating")
+//    @Mapping(target = "length",                source = "length")
+    @Mapping(target = "keyType",                   source = "keyType")
+    @Mapping(
+            target = "producerUsername",
+            expression = "java("
+                    + "track.getProducerTrackInfos().stream()"
+                    +     ".filter(ProducerTrackInfo::getOwnsPublishingTrack)"
+                    +     ".findFirst()"
+                    +     ".map(info -> info.getProducer().getUsername())"
+                    +     ".orElse(null)"
+                    + ")"
+    )
+    @Mapping(target = "purchased",             constant = "false")
     TrackDto toResponseDto(Track track);
 }

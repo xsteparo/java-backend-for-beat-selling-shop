@@ -14,4 +14,10 @@ export interface TrackDto {
 
     // список продюсеров и их статусов
     producerTrackInfoDtoList: ProducerTrackInfoDto[]
+    // Новые поля для списка:
+    rating: number;
+    length: String             // например "3:45"
+    key: String                // например "C#"
+    producerUsername: String   // главный продюсер
+    purchased: boolean;         // для состояний Buy / Download
 }

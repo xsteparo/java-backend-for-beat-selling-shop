@@ -21,4 +21,11 @@ public class TrackDto {
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private List<ProducerTrackInfoDto> producerTrackInfoDtoList;
 
+        // Новые поля для списка:
+        private double rating;
+        private String length;             // например "3:45"
+        private String keyType;                // например "C#"
+        private String producerUsername;   // главный продюсер
+        private Boolean purchased;         // для состояний Buy / Download
+
 }
