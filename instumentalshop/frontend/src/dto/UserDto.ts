@@ -8,4 +8,6 @@ export interface UserDto {
     registrationDate: string
 
     balance?: number
+
+    avatarUrl?: String
 }

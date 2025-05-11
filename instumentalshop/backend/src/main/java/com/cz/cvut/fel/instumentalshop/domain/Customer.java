@@ -41,6 +41,6 @@ public class Customer extends User{
     @OneToMany(mappedBy = "customer")
     private List<PurchasedLicence> orders;
 
-    private BigDecimal balance = BigDecimal.valueOf(0);
+
 
 }

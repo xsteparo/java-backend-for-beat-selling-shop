@@ -12,6 +12,7 @@ export class CustomerController {
         fd.append('username', data.username)
         fd.append('email', data.email)
         fd.append('password', data.password)
+        fd.append('role', (data.role as any).toUpperCase());
         if (data.avatar) fd.append('avatar', data.avatar)
 
         const res = await fetch('/api/v1/customers/register', {

@@ -30,9 +30,6 @@ public class Producer extends User {
     )
     private List<PurchasedLicence> soldLicences;
 
-    @Column(precision = 10, scale = 2, nullable = false)
-    private BigDecimal salary = BigDecimal.valueOf(0);
-
     @ManyToMany
     @JoinTable(
             name = "producer_licence_report",

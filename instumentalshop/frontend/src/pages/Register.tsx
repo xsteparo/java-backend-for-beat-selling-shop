@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import {CustomerController} from "../controller/CustomerController.ts";
 import {UserCreationRequestDto} from "../dto/UserCreationRequestDto.ts";
 import {UserDto} from "../dto/UserDto.ts";
+import {AuthController} from "../controller/AuthConrtoller.ts";
 
 export const Register: FC = () => {
     const navigate = useNavigate()
@@ -10,23 +11,24 @@ export const Register: FC = () => {
     const [email, setEmail]       = useState('')
     const [password, setPassword] = useState('')
     const [confirm, setConfirm]   = useState('')
-    const [role, setRole]         = useState<'producer'|'artist'>('producer')
+    const [role, setRole]         = useState<'producer'|'customer'>('producer')
     const [avatar, setAvatar]     = useState<File | null>(null)
     const [error, setError]       = useState<string | null>(null)
     const [success, setSuccess]   = useState<string | null>(null)
 
     const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault()
-        setError(null)
-        setSuccess(null)
+        e.preventDefault();
+        setError(null);
+        setSuccess(null);
 
-        // client-side password match check
+        // Debugging role state
+        console.log('Selected role:', role);
+
         if (password !== confirm) {
-            setError("Passwords don’t match")
-            return
+            setError("Passwords don’t match");
+            return;
         }
 
-        // build DTO for controller
         const dto: UserCreationRequestDto = {
             username,
             email,
@@ -34,16 +36,16 @@ export const Register: FC = () => {
             confirmPassword: confirm,
             role,
             avatar: avatar || undefined,
-        }
+        };
 
         try {
-            const user: UserDto = await CustomerController.register(dto)
-            setSuccess('Registration successful! Redirecting…')
-            setTimeout(() => navigate('/login'), 1500)
+            const user: UserDto = await AuthController.register(dto);
+            setSuccess('Registration successful! Redirecting…');
+            setTimeout(() => navigate('/login'), 1500);
         } catch (err: any) {
-            setError(err.message)
+            setError(err.message);
         }
-    }
+    };
 
     return (
         <main
@@ -158,10 +160,9 @@ export const Register: FC = () => {
                                 <input
                                     type="radio"
                                     name="role"
-                                    value="performer"
-                                    checked={role === 'artist'}
-                                    onChange={() => setRole('artist')}
-                                    className="form-radio text-blue-500"
+                                    value="customer"
+                                    checked={role === 'customer'}
+                                    onChange={() => setRole('customer')}
                                 />
                                 <span className="ml-2">Artist</span>
                             </label>

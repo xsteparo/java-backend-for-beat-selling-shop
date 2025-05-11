@@ -20,7 +20,7 @@ public interface UserMapper {
     @Mapping(target = "userId", source = "id")
     @Mapping(target = "role", expression = "java(roleToString(source.getRole()))")
     @Mapping(target = "registrationDate", source = "registrationDate", dateFormat = "yyyy-MM-dd HH:mm")
-    @Mapping(target = "balance", source = "salary")
+    @Mapping(target = "balance", source = "balance")
     @Mapping(target = "username", source = "username")
     UserDto toProducerResponseDto(Producer source);
 

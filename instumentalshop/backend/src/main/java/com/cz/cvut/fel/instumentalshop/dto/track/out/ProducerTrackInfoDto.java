@@ -3,6 +3,8 @@ package com.cz.cvut.fel.instumentalshop.dto.track.out;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class ProducerTrackInfoDto {
 
@@ -15,7 +17,7 @@ public class ProducerTrackInfoDto {
     private String producerUsername;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Integer profitPercentage;
+    private BigDecimal profitPercentage;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean agreedForSelling;

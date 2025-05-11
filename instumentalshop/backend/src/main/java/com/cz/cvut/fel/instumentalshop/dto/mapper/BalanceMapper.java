@@ -14,7 +14,7 @@ public interface BalanceMapper {
     BalanceResponseDto toResponseDto(Customer customer);
 
     @Mapping(target = "userId", source = "id")
-    @Mapping(target = "balance", source = "salary")
+    @Mapping(target = "balance", source = "balance")
     BalanceResponseDto toResponseDto(Producer producer);
 
 }

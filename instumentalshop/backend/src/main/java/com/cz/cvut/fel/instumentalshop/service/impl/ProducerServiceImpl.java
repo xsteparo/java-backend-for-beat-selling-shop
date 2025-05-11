@@ -145,7 +145,7 @@ public class ProducerServiceImpl implements ProducerService {
                 .username(requestDto.getUsername())
                 .password(passwordEncoder.encode(requestDto.getPassword()))
                 .registrationDate(LocalDateTime.now())
-                .salary(BigDecimal.ZERO)
+                .balance(BigDecimal.ZERO)
                 .role(Role.PRODUCER)
                 .build();
     }

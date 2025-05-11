@@ -14,7 +14,7 @@ public interface ProducerMapper {
     @Mapping(target = "role", expression = "java(roleToString(source.getRole()))")
     @Mapping(target = "username", source = "username")
     @Mapping(target = "registrationDate", source = "registrationDate")
-    @Mapping(target = "balance", source = "salary", ignore = true)
+    @Mapping(target = "balance", source = "balance", ignore = true)
     UserDto toResponseDto(Producer source);
 
     List<UserDto> toResponseDto(List<Producer> source);

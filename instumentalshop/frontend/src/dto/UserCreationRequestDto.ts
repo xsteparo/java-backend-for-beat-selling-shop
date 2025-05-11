@@ -3,6 +3,6 @@ export interface UserCreationRequestDto {
     email: string
     password: string
     confirmPassword: string
-    role: 'producer' | 'artist'
+    role: 'producer' | 'customer'
     avatar?: File
 }

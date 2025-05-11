@@ -7,6 +7,7 @@ import com.cz.cvut.fel.instumentalshop.service.TrackService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,14 +17,20 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/tracks/")
+@CrossOrigin(origins = "http://localhost:5173")
 public class TrackController {
 
     private final TrackService trackService;
 
-    @PostMapping("/create")
+    @PostMapping(
+            path = "/create",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     @PreAuthorize("hasAuthority('PRODUCER')")
-    public ResponseEntity<TrackDto> createTrack(@Valid @RequestBody TrackRequestDto requestDto) {
-        TrackDto responseDto = trackService.createTrack(requestDto);
+    public ResponseEntity<TrackDto> createTrack(
+            @Valid @ModelAttribute TrackRequestDto dto
+    ) {
+        TrackDto responseDto = trackService.createTrack(dto);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 

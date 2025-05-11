@@ -5,287 +5,293 @@ import com.cz.cvut.fel.instumentalshop.domain.ProducerTrackInfo;
 import com.cz.cvut.fel.instumentalshop.domain.Track;
 import com.cz.cvut.fel.instumentalshop.dto.mapper.ProducerTrackInfoMapper;
 import com.cz.cvut.fel.instumentalshop.dto.mapper.TrackMapper;
-import com.cz.cvut.fel.instumentalshop.dto.track.in.ProducerShareRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.in.TrackRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.out.ProducerTrackInfoDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.out.TrackDto;
 import com.cz.cvut.fel.instumentalshop.exception.ProducerTrackInfoNotFoundException;
-import com.cz.cvut.fel.instumentalshop.exception.UserNotFoundException;
 import com.cz.cvut.fel.instumentalshop.repository.ProducerRepository;
 import com.cz.cvut.fel.instumentalshop.repository.ProducerTrackInfoRepository;
 import com.cz.cvut.fel.instumentalshop.repository.TrackRepository;
 import com.cz.cvut.fel.instumentalshop.service.AuthenticationService;
 import com.cz.cvut.fel.instumentalshop.service.TrackService;
 import com.cz.cvut.fel.instumentalshop.util.validator.TrackValidator;
-import jakarta.persistence.EntityManager;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TrackServiceImpl implements TrackService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    @Value("${app.upload.tracks-path}")
+    private String tracksUploadDir;
+
+    private Path tracksUploadPath;
 
     private final AuthenticationService authenticationService;
-
     private final ProducerTrackInfoRepository producerTrackInfoRepository;
-
     private final TrackRepository trackRepository;
-
     private final ProducerRepository producerRepository;
-
     private final ProducerTrackInfoMapper producerTrackInfoMapper;
-
     private final TrackMapper trackMapper;
-
     private final TrackValidator trackValidator;
 
+    @PostConstruct
+    public void init() {
+        tracksUploadPath = Paths.get(tracksUploadDir)
+                .toAbsolutePath()
+                .normalize();
+        try {
+            Files.createDirectories(tracksUploadPath);
+        } catch (IOException e) {
+            throw new RuntimeException(
+                    "Failed to create folder for upload tracks: " + tracksUploadPath, e
+            );
+        }
+    }
+
+    private String storeFile(MultipartFile file, String ext) {
+        String filename = UUID.randomUUID() + "." + ext;
+        Path target = tracksUploadPath.resolve(filename);
+        try {
+            file.transferTo(target.toFile());
+            return "/uploads/tracks/" + filename;
+        } catch (IOException e) {
+            throw new RuntimeException(
+                    "Failed to store file " + file.getOriginalFilename(), e
+            );
+        }
+    }
 
     @Override
     @Transactional
-    public TrackDto createTrack(TrackRequestDto requestDto) {
+    public TrackDto createTrack(TrackRequestDto dto) {
         Producer leadProducer = authenticationService.getRequestingProducerFromSecurityContext();
+        boolean singleOwner = isSingleOwner(dto);
 
-        if (isSingleOwner(requestDto)) {
-            trackValidator.validateTrackCreationRequestWithSingleOwner(requestDto, leadProducer);
-            return createTrackWithSingleOwner(requestDto, leadProducer);
+        if (singleOwner) {
+            trackValidator.validateTrackCreationRequestWithSingleOwner(dto, leadProducer);
+        } else {
+            trackValidator.validateTrackCreationRequestWithMultiOwners(dto, leadProducer);
         }
 
-        trackValidator.validateTrackCreationRequestWithMultiOwners(requestDto, leadProducer);
-        return createTrackWithMultipleOwners(requestDto, leadProducer);
+        return createWithFiles(dto, leadProducer, singleOwner);
+    }
+
+    private TrackDto createWithFiles(TrackRequestDto dto,
+                                     Producer leadProducer,
+                                     boolean allAgreedForSelling) {
+        // 1) Store files
+        String urlMp3 = storeFile(dto.getNonExclusiveFile(), "mp3");
+        String urlWav = dto.getPremiumFile() != null
+                ? storeFile(dto.getPremiumFile(), "wav")
+                : null;
+        String urlZip = dto.getExclusiveFile() != null
+                ? storeFile(dto.getExclusiveFile(), "zip")
+                : null;
+
+        // 2) Build Track entity
+        Track track = Track.builder()
+                .name(dto.getName())
+                .genre(dto.getGenreType())
+                .bpm(dto.getBpm())
+                .allProducersAgreedForSelling(allAgreedForSelling)
+                .urlNonExclusive(urlMp3)
+                .urlPremium(urlWav)
+                .urlExclusive(urlZip)
+                .build();
+
+        // 3) Build ProducerTrackInfo list
+        List<ProducerTrackInfo> infos = buildProducerTrackInfos(track, dto, leadProducer, allAgreedForSelling);
+        track.setProducerTrackInfos(infos);
+
+        // 4) Persist track + infos
+        Track saved = trackRepository.save(track);
+
+        // 5) Map to DTO
+        if (allAgreedForSelling) {
+            return trackMapper.toResponseWithSingleOwnerDto(saved);
+        } else {
+            return trackMapper.toResponseWithMultipleOwnersDto(saved);
+        }
+    }
+
+
+    private boolean isSingleOwner(TrackRequestDto dto) {
+        return dto.getMainProducerPercentage() == null
+                && (dto.getProducerShares() == null || dto.getProducerShares().isEmpty());
+    }
+
+    private List<ProducerTrackInfo> buildProducerTrackInfos(Track track,
+                                                            TrackRequestDto dto,
+                                                            Producer leadProducer,
+                                                            boolean allAgreed) {
+        List<ProducerTrackInfo> infos = new ArrayList<>();
+
+        BigDecimal leadShare = allAgreed
+                ? BigDecimal.valueOf(100)
+                : BigDecimal.valueOf(dto.getMainProducerPercentage());
+        infos.add(buildProducerTrackInfo(track, leadProducer, leadShare, true));
+
+        if (dto.getProducerShares() != null) {
+            dto.getProducerShares().forEach(ps -> {
+                Producer co = producerRepository
+                        .findProducerByUsername(ps.getProducerName())
+                        .orElseThrow(() -> new EntityNotFoundException(
+                                "Producer not found: " + ps.getProducerName()));
+                infos.add(buildProducerTrackInfo(
+                        track,
+                        co,
+                        BigDecimal.valueOf(ps.getProfitPercentage()),
+                        false));
+            });
+        }
+
+        return infos;
+    }
+
+    private ProducerTrackInfo buildProducerTrackInfo(Track track,
+                                                     Producer producer,
+                                                     BigDecimal profitPercentage,
+                                                     boolean isLead) {
+        return ProducerTrackInfo.builder()
+                .track(track)
+                .producer(producer)
+                .profitPercentage(profitPercentage)
+                .ownsPublishingTrack(isLead)
+                .agreedForSelling(isLead)
+                .build();
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public TrackDto getTrackById(Long trackId) {
-        Track track = trackRepository.findTrackById(trackId)
-                .orElseThrow(() -> new EntityNotFoundException("Track is not found"));
-
-        return getTrackResponseWithProducersIds(track);
+        Track track = trackRepository.findById(trackId)
+                .orElseThrow(() -> new EntityNotFoundException("Track not found: " + trackId));
+        return getTrackResponseWithProducers(track);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<TrackDto> getAllTracks() {
-        List<Track> tracks = trackRepository.findAll();
-
-        return tracks.stream()
-                .map(this::getTrackResponseWithProducersIds)
+        return trackRepository.findAll().stream()
+                .map(this::getTrackResponseWithProducers)
                 .collect(Collectors.toList());
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<TrackDto> getAllTracksByProducer(Long producerId) {
-        List<Track> tracks = trackRepository.findTracksByProducerId(producerId);
-
-        return tracks.stream()
-                .map(this::getTrackResponseWithProducersIds)
+        return trackRepository.findTracksByProducerId(producerId).stream()
+                .map(this::getTrackResponseWithProducers)
                 .collect(Collectors.toList());
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<TrackDto> getCustomerBoughtTracksForProducer(Long customerId) {
-        Producer producer = authenticationService.getRequestingProducerFromSecurityContext();
-
-        List<Track> tracks = trackRepository.findCustomerBoughtTracksForProducer(customerId, producer.getId());
-
-        return tracks.stream()
-                .map(this::getTrackResponseWithProducersIds)
+        Producer p = authenticationService.getRequestingProducerFromSecurityContext();
+        return trackRepository.findCustomerBoughtTracksForProducer(customerId, p.getId()).stream()
+                .map(this::getTrackResponseWithProducers)
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
     public void deleteTrack(Long trackId) {
-        Producer currentProducer = authenticationService.getRequestingProducerFromSecurityContext();
-
-        trackValidator.validateTrackDeletionRequest(trackId, currentProducer.getId());
-
+        Producer p = authenticationService.getRequestingProducerFromSecurityContext();
+        trackValidator.validateTrackDeletionRequest(trackId, p.getId());
         trackRepository.deleteById(trackId);
     }
 
     @Override
     @Transactional
-    public TrackDto updateTrack(Long trackId, TrackRequestDto requestDto) {
-        Producer currentProducer = authenticationService.getRequestingProducerFromSecurityContext();
+    public TrackDto updateTrack(Long trackId, TrackRequestDto dto) {
+        Producer p = authenticationService.getRequestingProducerFromSecurityContext();
+        Track track = trackRepository.findById(trackId)
+                .orElseThrow(() -> new EntityNotFoundException("Track not found: " + trackId));
+        trackValidator.validateUpdateRequest(dto, trackId, p.getId());
 
-        Track track = trackRepository.findTrackById(trackId)
-                .orElseThrow(() -> new EntityNotFoundException("Track is not found"));
+        track.setName(dto.getName());
+        track.setBpm(dto.getBpm());
+        track.setGenre(dto.getGenreType());
+        // File updates can be handled similarly if needed
 
-        trackValidator.validateUpdateRequest(requestDto, trackId, currentProducer.getId());
-
-        track.setName(requestDto.getName());
-        track.setBpm(requestDto.getBpm());
-        track.setGenre(requestDto.getGenreType());
-
-        track = trackRepository.save(track);
-
-        return trackMapper.toResponseDto(track);
-
+        Track updated = trackRepository.save(track);
+        return trackMapper.toResponseDto(updated);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ProducerTrackInfoDto> getTrackApprovalsList() {
-        Producer currentProducer = authenticationService.getRequestingProducerFromSecurityContext();
-        List<ProducerTrackInfo> producerTrackInfos = producerTrackInfoRepository.findByProducerIdAndAgreedForSelling(currentProducer.getId(), false);
-        return producerTrackInfoMapper.toResponseDtoList(producerTrackInfos);
+        Producer p = authenticationService.getRequestingProducerFromSecurityContext();
+        return producerTrackInfoRepository
+                .findByProducerIdAndAgreedForSelling(p.getId(), false)
+                .stream()
+                .map(producerTrackInfoMapper::toResponseDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
     public List<ProducerTrackInfoDto> confirmProducerAgreement(Long trackId) {
-        Producer producer = authenticationService.getRequestingProducerFromSecurityContext();
-        Track track = trackRepository.findTrackById(trackId)
-                .orElseThrow(() -> new EntityNotFoundException("Track is not found"));
-
-        ProducerTrackInfo producerTrackInfo = getProducerTrackInfo(trackId, producer);
-
-        updateProducerAgreement(producerTrackInfo);
-
-        boolean isAllAgreed = isAllProducersAgreed(trackId);
-        updateTrackAgreementStatus(track, isAllAgreed);
-
-        return getProducerTrackInfoResponses(trackId);
-    }
-
-    private TrackDto createTrackWithSingleOwner(TrackRequestDto requestDto, Producer leadProducer) {
-        Track track = buildTrack(requestDto, true);
-
-        ProducerTrackInfo producerTrackInfo = buildProducerTrackInfo(track, leadProducer, BigDecimal.valueOf(100), true);
-
-        producerTrackInfo = producerTrackInfoRepository.save(producerTrackInfo);
-
-        return trackMapper.toResponseWithSingleOwnerDto(producerTrackInfo.getTrack());
-    }
-
-    private TrackDto createTrackWithMultipleOwners(TrackRequestDto requestDto, Producer leadProducer) {
-        Track track = buildTrack(requestDto, false);
-
-        List<ProducerTrackInfo> producerTrackInfos = buildProducerTrackInfosWithAllProducers(track, requestDto, leadProducer);
-
-        track.setProducerTrackInfos(producerTrackInfos);
-        track = trackRepository.save(track);
-
-        return trackMapper.toResponseWithMultipleOwnersDto(track);
-    }
-
-    private Track buildTrack(TrackRequestDto requestDto, boolean isAllAgreedForSelling) {
-        return Track.builder()
-                .name(requestDto.getName())
-                .bpm(requestDto.getBpm())
-                .genre(requestDto.getGenreType())
-                .allProducersAgreedForSelling(isAllAgreedForSelling)
-                .build();
-    }
-
-    private List<ProducerTrackInfo> buildProducerTrackInfosWithAllProducers(Track track, TrackRequestDto requestDto, Producer leadProducer) {
-        List<ProducerTrackInfo> producerTrackInfos = new ArrayList<>();
-
-        ProducerTrackInfo leadProducerTrackInfo = buildProducerTrackInfo(track, leadProducer, BigDecimal.valueOf(requestDto.getMainProducerPercentage()), true);
-
-        producerTrackInfos.add(leadProducerTrackInfo);
-
-        addCoProducerTrackInfos(track, producerTrackInfos, requestDto);
-
-        return producerTrackInfos;
-    }
-
-    private void addCoProducerTrackInfos(Track track, List<ProducerTrackInfo> producerTrackInfos, TrackRequestDto requestDto) {
-        for (ProducerShareRequestDto shareRequestDto : requestDto.getProducerShares()) {
-            Producer coProducer = producerRepository.findProducerByUsername(shareRequestDto.getProducerName())
-                    .orElseThrow(() -> new UserNotFoundException("Producer not found with id: " + shareRequestDto.getProducerName() + "not found "));
-
-            Integer profitPercentage = shareRequestDto.getProfitPercentage();
-
-            ProducerTrackInfo producerTrackInfo = buildProducerTrackInfo(track, coProducer, BigDecimal.valueOf(profitPercentage), false);
-
-            producerTrackInfos.add(producerTrackInfo);
-        }
-    }
-
-    private ProducerTrackInfo buildProducerTrackInfo(Track track, Producer producer, BigDecimal profitPercentage, boolean isLeadProducer) {
-        if (isLeadProducer) {
-            return ProducerTrackInfo.builder()
-                    .track(track)
-                    .producer(producer)
-                    .profitPercentage(profitPercentage)
-                    .ownsPublishingTrack(true)
-                    .agreedForSelling(true)
-                    .build();
-        }
-
-        return ProducerTrackInfo.builder()
-                .track(track)
-                .producer(producer)
-                .profitPercentage(profitPercentage)
-                .ownsPublishingTrack(false)
-                .agreedForSelling(false)
-                .build();
-
-    }
-
-    private boolean isSingleOwner(TrackRequestDto requestDto) {
-        return requestDto.getMainProducerPercentage() == null &&
-                (requestDto.getProducerShares() == null || requestDto.getProducerShares().isEmpty());
-    }
-
-    private ProducerTrackInfo getProducerTrackInfo(Long trackId, Producer producer) {
-        return producerTrackInfoRepository
-                .findProducerTrackInfoByTrackIdAndProducerIdAndAgreedStatus(trackId, producer.getId(), false)
+        Producer p = authenticationService.getRequestingProducerFromSecurityContext();
+        ProducerTrackInfo info = producerTrackInfoRepository
+                .findProducerTrackInfoByTrackIdAndProducerIdAndAgreedStatus(trackId, p.getId(), false)
                 .orElseThrow(() -> new ProducerTrackInfoNotFoundException(
-                        "Producer track information not found or already confirmed for track ID " + trackId
-                                + " and producer ID " + producer.getId()));
-    }
+                        "No pending agreement for track " + trackId + " and producer " + p.getId()));
 
-    private void updateProducerAgreement(ProducerTrackInfo producerTrackInfo) {
-        producerTrackInfo.setAgreedForSelling(true);
-        producerTrackInfoRepository.save(producerTrackInfo);
-    }
+        info.setAgreedForSelling(true);
+        producerTrackInfoRepository.save(info);
 
-    private boolean isAllProducersAgreed(Long trackId) {
-        return producerTrackInfoRepository.findByTrackId(trackId).stream()
+        boolean allAgreed = producerTrackInfoRepository
+                .findByTrackId(trackId)
+                .stream()
                 .allMatch(ProducerTrackInfo::getAgreedForSelling);
+
+        Track track = info.getTrack();
+        track.setAllProducersAgreedForSelling(allAgreed);
+        trackRepository.save(track);
+
+        return producerTrackInfoRepository
+                .findByTrackId(trackId)
+                .stream()
+                .map(producerTrackInfoMapper::toResponseDto)
+                .collect(Collectors.toList());
     }
 
-    private void updateTrackAgreementStatus(Track track, boolean isAllAgreed) {
-        track.setAllProducersAgreedForSelling(isAllAgreed);
-    }
-
-    private List<ProducerTrackInfoDto> getProducerTrackInfoResponses(Long trackId) {
-        List<ProducerTrackInfo> producerTrackInfos = producerTrackInfoRepository.findByTrackId(trackId);
-        return producerTrackInfoMapper.toResponseDtoList(producerTrackInfos);
-    }
-
-    private TrackDto getTrackResponseWithProducersIds(Track track) {
-        TrackDto responseDto = trackMapper.toResponseDto(track);
-
+    private TrackDto getTrackResponseWithProducers(Track track) {
+        TrackDto dto = trackMapper.toResponseDto(track);
         if (track.getProducerTrackInfos() != null) {
-            List<ProducerTrackInfoDto> producerTrackInfosDtoList = track.getProducerTrackInfos().stream()
-                    .map(producerTrackInfo -> {
-                        ProducerTrackInfoDto producerTrackInfoDto = new ProducerTrackInfoDto();
-                        producerTrackInfoDto.setProducerId(producerTrackInfo.getProducer().getId());
-                        producerTrackInfoDto.setProducerUsername(producerTrackInfo.getProducer().getUsername());
-                        producerTrackInfoDto.setOwnsPublishingTrack(producerTrackInfo.getOwnsPublishingTrack());
-                        return producerTrackInfoDto;
-                    })
-                    .collect(Collectors.toList());
-
-            responseDto.setProducerTrackInfoDtoList(producerTrackInfosDtoList);
+            dto.setProducerTrackInfoDtoList(
+                    track.getProducerTrackInfos().stream()
+                            .map(info -> {
+                                ProducerTrackInfoDto pdto = new ProducerTrackInfoDto();
+                                pdto.setProducerId(info.getProducer().getId());
+                                pdto.setProducerUsername(info.getProducer().getUsername());
+                                pdto.setOwnsPublishingTrack(info.getOwnsPublishingTrack());
+                                pdto.setProfitPercentage(info.getProfitPercentage());
+                                pdto.setAgreedForSelling(info.getAgreedForSelling());
+                                return pdto;
+                            })
+                            .collect(Collectors.toList())
+            );
         }
-
-        return responseDto;
+        return dto;
     }
 }

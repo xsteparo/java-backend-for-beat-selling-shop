@@ -1,10 +1,11 @@
-import { FC } from 'react'
-import { Link } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import {FC} from 'react'
+import {Link} from 'react-router-dom'
+import {useAuth} from '../context/AuthContext'
 
 export const Header: FC = () => {
-    const { token, role, logout, user } = useAuth()
-
+    const {token, role, logout, user} = useAuth()
+    const API_URL = import.meta.env.VITE_API_URL ?? ''
+    console.log(role)
     return (
         <header className="bg-[#141414]">
             <div className="relative container mx-auto max-w-[1400px] px-5 h-[80px] flex items-center">
@@ -48,14 +49,6 @@ export const Header: FC = () => {
 
                         {token && (
                             <>
-                                <li>
-                                    <Link
-                                        to="/profile"
-                                        className="text-[#edf0f1] text-base font-medium hover:text-[#0088a9] transition-colors"
-                                    >
-                                        Profile
-                                    </Link>
-                                </li>
                                 <li>
                                     <Link
                                         to="/purchases"
@@ -110,7 +103,7 @@ export const Header: FC = () => {
                     </ul>
                 </nav>
 
-                <div className="ml-auto flex items-center space-x-4 relative z-10">
+                <div className="ml-auto flex items-center space-x-4 relative z-10 gap-x-4">
                     {!token ? (
                         <>
                             <Link
@@ -127,17 +120,20 @@ export const Header: FC = () => {
                             </Link>
                         </>
                     ) : (
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-4 gap-x-4">
                             <Link
                                 to="/profile"
                                 className="flex items-center space-x-2"
                             >
                                 <img
-                                    src={user?.avatarUrl || "/images/default-avatar.png"}
-                                    alt={user?.username || "User Avatar"}
-                                    className="w-10 h-10 rounded-full object-cover"
+                                    src={
+                                        user?.avatarUrl
+                                            ? `${API_URL}${user.avatarUrl}`    // "http://localhost:8080/uploads/avatars/..."
+                                            : "/images/default-avatar.png"
+                                    } alt={user?.username || "User Avatar"}
+                                    className="w-10 h-10 rounded-full object-cover mr-2"
                                 />
-                                <span className="text-white text-base">
+                                <span className="text-white text-base px-2">
                   {user?.username || 'User'}
                 </span>
                             </Link>

@@ -64,6 +64,15 @@ public class Track {
     @OneToMany(mappedBy = "track")
     private List<PurchasedLicence> purchasedLicence;
 
+    @Column(name = "url_non_exclusive")
+    private String urlNonExclusive;
+
+    @Column(name = "url_premium")
+    private String urlPremium;
+
+    @Column(name = "url_exclusive")
+    private String urlExclusive;
+
     public double getNormalizedScore() {
         if (plays == 0) return 0;
         return (double) likes / plays;

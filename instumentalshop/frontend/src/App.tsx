@@ -9,7 +9,7 @@ import { Tracks }      from './pages/Tracks'
 // import { Profile }     from './pages/Profile'
 // import { Purchases }   from './pages/Purchases'
 // import { Chats }       from './pages/Chats'
-// import { Upload }      from './pages/Upload'
+import { Upload }      from './pages/Upload'
 // import { Sales }       from './pages/Sales'
 // import { AdminPurchases } from './pages/AdminPurchases'
 
@@ -42,7 +42,7 @@ export const App = () => (
 
                     {/* только для producer */}
                     <Route element={<RequireAuth allowedRoles={['producer']} />}>
-                        {/*<Route path="upload" element={<Upload />} />*/}
+                        <Route path="upload" element={<Upload />} />
                         {/*<Route path="sales"  element={<Sales />}  />*/}
                     </Route>
 

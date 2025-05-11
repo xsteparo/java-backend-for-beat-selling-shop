@@ -63,6 +63,6 @@ public class UserValidatorImpl implements UserValidator {
     }
 
     private boolean hasProducerSalary(Producer producer) {
-        return producer.getSalary() != null && producer.getSalary().compareTo(BigDecimal.ZERO) != 0;
+        return producer.getBalance() != null && producer.getBalance().compareTo(BigDecimal.ZERO) != 0;
     }
 }

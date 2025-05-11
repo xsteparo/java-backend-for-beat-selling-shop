@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,8 +26,28 @@ public class TrackRequestDto {
     @Max(value = 300, message = "BPM cannot be more than 300")
     private Integer bpm;
 
+    private String key;
+
+    private Integer price;
+
     private Integer mainProducerPercentage;
 
     private List<@Valid ProducerShareRequestDto> producerShares;
+
+    /**
+     * Non-Exclusive license: mp3
+     */
+    @NotNull(message = "Non-exclusive file is required")
+    private MultipartFile nonExclusiveFile;
+
+    /**
+     * Premium license: wav
+     */
+    private MultipartFile premiumFile;
+
+    /**
+     * Exclusive license: zip (mp3+wav+лицензия внутрь)
+     */
+    private MultipartFile exclusiveFile;
 
 }

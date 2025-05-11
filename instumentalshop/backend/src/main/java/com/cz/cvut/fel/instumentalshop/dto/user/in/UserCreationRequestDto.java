@@ -1,5 +1,6 @@
 package com.cz.cvut.fel.instumentalshop.dto.user.in;
 
+import com.cz.cvut.fel.instumentalshop.domain.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -38,4 +39,6 @@ public class UserCreationRequestDto {
      * Avatar file uploaded by client; may be null or empty.
      */
     private MultipartFile avatar;
+
+    private Role role;
 }

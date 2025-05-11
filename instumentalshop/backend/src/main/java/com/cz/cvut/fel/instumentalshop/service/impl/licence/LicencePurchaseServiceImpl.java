@@ -186,7 +186,7 @@ public class LicencePurchaseServiceImpl implements LicencePurchaseService {
             BigDecimal percentage = producerTrackInfo.getProfitPercentage();
             BigDecimal producerIncome = totalIncome.multiply(percentage).divide(BigDecimal.valueOf(100), RoundingMode.HALF_EVEN);
             Producer producer = producerTrackInfo.getProducer();
-            producer.setSalary(producer.getSalary().add(producerIncome));
+            producer.setBalance(producer.getBalance().add(producerIncome));
             producerRepository.save(producer);
         });
     }
