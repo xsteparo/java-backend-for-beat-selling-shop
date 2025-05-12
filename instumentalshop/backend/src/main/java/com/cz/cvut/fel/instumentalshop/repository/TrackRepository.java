@@ -1,6 +1,10 @@
 package com.cz.cvut.fel.instumentalshop.repository;
 
 import com.cz.cvut.fel.instumentalshop.domain.Track;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -19,5 +23,14 @@ public interface TrackRepository extends JpaRepository<Track, Long>, JpaSpecific
 
     @Query(name = "Track.findCustomerBoughtTracksForProducer")
     List<Track> findCustomerBoughtTracksForProducer(@Param("customerId") Long customerId, @Param("producerId") Long producerId);
+
+    @EntityGraph(attributePaths = {
+            "producerTrackInfos",
+            "producerTrackInfos.producer"
+    })
+    Page<Track> findAll(Specification<Track> spec, Pageable pageable);
+
+    @Query("SELECT AVG(t.rating) FROM Track t")
+    Double findAverageRating();
 
 }

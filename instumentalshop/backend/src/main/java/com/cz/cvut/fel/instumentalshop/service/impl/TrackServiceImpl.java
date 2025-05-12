@@ -19,6 +19,8 @@ import com.cz.cvut.fel.instumentalshop.service.TrackService;
 import com.cz.cvut.fel.instumentalshop.util.validator.TrackValidator;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -38,6 +40,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -84,51 +87,70 @@ public class TrackServiceImpl implements TrackService {
             );
         }
     }
-
-    @Override
     public Page<TrackDto> listTracks(String tab, String search, String genre, String tempoRange, String key, String sort, int page, int size) {
         Specification<Track> spec = Specification.where(null);
 
-        if (!search.isBlank()) {
-            spec = spec.and((root, q, cb) ->
-                    cb.or(
-                            cb.like(cb.lower(root.get("title")), "%" + search.toLowerCase() + "%"),
-                            cb.like(cb.lower(root.get("producer").get("username")), "%" + search.toLowerCase() + "%")
-                    )
-            );
+        if (search != null && !search.isBlank()) {
+            String lowered = search.toLowerCase().trim();
+            spec = spec.and((root, q, cb) -> {
+                Join<Track, ProducerTrackInfo> ptiJoin = root.join("producerTrackInfos", JoinType.LEFT);
+                Join<ProducerTrackInfo, Producer> producerJoin = ptiJoin.join("producer", JoinType.LEFT);
+
+                return cb.or(
+                        cb.like(cb.lower(root.get("name")), "%" + lowered + "%"),
+                        cb.like(cb.lower(producerJoin.get("username")), "%" + lowered + "%")
+                );
+            });
         }
-        if (!genre.isBlank()) {
+
+        if (genre != null && !genre.isBlank()) {
             spec = spec.and((root, q, cb) ->
-                    cb.equal(root.get("genre"), GenreType.valueOf(genre.toUpperCase()))
-            );
-        }
-        if (!tempoRange.isBlank()) {
-            String[] parts = tempoRange.split("-");
-            int low = Integer.parseInt(parts[0]), high = Integer.parseInt(parts[1]);
-            spec = spec.and((root, q, cb) ->
-                    cb.between(root.get("bpm"), low, high)
-            );
-        }
-        if (!key.isBlank()) {
-            spec = spec.and((root, q, cb) ->
-                    cb.equal(root.get("key"), KeyType.fromString(key.toUpperCase()))
+                    cb.equal(root.get("genre"), GenreType.valueOf(genre.trim().toUpperCase()))
             );
         }
 
-        Sort.Direction dir = sort.startsWith("-") ? Sort.Direction.DESC : Sort.Direction.ASC;
-        String sortField = sort.replaceFirst("^-", "");
-        Sort springSort = Sort.by(dir, sortField.isBlank() ? defaultSortBy(tab) : sortField);
-        Pageable pageable = PageRequest.of(page, size, springSort);
+        if (tempoRange != null && !tempoRange.isBlank()) {
+            try {
+                String[] parts = tempoRange.trim().split("-");
+                int low = Integer.parseInt(parts[0]);
+                int high = Integer.parseInt(parts[1]);
+                spec = spec.and((root, q, cb) ->
+                        cb.between(root.get("bpm"), low, high)
+                );
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Invalid tempo range format (expected: min-max)");
+            }
+        }
 
+        if (key != null && !key.isBlank()) {
+            try {
+                spec = spec.and((root, q, cb) ->
+                        cb.equal(root.get("keyType"), KeyType.fromString(key.trim().toUpperCase()))
+                );
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid key value");
+            }
+        }
+
+        // Handle sort safely
+        Sort.Direction dir = sort != null && sort.startsWith("-") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        String sortFieldRaw = sort != null ? sort.replaceFirst("^-", "").trim() : "";
+        String fallbackSortField = defaultSortBy(tab);
+        Set<String> allowedSortFields = Set.of("rating", "createdAt", "lastRatingDelta", "bpm", "likes", "plays");
+        String sortField = allowedSortFields.contains(sortFieldRaw) ? sortFieldRaw : fallbackSortField;
+
+        Pageable pageable = tab.equals("trending")
+                ? PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "lastRatingDelta"))
+                : PageRequest.of(page, size, Sort.by(dir, sortField));
+
+        // Handle trending tab with average rating filter
         if (tab.equals("trending")) {
-            Double avg = trackRepository.findAll()
-                    .stream()
-                    .mapToDouble(Track::getRating)
-                    .average().orElse(0);
-            spec = spec.and((root, q, cb) ->
-                    cb.greaterThan(root.get("rating"), avg)
-            );
-            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "lastRatingDelta"));
+            Double avgRating = trackRepository.findAverageRating();
+            if (avgRating != null) {
+                spec = spec.and((root, q, cb) ->
+                        cb.greaterThan(root.get("rating"), avgRating)
+                );
+            }
         }
 
         Page<Track> tracks = trackRepository.findAll(spec, pageable);

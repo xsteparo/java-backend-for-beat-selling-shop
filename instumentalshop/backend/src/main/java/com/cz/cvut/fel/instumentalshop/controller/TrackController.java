@@ -26,12 +26,12 @@ public class TrackController {
     @GetMapping("")
     @PreAuthorize("permitAll()")
     public ResponseEntity<Page<TrackDto>> listTracks(
-            @RequestParam(defaultValue = "new") String tab,          // "top", "trending" или "new"
-            @RequestParam(defaultValue = "") String search,          // поиск по названию/продюсеру
-            @RequestParam(defaultValue = "") String genre,           // жанр
-            @RequestParam(defaultValue = "") String tempoRange,      // например "80-120"
+            @RequestParam(defaultValue = "new") String tab,
+            @RequestParam(defaultValue = "") String search,
+            @RequestParam(defaultValue = "") String genre,
+            @RequestParam(defaultValue = "") String tempoRange,
             @RequestParam(defaultValue = "") String key,
-            @RequestParam(defaultValue = "") String sort,            // e.g. "rating", "bpm"
+            @RequestParam(defaultValue = "") String sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
