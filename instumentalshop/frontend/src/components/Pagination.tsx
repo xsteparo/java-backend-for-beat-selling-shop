@@ -7,7 +7,7 @@ interface PaginationProps {
 }
 
 const Pagination: FC<PaginationProps> = ({ page, totalPages, onPageChange }) => {
-    if (totalPages <= 1) return null;
+    // if (totalPages <= 1) return null;
 
     return (
         <div className="flex justify-center mt-4 space-x-2">

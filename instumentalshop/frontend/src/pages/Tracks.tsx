@@ -7,6 +7,9 @@ import {TrackController} from "../controller/TrackController.tsx";
 import {TrackDto} from "../dto/TrackDto.ts"; // Tailwind
 import Pagination from '../components/Pagination.tsx';
 import {TracksTable} from "../components/tracks/TracksTable.tsx";
+import {CartItem, LicenseType} from "../dto/CartItem.tsx";
+import {LicenseModal} from "../components/LicenseModal.tsx";
+import {Cart} from "../components/Cart.tsx";
 
 
 export const Tracks: FC = () => {
@@ -25,7 +28,25 @@ export const Tracks: FC = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [filters, setFilters]       = useState({ genre:'', bpm:'', key:'', sort:'' });
 
-    // Загрузка данных
+    const [liked, setLiked] = useState<Set<string>>(new Set());
+    const toggleLike = (id: string) => {
+        setLiked(prev => {
+            const next = new Set(prev);
+            prev.has(id) ? next.delete(id) : next.add(id);
+            return next;
+        });
+    };
+
+    const [cart, setCart] = useState<CartItem[]>([]);
+    const addToCart = (track: TrackDto, license: LicenseType, price: number) => {
+        setCart(c => [...c, { track, license, price }]);
+    };
+    const removeFromCart = (idx: number) => {
+        setCart(c => c.filter((_, i) => i !== idx));
+    };
+
+    const [modalTrack, setModalTrack] = useState<TrackDto | null>(null);
+
     useEffect(() => {
         async function load() {
             try {
@@ -52,19 +73,20 @@ export const Tracks: FC = () => {
         e.preventDefault();
         setPage(1);
     };
-
-    const play = (id: string) => (document.getElementById(`audio-${id}`) as HTMLAudioElement)?.play();
-    const buy  = async (id: string) => { /* … */ };
-    const remove     = async (id: string) => { /* … */ };
-    const toggleLike = (id: string) => { /* … */ };
+    const play   = (id: string) => (document.getElementById(`audio-${id}`) as HTMLAudioElement)?.play();
+    const buy    = (id: string) => {
+        const track = tracks.find(t => t.id === id);
+        if (track) setModalTrack(track);
+    };
+    const remove = async (id: string) => { /* … */ };
 
     return (
         <main className="flex flex-col bg-gray-900 min-h-screen p-6">
             <h1 className="text-3xl text-white text-center mb-6">All beats</h1>
 
-            {/* ======= Табы + Поиск ======= */}
+            {/* ======= Табы + Поиск (вот он!) ======= */}
             <div className="mb-6 grid grid-cols-[1fr_auto_1fr] items-center">
-                <div />
+                <div/>
                 <div className="flex space-x-4">
                     {tabs.map(t => (
                         <button
@@ -74,10 +96,7 @@ export const Tracks: FC = () => {
                                     ? 'bg-green-600 text-white'
                                     : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                             }`}
-                            onClick={() => {
-                                setActiveTab(t.key);
-                                setPage(1);
-                            }}
+                            onClick={() => { setActiveTab(t.key); setPage(1); }}
                         >
                             {t.label}
                         </button>
@@ -119,6 +138,7 @@ export const Tracks: FC = () => {
                                 onBuy={buy}
                                 onRemove={remove}
                                 onToggleLike={toggleLike}
+                                likedSet={liked}
                             />
 
                             <Pagination
@@ -130,6 +150,23 @@ export const Tracks: FC = () => {
                     )}
                 </div>
             </div>
+
+            {/* ======= Лицензионная модалка ======= */}
+            {modalTrack && (
+                <LicenseModal
+                    track={modalTrack}
+                    onClose={() => setModalTrack(null)}
+                    onChoose={(track, license, price) => {
+                        addToCart(track, license, price);
+                        setModalTrack(null);
+                    }}
+                />
+            )}
+
+            {/* ======= Корзина ======= */}
+            {cart.length > 0 && (
+                <Cart items={cart} onRemove={removeFromCart} />
+            )}
         </main>
     );
 };
