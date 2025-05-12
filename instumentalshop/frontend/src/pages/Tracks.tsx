@@ -1,11 +1,12 @@
 // src/pages/Tracks.tsx
-import { FC, useState, useEffect, FormEvent } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { Filters } from '../components/Filters'
+import {FC, FormEvent, useEffect, useState} from 'react'
+import {useAuth} from '../context/AuthContext'
+import {Filters} from '../components/Filters'
 import '../index.css'
 import {TrackController} from "../controller/TrackController.tsx";
-import {TrackDto} from "../dto/TrackDto.ts";  // Tailwind
-
+import {TrackDto} from "../dto/TrackDto.ts"; // Tailwind
+import Pagination from '../components/Pagination.tsx';
+import {TracksTable} from "../components/tracks/TracksTable.tsx";
 
 
 export const Tracks: FC = () => {
@@ -24,6 +25,7 @@ export const Tracks: FC = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [filters, setFilters]       = useState({ genre:'', bpm:'', key:'', sort:'' });
 
+    // Загрузка данных
     useEffect(() => {
         async function load() {
             try {
@@ -51,17 +53,18 @@ export const Tracks: FC = () => {
         setPage(1);
     };
 
-    const play   = (id: string) => (document.getElementById(`audio-${id}`) as HTMLAudioElement)?.play();
-    const buy    = async (id: string) => { /* … */ };
-    const remove = async (id: string) => { /* … */ };
+    const play = (id: string) => (document.getElementById(`audio-${id}`) as HTMLAudioElement)?.play();
+    const buy  = async (id: string) => { /* … */ };
+    const remove     = async (id: string) => { /* … */ };
+    const toggleLike = (id: string) => { /* … */ };
 
     return (
         <main className="flex flex-col bg-gray-900 min-h-screen p-6">
             <h1 className="text-3xl text-white text-center mb-6">All beats</h1>
 
-            {/* Табы + Поиск */}
+            {/* ======= Табы + Поиск ======= */}
             <div className="mb-6 grid grid-cols-[1fr_auto_1fr] items-center">
-                <div/>
+                <div />
                 <div className="flex space-x-4">
                     {tabs.map(t => (
                         <button
@@ -71,7 +74,10 @@ export const Tracks: FC = () => {
                                     ? 'bg-green-600 text-white'
                                     : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                             }`}
-                            onClick={() => { setActiveTab(t.key); setPage(1); }}
+                            onClick={() => {
+                                setActiveTab(t.key);
+                                setPage(1);
+                            }}
                         >
                             {t.label}
                         </button>
@@ -95,104 +101,33 @@ export const Tracks: FC = () => {
             </div>
 
             <div className="flex flex-1 gap-6">
-                {/* Фильтры */}
+                {/* ======= Фильтры ======= */}
                 <Filters onChange={setFilters} />
 
-                {/* Список */}
+                {/* ======= Таблица + Пагинация ======= */}
                 <div className="flex-1 flex flex-col">
                     {tracks.length === 0 ? (
                         <div className="flex-1 flex items-center justify-center text-gray-400">
                             No tracks found.
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 gap-4 flex-1 overflow-auto">
-                            {tracks.map(t => (
-                                <div
-                                    key={t.id}
-                                    className="grid grid-cols-[auto_auto_1fr_auto_auto_auto_auto_auto_auto] items-center bg-gray-800 p-3 rounded-lg"
-                                >
-                                    <button onClick={() => play(t.id)} className="p-1">▶</button>
-                                    <img src="/images/note-icon.svg" alt="" className="w-6 h-6" />
-                                    <div className="pl-2">
-                                        <div className="text-white font-semibold">{t.name}</div>
-                                        <div className="text-gray-400 text-sm">{t.producerUsername}</div>
-                                    </div>
-                                    <div className="text-center text-gray-300">{t.rating}</div>
-                                    <div className="text-center text-gray-300">{t.genreType}</div>
-                                    <div className="text-center text-gray-300">{t.length}</div>
-                                    <div className="text-center text-gray-300">{t.key}</div>
-                                    <div className="text-center text-gray-300">{t.bpm}</div>
-                                    <div className="flex space-x-2">
-                                        {role === 'admin' ? (
-                                            <>
-                                                <a
-                                                    href={`/api/v1/tracks/${t.id}/download`}
-                                                    className="px-2 py-1 bg-green-600 text-white rounded text-xs"
-                                                >
-                                                    Download
-                                                </a>
-                                                <button className="px-2 py-1 bg-yellow-500 text-black rounded text-xs">
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    onClick={() => remove(t.id)}
-                                                    className="px-2 py-1 bg-red-600 text-white rounded text-xs"
-                                                >
-                                                    Delete
-                                                </button>
-                                            </>
-                                        ) : t.purchased ? (
-                                            <a
-                                                href={`/api/v1/tracks/${t.id}/download`}
-                                                className="px-2 py-1 bg-green-600 text-white rounded text-xs"
-                                            >
-                                                Download
-                                            </a>
-                                        ) : (
-                                            <button
-                                                onClick={() => buy(t.id)}
-                                                className="px-2 py-1 bg-green-500 text-white rounded text-xs"
-                                            >
-                                                Buy
-                                            </button>
-                                        )}
-                                    </div>
-                                    <audio id={`audio-${t.id}`} src={t.urlNonExclusive} preload="none" />
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                        <>
+                            <TracksTable
+                                tracks={tracks}
+                                role={role}
+                                onPlay={play}
+                                onBuy={buy}
+                                onRemove={remove}
+                                onToggleLike={toggleLike}
+                            />
 
-                    {/* Пагинация */}
-                    <div className="flex justify-center mt-4 space-x-2">
-                        <button
-                            disabled={page <= 1}
-                            onClick={() => setPage(page - 1)}
-                            className="px-3 py-1 bg-gray-700 text-gray-300 rounded disabled:opacity-50"
-                        >
-                            ‹
-                        </button>
-                        {Array.from({ length: totalPages }, (_, i) => (
-                            <button
-                                key={i+1}
-                                onClick={() => setPage(i+1)}
-                                className={`px-3 py-1 rounded ${
-                                    page === i+1
-                                        ? 'bg-green-600 text-white'
-                                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                                }`}
-                            >
-                                {i+1}
-                            </button>
-                        ))}
-                        <button
-                            disabled={page >= totalPages}
-                            onClick={() => setPage(page + 1)}
-                            className="px-3 py-1 bg-gray-700 text-gray-300 rounded disabled:opacity-50"
-                        >
-                            ›
-                        </button>
-                    </div>
+                            <Pagination
+                                page={page}
+                                totalPages={totalPages}
+                                onPageChange={setPage}
+                            />
+                        </>
+                    )}
                 </div>
             </div>
         </main>
