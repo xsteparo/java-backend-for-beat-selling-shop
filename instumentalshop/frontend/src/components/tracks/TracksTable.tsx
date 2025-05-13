@@ -15,23 +15,17 @@ interface TracksTableProps {
 }
 
 export const TracksTable: FC<TracksTableProps> = ({
-                                                      tracks,
-                                                      role,
-                                                      likedSet,
-                                                      currentTrackId,
-                                                      onPlay,
-                                                      onBuy,
-                                                      onRemove,
-                                                      onToggleLike,
+                                                      tracks, role, likedSet, currentTrackId,
+                                                      onPlay, onBuy, onRemove, onToggleLike
                                                   }) => (
     <div className="w-full flex flex-col space-y-2">
         {/* Заголовок */}
         <div className="flex w-full items-center px-6 py-2 space-x-4 text-xs text-gray-400 uppercase">
-            <div className="flex-none w-10" />
-            <div className="flex-none w-8" />
-            <div className="flex-grow min-w-0 ">NAZEV</div>
-            <div className="flex-none w-16 text-center">HODNOCENÍ</div>
-            <div className="flex-none w-16 text-center">ŽÁNR</div>
+            <div className="flex-none w-10 mr-4" />
+            <div className="flex-none w-10 mr-4" />
+            <div className="flex-1 min-w-0">NAZEV</div>
+            <div className="flex-none w-20 text-center truncate">HODNOCENÍ</div>
+            <div className="flex-none w-16 text-center truncate">ŽÁNR</div>
             <div className="flex-none w-16 text-center">DÉLKA</div>
             <div className="flex-none w-16 text-center">TÓNINA</div>
             <div className="flex-none w-16 text-center">BPM</div>

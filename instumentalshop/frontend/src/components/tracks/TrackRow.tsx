@@ -17,34 +17,31 @@ interface TrackRowProps {
 }
 
 export const TrackRow: FC<TrackRowProps> = ({
-                                                track,
-                                                role,
-                                                liked,
-                                                currentTrackId,
-                                                onPlay,
-                                                onBuy,
-                                                onRemove,
-                                                onToggleLike,
+                                                track, role, liked, currentTrackId,
+                                                onPlay, onBuy, onRemove, onToggleLike
                                             }) => {
     const idStr = String(track.id);
     const isPlaying = idStr === currentTrackId;
 
     return (
-        <div className="flex w-full items-center bg-gray-800 rounded-xl px-6 py-4 space-x-4">
+        <div className="flex w-full items-center bg-gray-800 rounded-xl px-6 py-4 space-x-2">
+            {/* ▶ с отступом вправо */}
             <button
                 onClick={() => onPlay(idStr)}
-                className="flex-none w-10 h-10 flex items-center justify-center text-teal-400 hover:text-teal-300"
+                className="flex-none w-10 h-10 mr-4 flex items-center justify-center text-teal-400 hover:text-teal-300"
             >
                 {isPlaying ? '❚❚' : '▶'}
             </button>
 
+            {/* Иконка с отступом вправо */}
             <img
                 src="/images/note-icon.svg"
                 alt="icon"
-                className="flex-none w-10 h-10 rounded-full object-cover"
+                className="flex-none w-10 h-10 rounded-full object-cover mr-4"
             />
 
-            <div className="flex-grow min-w-0  flex flex-col">
+            {/* Название + продюсер (растягивается) */}
+            <div className="flex-1 min-w-0 flex flex-col">
         <span className="text-white font-semibold truncate">
           {track.name}
         </span>
@@ -53,6 +50,7 @@ export const TrackRow: FC<TrackRowProps> = ({
         </span>
             </div>
 
+            {/* Остальные поля */}
             <div className="flex-none w-16 text-center text-gray-300">
                 {track.rating}
             </div>
@@ -69,38 +67,26 @@ export const TrackRow: FC<TrackRowProps> = ({
                 {track.bpm}
             </div>
 
+            {/* Кнопки действий */}
             <div className="flex-none w-24 flex items-center justify-end space-x-3">
                 <button onClick={() => onToggleLike(idStr)} className="p-1">
                     <HeartIcon filled={liked} className="w-5 h-5 text-red-500" />
                 </button>
-
                 {role === 'admin' ? (
                     <>
-                        <a
-                            href={`/api/v1/tracks/${track.id}/download`}
-                            className="p-1 hover:text-blue-400"
-                        >
+                        <a href={`/api/v1/tracks/${track.id}/download`} className="p-1 hover:text-blue-400">
                             <BagIcon className="w-5 h-5 text-blue-500" />
                         </a>
-                        <button
-                            onClick={() => onRemove(idStr)}
-                            className="text-red-500 hover:text-red-400"
-                        >
+                        <button onClick={() => onRemove(idStr)} className="text-red-500 hover:text-red-400">
                             ✕
                         </button>
                     </>
                 ) : track.purchased ? (
-                    <a
-                        href={`/api/v1/tracks/${track.id}/download`}
-                        className="p-1 hover:text-blue-400"
-                    >
+                    <a href={`/api/v1/tracks/${track.id}/download`} className="p-1 hover:text-blue-400">
                         <BagIcon className="w-5 h-5 text-blue-500" />
                     </a>
                 ) : (
-                    <button
-                        onClick={() => onBuy(idStr)}
-                        className="p-1 hover:text-blue-400"
-                    >
+                    <button onClick={() => onBuy(idStr)} className="p-1 hover:text-blue-400">
                         <BagIcon className="w-5 h-5 text-blue-500" />
                     </button>
                 )}
