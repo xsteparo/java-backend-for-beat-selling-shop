@@ -3,6 +3,7 @@ import { TrackRow } from './TrackRow';
 import {TrackDto} from "../../dto/TrackDto.ts";
 
 
+
 interface TracksTableProps {
     tracks: TrackDto[];
     role: string;
@@ -14,32 +15,27 @@ interface TracksTableProps {
 }
 
 export const TracksTable: FC<TracksTableProps> = ({
-                                                      tracks,
-                                                      role,
-                                                      likedSet,
-                                                      onPlay,
-                                                      onBuy,
-                                                      onRemove,
-                                                      onToggleLike,
+                                                      tracks, role, likedSet, onPlay, onBuy, onRemove, onToggleLike
                                                   }) => (
-    <div className="flex-1 flex flex-col space-y-2">
-        <div className="grid grid-cols-[auto_auto_1fr_repeat(5,auto)_auto] gap-x-4 px-6 py-2 text-xs text-gray-400 uppercase">
-            <div />
-            <div />
-            <div>NAZEV</div>
-            <div className="text-center">HODNOCENÍ</div>
-            <div className="text-center">ŽÁNR</div>
-            <div className="text-center">DÉLKA</div>
-            <div className="text-center">TÓNINA</div>
-            <div className="text-center">BPM</div>
-            <div />
+    <div className="w-full flex flex-col space-y-2">
+        <div className="flex w-full items-center px-6 py-2 space-x-4 text-xs text-gray-400 uppercase">
+            <div className="flex-none w-10" />
+            <div className="flex-none w-8" />
+            <div className="flex-grow min-w-0 max-w-[250px]">NAZEV</div>
+            <div className="flex-none w-16 text-center">HODNOCENÍ</div>
+            <div className="flex-none w-16 text-center">ŽÁNR</div>
+            <div className="flex-none w-16 text-center">DÉLKA</div>
+            <div className="flex-none w-16 text-center">TÓNINA</div>
+            <div className="flex-none w-16 text-center">BPM</div>
+            <div className="flex-none w-24" />
         </div>
+
         {tracks.map(track => (
             <TrackRow
                 key={track.id}
                 track={track}
                 role={role}
-                liked={likedSet.has(track.id?.toString())}
+                liked={likedSet.has(String(track.id))}
                 onPlay={onPlay}
                 onBuy={onBuy}
                 onRemove={onRemove}
