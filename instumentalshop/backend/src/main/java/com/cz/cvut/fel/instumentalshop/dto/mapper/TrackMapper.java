@@ -6,18 +6,20 @@ import com.cz.cvut.fel.instumentalshop.dto.track.out.ProducerTrackInfoDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.out.TrackDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface TrackMapper {
 
     @Mapping(target = "producerTrackInfoDtoList", source = "producerTrackInfos")
-    @Mapping(target = "trackId", source = "id")
+    @Mapping(target = "id", source = "id")
     @Mapping(target = "genreType" , source = "genre")
     TrackDto toResponseWithMultipleOwnersDto(Track track);
 
-    @Mapping(target = "trackId", source = "id")
+    @Mapping(target = "id", source = "id")
     @Mapping(target = "genreType" , source = "genre")
     @Mapping(target = "producerTrackInfoDtoList", ignore = true)
     TrackDto toResponseWithSingleOwnerDto(Track track);
@@ -28,23 +30,32 @@ public interface TrackMapper {
 
     List<ProducerTrackInfoDto> mapProducerTrackInfos(List<ProducerTrackInfo> producerTrackInfos);
 
-    @Mapping(target = "trackId", source = "id")
-    @Mapping(target = "genreType" , source = "genre")
-    @Mapping(target = "producerTrackInfoDtoList", ignore = true)
+    @Mapping(target = "id",                source = "id")
+    @Mapping(target = "name",              source = "name")
+    @Mapping(target = "genreType",         source = "genre")
+    @Mapping(target = "bpm",               source = "bpm")
 
-    @Mapping(target = "rating",                source = "rating")
-//    @Mapping(target = "length",                source = "length")
-    @Mapping(target = "keyType",                   source = "keyType")
+    // URL-ы
+    @Mapping(target = "urlNonExclusive",   source = "urlNonExclusive")
+    @Mapping(target = "urlPremium",        source = "urlPremium")
+    @Mapping(target = "urlExclusive",      source = "urlExclusive")
+
+    @Mapping(target = "rating",            source = "rating")
+//    @Mapping(target = "length",            source = "length")
+    @Mapping(target = "keyType",           source = "keyType")
+
+    // главный продюсер
     @Mapping(
-            target = "producerUsername",
-            expression = "java("
-                    + "track.getProducerTrackInfos().stream()"
-                    +     ".filter(ProducerTrackInfo::getOwnsPublishingTrack)"
-                    +     ".findFirst()"
-                    +     ".map(info -> info.getProducer().getUsername())"
-                    +     ".orElse(null)"
-                    + ")"
+            target     = "producerUsername",
+            expression = "java(track.getProducerTrackInfos().stream()\n" +
+                    "     .filter(ProducerTrackInfo::getOwnsPublishingTrack)\n" +
+                    "     .findFirst()\n" +
+                    "     .map(info -> info.getProducer().getUsername())\n" +
+                    "     .orElse(null))"
     )
-    @Mapping(target = "purchased",             constant = "false")
+
+    // пока константой, потом можно по-умному
+    @Mapping(target = "purchased",         constant = "false")
     TrackDto toResponseDto(Track track);
 }
+

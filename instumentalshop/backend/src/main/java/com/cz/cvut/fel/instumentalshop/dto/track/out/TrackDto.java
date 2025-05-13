@@ -2,6 +2,7 @@ package com.cz.cvut.fel.instumentalshop.dto.track.out;
 
 import com.cz.cvut.fel.instumentalshop.domain.enums.GenreType;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Data;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 @Builder
 public class TrackDto {
 
-        private Long trackId;
+        private Long id;
 
         private String name;
 
@@ -20,6 +21,10 @@ public class TrackDto {
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private List<ProducerTrackInfoDto> producerTrackInfoDtoList;
+
+        private String urlNonExclusive;
+        private String urlPremium;
+        private String urlExclusive;
 
         // Новые поля для списка:
         private double rating;

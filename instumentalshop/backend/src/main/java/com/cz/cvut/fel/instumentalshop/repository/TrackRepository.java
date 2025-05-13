@@ -33,4 +33,7 @@ public interface TrackRepository extends JpaRepository<Track, Long>, JpaSpecific
     @Query("SELECT AVG(t.rating) FROM Track t")
     Double findAverageRating();
 
+    @Query("select t.urlNonExclusive from Track t where t.id = :id")
+    String findFilePathById(@Param("id") Long id);
+
 }

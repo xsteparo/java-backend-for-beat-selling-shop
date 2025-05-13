@@ -4,6 +4,7 @@ import com.cz.cvut.fel.instumentalshop.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -11,12 +12,18 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -29,39 +36,87 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/v1/customers/register", "/api/v1/producers/register").anonymous()
-                        .requestMatchers(
-                                "/api/v1/auth/**",
-                                "/api/v1/customers/{id}",
-                                "/api/v1/producers",
-                                "/api/v1/producers/{producerId}",
-                                "/api/v1/tracks/",
-                                "/api/v1/tracks/{trackId}",
-                                "/api/v1/tracks/by-producer/{producerId}",
-                                "/api/v1/tracks/{trackId}/licence-templates",
-                                "/api/v1/tracks/{trackId}/licence-templates/{licenceType}"
-                        )
+
+        http
+                // 1) выключаем CSRF для REST
+                .csrf(AbstractHttpConfigurer::disable)
+
+                // 2) подключаем CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // 3) правила доступа
+                .authorizeHttpRequests(req -> req
+
+                        // а) регистрации — только анонимные
+                        .requestMatchers("/api/v1/customers/register",
+                                "/api/v1/producers/register")
+                        .anonymous()
+
+                        // б) ПУБЛИЧНЫЙ стрим mp3
+                        //    AntPath: * = один сегмент; ** = любое кол-во сегментов
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/tracks/*/stream")
                         .permitAll()
-                        .requestMatchers("/ws/**").permitAll()
-                        .anyRequest().authenticated())
-                .sessionManagement(manager -> manager
+
+                        // в) публичные GET-ы, которые у вас были
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/producers",
+                                "/api/v1/producers/*",
+                                "/api/v1/tracks",
+                                "/api/v1/tracks/*",
+                                "/api/v1/tracks/by-producer/*",
+                                "/api/v1/tracks/*/licence-templates",
+                                "/api/v1/tracks/*/licence-templates/*")
+                        .permitAll()
+
+                        // г) auth-эндпоинты остаются открытыми
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+
+                        // д) статика / сокеты
+                        .requestMatchers("/uploads/**", "/ws/**").permitAll()
+
+                        // е) остальное — только с токеном
+                        .anyRequest().authenticated()
+                )
+
+                // 4) stateless-режим (JWT)
+                .sessionManagement(mgr -> mgr
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // 5) цепочка фильтров
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
+    /** игнорируем прямой доступ к загруженным файлам (если нужно) */
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers("/uploads/**");
+    }
 
+    /** CORS: фронт крутится на http://localhost:5173 */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+    /** DAO-провайдер + BCrypt */
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userService.userDetailsService());
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
-
-        return authenticationProvider;
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userService.userDetailsService());
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
     }
 
     @Bean
@@ -70,8 +125,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
+        return cfg.getAuthenticationManager();
     }
 }
-

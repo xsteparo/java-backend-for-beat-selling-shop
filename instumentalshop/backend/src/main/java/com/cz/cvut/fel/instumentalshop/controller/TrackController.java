@@ -1,18 +1,25 @@
 package com.cz.cvut.fel.instumentalshop.controller;
 
+import com.cz.cvut.fel.instumentalshop.domain.Track;
 import com.cz.cvut.fel.instumentalshop.dto.track.in.TrackRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.out.ProducerTrackInfoDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.out.TrackDto;
 import com.cz.cvut.fel.instumentalshop.service.TrackService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.core.io.support.ResourceRegion;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -21,7 +28,41 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 public class TrackController {
 
+    @Value("${app.upload.tracks-path}")
+    private String uploadDir;
+
     private final TrackService trackService;
+
+    @GetMapping("/{id}/stream")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<ResourceRegion> stream(
+            @PathVariable Long id,
+            @RequestHeader HttpHeaders headers) throws IOException {
+
+        Resource audio = trackService.loadAsResource(id);      // <-- здесь
+        long length = audio.contentLength();
+
+        ResourceRegion region = buildRegion(audio, headers.getRange(), length);
+
+        return ResponseEntity
+                .status(region.getPosition() == 0 ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT)
+                .contentType(MediaTypeFactory.getMediaType(audio)
+                        .orElse(MediaType.APPLICATION_OCTET_STREAM))
+                .header(HttpHeaders.ACCEPT_RANGES, "bytes")
+                .body(region);
+    }
+
+    private ResourceRegion buildRegion(Resource res, List<HttpRange> ranges, long len) throws IOException {
+        long chunk = 1024 * 1024;                             // 1 МБ
+        if (ranges == null || ranges.isEmpty()) {
+            return new ResourceRegion(res, 0, Math.min(chunk, len));
+        }
+        HttpRange range = ranges.get(0);
+        long start = range.getRangeStart(len);
+        long end   = range.getRangeEnd(len);
+        long rangeLen = Math.min(chunk, end - start + 1);
+        return new ResourceRegion(res, start, rangeLen);
+    }
 
     @GetMapping("")
     @PreAuthorize("permitAll()")

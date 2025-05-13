@@ -1,6 +1,7 @@
 package com.cz.cvut.fel.instumentalshop.dto.track.out;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;

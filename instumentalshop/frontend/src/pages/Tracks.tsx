@@ -10,6 +10,7 @@ import {TracksTable} from "../components/tracks/TracksTable.tsx";
 import {CartItem, LicenseType} from "../dto/CartItem.tsx";
 import {LicenseModal} from "../components/LicenseModal.tsx";
 import {Cart} from "../components/Cart.tsx";
+import PlayerBar from "../components/PlayerBar.tsx";
 
 
 export const Tracks: FC = () => {
@@ -49,28 +50,24 @@ export const Tracks: FC = () => {
     const audioRef = useRef<HTMLAudioElement>(null);
     const [currentTrackId, setCurrentTrackId] = useState<string | null>(null);
 
-    const play = (id: string) => {
+    const play = async (id: string) => {
         const audio = audioRef.current;
         if (!audio) return;
 
-        // если кликнули на тот же трек — пауза
         if (currentTrackId === id) {
             audio.pause();
             setCurrentTrackId(null);
             return;
         }
 
-        // иначе — меняем источник и играем
-        const track = tracks.find(t => String(t.id) === id);
-        if (!track) return;
-
-        audio.src = track.urlNonExclusive;
-        audio
-            .play()
-            .then(() => setCurrentTrackId(id))
-            .catch(err => {
-                console.error('Ошибка при воспроизведении:', err);
-            });
+        audio.src = `/api/v1/tracks/${id}/stream`;
+        audio.currentTime = 0;     // сброс, если до этого играло что-то другое
+        try {
+            await audio.play();
+            setCurrentTrackId(id);
+        } catch (err) {
+            console.error('Ошибка при воспроизведении:', err);
+        }
     };
     // -------------------------------------
 
@@ -189,7 +186,24 @@ export const Tracks: FC = () => {
             )}
 
             {/* Скрытый плеер */}
-            <audio ref={audioRef} style={{ display: 'none' }} />
+            {/*<audio ref={audioRef} style={{ display: 'none' }} />*/}
+            {/*<audio ref={audioRef} preload="none" style={{ display: 'none' }} />*/}
+            {/*<audio*/}
+            {/*    ref={audioRef}*/}
+            {/*    controls                     // ← это всё магически включает*/}
+            {/*    style={{*/}
+            {/*        position: 'fixed',         // «прилипает» к низу*/}
+            {/*        bottom: 0,*/}
+            {/*        left: 0,*/}
+            {/*        width: '100%',*/}
+            {/*        zIndex: 1000,*/}
+            {/*    }}*/}
+            {/*/>*/}
+            {/* невидимый аудио-элемент */}
+            <audio ref={audioRef} preload="none" />
+
+            {/* кастом-бар */}
+            <PlayerBar audio={audioRef.current} />
         </main>
     );
 };

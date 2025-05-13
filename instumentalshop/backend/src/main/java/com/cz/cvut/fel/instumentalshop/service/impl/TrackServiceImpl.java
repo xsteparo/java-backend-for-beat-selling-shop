@@ -23,6 +23,8 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,8 +35,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -73,6 +77,33 @@ public class TrackServiceImpl implements TrackService {
                     "Failed to create folder for upload tracks: " + tracksUploadPath, e
             );
         }
+    }
+
+    @Override
+    public Resource loadAsResource(Long id) throws MalformedURLException {
+
+        String relPath = trackRepository.findFilePathById(id);   // "/uploads/tracks/uuid.mp3"
+        if (relPath == null) {
+            throw new RuntimeException("Track not found: " + id);
+        }
+
+        // убираем первый слэш
+        if (relPath.startsWith("/")) relPath = relPath.substring(1);    // "uploads/tracks/uuid.mp3"
+
+        // если storageRoot уже заканчивается на .../uploads/tracks,
+        // обрезаем эту же часть из relPath, чтобы не было дубля
+        final String PREFIX = "uploads/tracks/";
+        if (relPath.startsWith(PREFIX)) {
+            relPath = relPath.substring(PREFIX.length());               // остаётся только "uuid.mp3"
+        }
+
+        Path file = Paths.get(tracksUploadDir).resolve(relPath);            // .../uploads/tracks/uuid.mp3
+        Resource res = new UrlResource(file.toUri());
+
+        if (!res.exists()) {
+            throw new RuntimeException("File not found on disk: " + file);
+        }
+        return res;
     }
 
     private String storeFile(MultipartFile file, String ext) {
