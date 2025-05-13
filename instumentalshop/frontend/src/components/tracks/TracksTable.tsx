@@ -18,12 +18,14 @@ export const TracksTable: FC<TracksTableProps> = ({
                                                       tracks, role, likedSet, currentTrackId,
                                                       onPlay, onBuy, onRemove, onToggleLike
                                                   }) => (
-    <div className="w-full flex flex-col space-y-2">
-        {/* Заголовок */}
-        <div className="flex w-full items-center px-6 py-2 space-x-4 text-xs text-gray-400 uppercase">
+    <div className="w-full flex flex-col">
+
+        {/* ─── заголовок ─── */}
+        <div className="flex w-full items-center px-6 py-2 space-x-4
+                    text-xs text-gray-400 uppercase mb-3">
             <div className="flex-none w-10 mr-4" />
             <div className="flex-none w-10 mr-4" />
-            <div className="flex-1 min-w-0">NAZEV</div>
+            <div className="flex-1  min-w-0">NAZEV</div>
             <div className="flex-none w-20 text-center truncate">HODNOCENÍ</div>
             <div className="flex-none w-16 text-center truncate">ŽÁNR</div>
             <div className="flex-none w-16 text-center">DÉLKA</div>
@@ -32,18 +34,21 @@ export const TracksTable: FC<TracksTableProps> = ({
             <div className="flex-none w-24" />
         </div>
 
-        {tracks.map(track => (
-            <TrackRow
-                key={track.id}
-                track={track}
-                role={role}
-                liked={likedSet.has(String(track.id))}
-                currentTrackId={currentTrackId}
-                onPlay={onPlay}
-                onBuy={onBuy}
-                onRemove={onRemove}
-                onToggleLike={onToggleLike}
-            />
-        ))}
+        {/* ─── строки ─── */}
+        <div className="flex flex-col gap-3">{/* можно space-y-3, но gap проще */}
+            {tracks.map(track => (
+                <TrackRow
+                    key={track.id}
+                    track={track}
+                    role={role}
+                    liked={likedSet.has(String(track.id))}
+                    currentTrackId={currentTrackId}
+                    onPlay={onPlay}
+                    onBuy={onBuy}
+                    onRemove={onRemove}
+                    onToggleLike={onToggleLike}
+                />
+            ))}
+        </div>
     </div>
 );
