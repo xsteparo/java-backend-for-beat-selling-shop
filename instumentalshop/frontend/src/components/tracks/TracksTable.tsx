@@ -3,11 +3,11 @@ import { TrackRow } from './TrackRow';
 import {TrackDto} from "../../dto/TrackDto.ts";
 
 
-
 interface TracksTableProps {
     tracks: TrackDto[];
     role: string;
     likedSet: Set<string>;
+    currentTrackId: string | null;
     onPlay: (id: string) => void;
     onBuy: (id: string) => void;
     onRemove: (id: string) => void;
@@ -15,13 +15,21 @@ interface TracksTableProps {
 }
 
 export const TracksTable: FC<TracksTableProps> = ({
-                                                      tracks, role, likedSet, onPlay, onBuy, onRemove, onToggleLike
+                                                      tracks,
+                                                      role,
+                                                      likedSet,
+                                                      currentTrackId,
+                                                      onPlay,
+                                                      onBuy,
+                                                      onRemove,
+                                                      onToggleLike,
                                                   }) => (
     <div className="w-full flex flex-col space-y-2">
+        {/* Заголовок */}
         <div className="flex w-full items-center px-6 py-2 space-x-4 text-xs text-gray-400 uppercase">
             <div className="flex-none w-10" />
             <div className="flex-none w-8" />
-            <div className="flex-grow min-w-0 max-w-[250px]">NAZEV</div>
+            <div className="flex-grow min-w-0 ">NAZEV</div>
             <div className="flex-none w-16 text-center">HODNOCENÍ</div>
             <div className="flex-none w-16 text-center">ŽÁNR</div>
             <div className="flex-none w-16 text-center">DÉLKA</div>
@@ -36,6 +44,7 @@ export const TracksTable: FC<TracksTableProps> = ({
                 track={track}
                 role={role}
                 liked={likedSet.has(String(track.id))}
+                currentTrackId={currentTrackId}
                 onPlay={onPlay}
                 onBuy={onBuy}
                 onRemove={onRemove}
