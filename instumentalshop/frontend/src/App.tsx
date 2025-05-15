@@ -17,6 +17,7 @@ import {CartProvider, useCart} from "./context/CartContext.tsx";
 
 import {Cart} from "./components/Cart.tsx";
 import { AuthProvider } from './context/AuthContext.tsx'
+import About from "./pages/About.tsx";
 
 export const App = () => (
     <BrowserRouter>
@@ -28,6 +29,7 @@ export const App = () => (
                     <Route path="/" element={<MainLayout/>}>
                         {/* публичная главная */}
                         <Route index element={<Home/>}/>
+                        <Route path="/about" element={<About/>}/>
 
                         {/* только для гостей */}
                         <Route element={<RequireGuest/>}>

@@ -2,3 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 @import "tailwindcss";
+
+.about-card {
+    @apply relative bg-gray-800 rounded-xl overflow-hidden p-8 space-y-4;
+}
+.about-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+            135deg,
+            rgba(255,255,255,0.05) 25%,
+            transparent 25%
+    ) 0 0 / 200% 200%;
+    transform: translateX(-50%);
+}
+.about-card__title { @apply text-lg font-semibold tracking-wide; }
+.about-card__text  { @apply text-gray-300 text-sm leading-relaxed; }

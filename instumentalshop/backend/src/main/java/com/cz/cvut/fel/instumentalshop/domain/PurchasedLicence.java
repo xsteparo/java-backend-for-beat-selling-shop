@@ -19,26 +19,21 @@ public class PurchasedLicence {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne (cascade = CascadeType.PERSIST)
+    @ManyToOne(optional = false)
     private Customer customer;
 
-    @ManyToMany(mappedBy = "soldLicences")
-    private List<Producer> producers;
+    @ManyToOne(optional = false)
+    private Producer producer;
+
+    @ManyToOne(optional = false)
+    private Track track;
+
+    @ManyToOne(optional = false)
+    private LicenceTemplate licenceTemplate;
 
     @Column(nullable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private LocalDateTime purchaseDate;
 
-    @Column(nullable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private LocalDateTime expiredDate;
-
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    private Track track;
-
-    @ManyToOne()
-    @JoinColumn(name = "licence_template_id", nullable = false)
-    private LicenceTemplate licenceTemplate;
-
-    @OneToMany(mappedBy = "purchasedLicence", cascade = CascadeType.ALL)
-    private List<LicenceReport> licenceReports;
 
 }

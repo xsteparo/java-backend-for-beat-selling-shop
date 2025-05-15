@@ -19,7 +19,6 @@ public interface AuthenticationService {
 
     LoginDto login(LoginRequestDto loginRequestDto);
 
-
     LoginDto refreshToken(RefreshTokenRequest refreshTokenRequest);
 
     Customer getRequestingCustomerFromSecurityContext();

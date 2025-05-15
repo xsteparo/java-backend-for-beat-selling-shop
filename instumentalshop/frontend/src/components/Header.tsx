@@ -79,6 +79,7 @@ export const Header: FC = () => {
                 {/* ───── правый блок ───── */}
                 <div className="ml-auto flex items-center space-x-4 gap-x-4 relative z-10">
                     {/* иконка корзины */}
+                    {token && (
                     <button onClick={toggle} className="relative">
                         <BagIcon className="w-6 h-6 text-[#edf0f1] hover:text-[#0088a9] transition-colors" />
                         {items.length > 0 && (
@@ -90,6 +91,7 @@ export const Header: FC = () => {
               </span>
                         )}
                     </button>
+                    )}
 
                     {!token ? (
                         <>

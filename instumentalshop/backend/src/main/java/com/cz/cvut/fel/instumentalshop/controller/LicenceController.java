@@ -1,7 +1,10 @@
 package com.cz.cvut.fel.instumentalshop.controller;
 
+import com.cz.cvut.fel.instumentalshop.domain.User;
 import com.cz.cvut.fel.instumentalshop.domain.enums.LicenceType;
 import com.cz.cvut.fel.instumentalshop.domain.enums.ReportStatus;
+import com.cz.cvut.fel.instumentalshop.dto.CheckoutRequest;
+import com.cz.cvut.fel.instumentalshop.dto.CheckoutResponse;
 import com.cz.cvut.fel.instumentalshop.dto.licence.in.LicenceReportRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.licence.in.TemplateCreationRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.licence.in.TemplateUpdateRequestDto;
@@ -9,6 +12,7 @@ import com.cz.cvut.fel.instumentalshop.dto.licence.out.LicenceReportDto;
 import com.cz.cvut.fel.instumentalshop.dto.licence.out.TemplateResponseDto;
 import com.cz.cvut.fel.instumentalshop.dto.licence.in.PurchaseRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.licence.out.PurchaseDto;
+import com.cz.cvut.fel.instumentalshop.service.CheckoutService;
 import com.cz.cvut.fel.instumentalshop.service.LicencePurchaseService;
 import com.cz.cvut.fel.instumentalshop.service.LicenceReportService;
 import com.cz.cvut.fel.instumentalshop.service.LicenceTemplateService;
@@ -17,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +36,18 @@ public class LicenceController {
     private final LicenceTemplateService licenceTemplateService;
 
     private final LicenceReportService licenceReportService;
+
+    private final CheckoutService checkoutService;
+
+    @PostMapping("/licence-purchases/checkout")
+    @PreAuthorize("hasAuthority('CUSTOMER')")
+    public ResponseEntity<CheckoutResponse> checkout(
+            @AuthenticationPrincipal User user,
+            @RequestBody @Valid CheckoutRequest req) {
+
+        CheckoutResponse res = checkoutService.checkout(user.getId(), req);
+        return new ResponseEntity<>(res, HttpStatus.CREATED);
+    }
 
     @PostMapping("tracks/{trackId}/licence-templates")
     @PreAuthorize("hasAuthority('PRODUCER')")

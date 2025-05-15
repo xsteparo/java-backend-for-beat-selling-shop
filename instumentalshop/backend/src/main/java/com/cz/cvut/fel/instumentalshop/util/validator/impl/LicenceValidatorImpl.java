@@ -78,7 +78,7 @@ public class LicenceValidatorImpl extends ValidatorBase implements LicenceValida
 
     @Override
     public void validateReportCreateRequest(PurchasedLicence purchasedLicence, Producer producer) {
-        if (purchasedLicence.getProducers().contains(producer)) {
+        if (purchasedLicence.getProducer().equals(producer)) {
             throw new IllegalArgumentException("Producer is already related to this purchased licence");
         }
     }
@@ -88,7 +88,7 @@ public class LicenceValidatorImpl extends ValidatorBase implements LicenceValida
         if (licenceReport.getReportStatus() != ReportStatus.PENDING) {
             throw new IllegalArgumentException("Report status is not pending");
         }
-        if (!licenceReport.getPurchasedLicence().getProducers().contains(producer)) {
+        if (!licenceReport.getPurchasedLicence().getProducer().equals(producer)) {
             throw new AccessDeniedException("Producer is not allowed to update this report");
         }
 
@@ -99,7 +99,7 @@ public class LicenceValidatorImpl extends ValidatorBase implements LicenceValida
         LicenceReport licenceReport = licenceReportRepository.findById(reportId)
                 .orElseThrow(() -> new EntityNotFoundException("Licence report not found with id: " + reportId));
 
-        if (!licenceReport.getPurchasedLicence().getProducers().contains(producer)) {
+        if (!licenceReport.getPurchasedLicence().getProducer().equals(producer)) {
             throw new AccessDeniedException("Producer is not allowed to delete this report");
         }
     }
@@ -129,8 +129,7 @@ public class LicenceValidatorImpl extends ValidatorBase implements LicenceValida
     }
 
     private boolean isProducerOfLicence(User currentUser, PurchasedLicence purchasedLicence) {
-        return purchasedLicence.getProducers().stream()
-                .anyMatch(producer -> producer.getId().equals(currentUser.getId()));
+        return purchasedLicence.getProducer().getId().equals(currentUser.getId());
     }
 
     private void validateIfCurrentLicenceTypeExists(Long trackId, LicenceType licenceType) {

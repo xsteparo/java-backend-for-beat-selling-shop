@@ -50,4 +50,21 @@ public class AuthenticationController {
         return ResponseEntity.ok(user);
     }
 
+    // ====== OAuth2 (for future) ======
+    // @GetMapping("/oauth2/authorize/{provider}")
+    // public void oauth2Authorize(
+    //     @PathVariable String provider,
+    //     HttpServletResponse response
+    // ) throws IOException {
+    //     // authService.buildOauth2AuthorizationUrl(provider, response);
+    // }
+
+    // @GetMapping("/oauth2/callback/{provider}")
+    // public ResponseEntity<LoginDto> oauth2Callback(
+    //     @PathVariable String provider,
+    //     @RequestParam("code") String authorizationCode
+    // ) {
+    //     // return ResponseEntity.ok(authService.handleOauth2Callback(provider, authorizationCode));
+    // }
+    // =============================================
 }

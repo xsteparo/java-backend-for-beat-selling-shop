@@ -26,176 +26,145 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
 @Service
 @RequiredArgsConstructor
 public class LicencePurchaseServiceImpl implements LicencePurchaseService {
 
     @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager em;
 
-    private final AuthenticationService authenticationService;
+    private final AuthenticationService       auth;
+    private final LicenceTemplateRepository   tplRepo;
+    private final PurchasedLicenceRepository  licRepo;
+    private final ProducerRepository          producerRepo;
+    private final TrackRepository             trackRepo;
+    private final ProducerTrackInfoRepository ptiRepo;
+    private final LicenceValidator            validator;
 
-    private final LicenceTemplateRepository licenceTemplateRepository;
+    /*─────────────────────────────────── API ───────────────────────────────────*/
 
-    private final PurchasedLicenceRepository purchasedLicenceRepository;
+    @Override @Transactional
+    public PurchaseDto purchaseLicence(PurchaseRequestDto dto, Long trackId) {
 
-    private final ProducerRepository producerRepository;
+        Customer customer = auth.getRequestingCustomerFromSecurityContext();
+        Track    track    = trackRepo.findTrackById(trackId)
+                .orElseThrow(() -> new EntityNotFoundException("Track not found"));
 
-    private final TrackRepository trackRepository;
+        validator.validatePurchaseCreateRequest(customer, track, dto.getLicenceType());
 
-    private final ProducerTrackInfoRepository producerTrackInfoRepository;
-
-    private final LicenceValidator licenceValidator;
-
-    @Override
-    @Transactional
-    public PurchaseDto purchaseLicence(PurchaseRequestDto requestDto, Long trackId) {
-        Customer customer = authenticationService.getRequestingCustomerFromSecurityContext();
-
-        Track track = trackRepository.findTrackById(trackId).orElseThrow(() -> new EntityNotFoundException("Track is not found"));
-
-        licenceValidator.validatePurchaseCreateRequest(customer, track, requestDto.getLicenceType());
-
-        PurchasedLicence purchasedLicence = processPurchase(track, customer, requestDto);
-
-        return buildPurchaseResponseDto(purchasedLicence);
+        PurchasedLicence lic = processPurchase(track, customer, dto.getLicenceType());
+        return buildDto(lic);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public PurchaseDto getPurchasedLicenceById(Long purchaseId) {
-        User currentUser = authenticationService.getRequestingUserFromSecurityContext();
+    @Override @Transactional
+    public PurchaseDto getPurchasedLicenceById(Long id) {
+        User user = auth.getRequestingUserFromSecurityContext();
 
-        PurchasedLicence purchasedLicence = purchasedLicenceRepository.findById(purchaseId)
-                .orElseThrow(() -> new EntityNotFoundException("Purchased Licence not found"));
+        PurchasedLicence lic = licRepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Purchased licence not found"));
 
-        licenceValidator.validatePurchasedLicenceGetRequest(currentUser, purchasedLicence);
-
-        return buildPurchaseResponseDto(purchasedLicence);
+        validator.validatePurchasedLicenceGetRequest(user, lic);
+        return buildDto(lic);
     }
 
-    @Override
-    @Transactional(readOnly = true)
+    @Override @Transactional
     public List<PurchaseDto> getAllPurchasedLicences() {
-        User currentUser = authenticationService.getRequestingUserFromSecurityContext();
-        List<PurchasedLicence> purchasedLicences;
 
-        if (currentUser.getRole() == Role.CUSTOMER) {
-            purchasedLicences = purchasedLicenceRepository.findByCustomerId(currentUser.getId());
-        } else if (currentUser.getRole() == Role.PRODUCER) {
-            purchasedLicences = purchasedLicenceRepository.findForProducerByProducerId(currentUser.getId());
-        } else {
-            throw new AccessDeniedException("User role is not supported for this operation");
-        }
+        User user = auth.getRequestingUserFromSecurityContext();
+        List<PurchasedLicence> list;
 
-        return purchasedLicences.stream()
-                .map(this::buildPurchaseResponseDto)
-                .collect(Collectors.toList());
+        if (user.getRole() == Role.CUSTOMER) {
+            list = licRepo.findByCustomerId(user.getId());
+
+        } else if (user.getRole() == Role.PRODUCER) {
+            list = licRepo.findForProducerByProducerId(user.getId());
+
+        } else throw new AccessDeniedException("Unsupported role");
+
+        return list.stream().map(this::buildDto).toList();
     }
 
-    @Override
+    @Override @Transactional
     public List<ProducerIncomeDto> getProducerIncomesByTracks() {
-        Producer producer = authenticationService.getRequestingProducerFromSecurityContext();
-        List<ProducerIncomeDto> result = entityManager.createNamedQuery("ProducerTrackInfo.findProducerIncomeByTracks", ProducerIncomeDto.class)
+        Producer producer = auth.getRequestingProducerFromSecurityContext();
+        return em.createNamedQuery(
+                        "ProducerTrackInfo.findProducerIncomeByTracks",
+                        ProducerIncomeDto.class)
                 .setParameter("producerId", producer.getId())
                 .getResultList();
-        return result;
     }
 
-    private PurchasedLicence processPurchase(Track track, Customer customer, PurchaseRequestDto requestDto) {
-        checkIfLicenceIsExclusive(track, requestDto.getLicenceType());
+    /*────────────────────────────  INTERNAL  ────────────────────────────*/
 
-        LicenceTemplate licenceTemplate = licenceTemplateRepository.findByTrackAndLicenceType(track, requestDto.getLicenceType())
-                .orElseThrow(() -> new EntityNotFoundException(requestDto.getLicenceType() + "Template was not found"));
+    private PurchasedLicence processPurchase(Track track,
+                                             Customer customer,
+                                             LicenceType type) {
 
-        List<Producer> producers = getTrackProducers(track.getId());
-
-        LocalDateTime purchaseDate = LocalDateTime.now();
-        LocalDateTime expiredDate = calculateExpiredDate(licenceTemplate, purchaseDate);
-
-        updateCustomerBalance(customer, licenceTemplate.getPrice());
-
-        PurchasedLicence purchasedLicence = buildPurchasedLicence(track, customer, producers, licenceTemplate, purchaseDate, expiredDate);
-
-        purchasedLicence = purchasedLicenceRepository.save(purchasedLicence);
-
-        distributeIncomeAmongProducers(track.getId(), licenceTemplate.getPrice());
-
-        addPurchasedLicenceToProducers(producers, purchasedLicence);
-
-        return purchasedLicence;
-    }
-
-    private void checkIfLicenceIsExclusive(Track track, LicenceType licenceType) {
-        if (licenceType == LicenceType.EXCLUSIVE) {
+        if (type == LicenceType.EXCLUSIVE)
             track.setExclusiveBought(true);
-        }
-    }
 
-    private LocalDateTime calculateExpiredDate(LicenceTemplate licenceTemplate, LocalDateTime purchaseDate) {
-        return purchaseDate.plusDays(licenceTemplate.getValidityPeriodDays());
-    }
+        LicenceTemplate tpl = tplRepo.findByTrackAndLicenceType(track, type)
+                .orElseThrow(() -> new EntityNotFoundException(type + " template not found"));
 
-    private void updateCustomerBalance(Customer customer, BigDecimal amountToSubtract) {
-        BigDecimal newBalance = customer.getBalance().subtract(amountToSubtract);
-        customer.setBalance(newBalance);
-    }
+        LocalDateTime now   = LocalDateTime.now();
+        LocalDateTime until = tpl.getValidityPeriodDays() == null
+                ? null
+                : now.plusDays(tpl.getValidityPeriodDays());
 
-    private List<Producer> getTrackProducers(Long trackId) {
-        return producerTrackInfoRepository.findByTrackId(trackId).stream()
-                .map(ProducerTrackInfo::getProducer)
-                .toList();
-    }
+        /* баланс клиента */
+        customer.setBalance(customer.getBalance().subtract(tpl.getPrice()));
 
-    private PurchasedLicence buildPurchasedLicence(Track track, Customer customer,
-                                                   List<Producer> producers, LicenceTemplate licenceTemplate,
-                                                   LocalDateTime purchaseDate, LocalDateTime expiredDate) {
-        return PurchasedLicence.builder()
+        /* создаём запись */
+        Producer lead = track.getLeadProducer();
+        PurchasedLicence lic = PurchasedLicence.builder()
                 .track(track)
-                .licenceTemplate(licenceTemplate)
-                .purchaseDate(purchaseDate)
-                .expiredDate(expiredDate)
+                .licenceTemplate(tpl)
+                .purchaseDate(now)
+                .expiredDate(until)
                 .customer(customer)
-                .producers(producers)
+                .producer(lead)
                 .build();
+
+        lic = licRepo.save(lic);
+
+        /* распределяем доход между со-авторами (если есть проценты) */
+        distributeIncomeAmongProducers(track.getId(), tpl.getPrice());
+
+        return lic;
     }
 
-    private PurchaseDto buildPurchaseResponseDto(PurchasedLicence purchasedLicence) {
+    private PurchaseDto buildDto(PurchasedLicence lic) {
 
-        List<Platform> platforms = purchasedLicence.getLicenceTemplate().getAvailablePlatforms();
-
-        Map<Long, String> producerOwners = purchasedLicence.getProducers().stream()
-                .collect(Collectors.toMap(Producer::getId, Producer::getUsername));
+        LicenceTemplate tpl = lic.getLicenceTemplate();
 
         return PurchaseDto.builder()
-                .purchaseId(purchasedLicence.getId())
-                .licenceType(purchasedLicence.getLicenceTemplate().getLicenceType())
-                .purchaseDate(purchasedLicence.getPurchaseDate())
-                .expiredDate(purchasedLicence.getExpiredDate())
-                .price(purchasedLicence.getLicenceTemplate().getPrice())
-                .trackId(purchasedLicence.getLicenceTemplate().getTrack().getId())
-                .validityPeriodDays(purchasedLicence.getLicenceTemplate().getValidityPeriodDays())
-                .availablePlatforms(platforms)
-                .producerOwners(producerOwners)
+                .purchaseId(lic.getId())
+                .licenceType(tpl.getLicenceType())
+                .purchaseDate(lic.getPurchaseDate())
+                .expiredDate(lic.getExpiredDate())
+                .price(tpl.getPrice())
+                .trackId(tpl.getTrack().getId())
+                .validityPeriodDays(tpl.getValidityPeriodDays())
+                .availablePlatforms(tpl.getAvailablePlatforms())
+                .producerOwners(Map.of(lic.getProducer().getId(), lic.getProducer().getUsername()))
                 .build();
     }
 
-    private void distributeIncomeAmongProducers(Long trackId, BigDecimal totalIncome) {
-        List<ProducerTrackInfo> producerTrackInfos = producerTrackInfoRepository.findByTrackId(trackId);
-        producerTrackInfos.forEach(producerTrackInfo -> {
-            BigDecimal percentage = producerTrackInfo.getProfitPercentage();
-            BigDecimal producerIncome = totalIncome.multiply(percentage).divide(BigDecimal.valueOf(100), RoundingMode.HALF_EVEN);
-            Producer producer = producerTrackInfo.getProducer();
-            producer.setBalance(producer.getBalance().add(producerIncome));
-            producerRepository.save(producer);
+    private void distributeIncomeAmongProducers(Long trackId, BigDecimal total) {
+
+        List<ProducerTrackInfo> infos = ptiRepo.findByTrackId(trackId);
+
+        infos.forEach(info -> {
+            BigDecimal pct    = info.getProfitPercentage();                // %
+            BigDecimal income = total.multiply(pct)
+                    .divide(BigDecimal.valueOf(100), RoundingMode.HALF_EVEN);
+
+            Producer p = info.getProducer();
+            p.setBalance(p.getBalance().add(income));
+            producerRepo.save(p);
         });
     }
-
-    private void addPurchasedLicenceToProducers(List<Producer> producers, PurchasedLicence purchasedLicence) {
-        producers.forEach(producer -> {
-            producer.getSoldLicences().add(purchasedLicence);
-            producerRepository.save(producer);
-        });
-    }
-
 }
+
+

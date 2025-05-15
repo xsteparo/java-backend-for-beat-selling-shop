@@ -81,4 +81,11 @@ public class Track {
         return (double) likes / plays;
     }
 
+    public Producer getLeadProducer() {
+        return producerTrackInfos.stream()
+                .filter(ProducerTrackInfo::getOwnsPublishingTrack)
+                .findFirst()
+                .map(ProducerTrackInfo::getProducer)
+                .orElseThrow(() -> new IllegalStateException("Lead producer not set"));
+    }
 }
