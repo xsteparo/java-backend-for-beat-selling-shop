@@ -31,6 +31,8 @@ import java.util.List;
  */
 public interface TrackService {
 
+    void incrementPlays(Long trackId);
+
     /**
      * Vrátí stránkovaný seznam skladb podle zadaného filtru a stránkování.
      *

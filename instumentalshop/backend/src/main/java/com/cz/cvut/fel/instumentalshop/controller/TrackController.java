@@ -66,6 +66,8 @@ public class TrackController {
         MediaType contentType = MediaTypeFactory.getMediaType(audio)
                 .orElse(MediaType.APPLICATION_OCTET_STREAM);
 
+        trackService.incrementPlays(id);
+
         return ResponseEntity
                 .status(region.getPosition() == 0 ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT)
                 .contentType(contentType)

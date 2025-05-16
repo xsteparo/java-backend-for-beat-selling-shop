@@ -234,6 +234,14 @@ public class TrackServiceImpl implements TrackService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public void incrementPlays(Long trackId) {
+        Track track = trackRepository.findById(trackId)
+                .orElseThrow(() -> new EntityNotFoundException("Track not found"));
+        track.setPlays(track.getPlays() + 1);
+        trackRepository.save(track);
+    }
+
 
     //=====================================
     //    Private helpers
