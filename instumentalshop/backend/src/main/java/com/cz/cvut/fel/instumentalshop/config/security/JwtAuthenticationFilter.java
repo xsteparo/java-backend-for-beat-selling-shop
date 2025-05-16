@@ -1,5 +1,6 @@
 package com.cz.cvut.fel.instumentalshop.config.security;
 
+import com.cz.cvut.fel.instumentalshop.service.impl.CustomUserDetailsService;
 import com.cz.cvut.fel.instumentalshop.service.security.JWTService;
 import com.cz.cvut.fel.instumentalshop.service.UserService;
 import jakarta.servlet.FilterChain;
@@ -24,6 +25,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTService jwtService;
+    private final CustomUserDetailsService customUserDetailsService;
     private final UserService userService;
 
     @Override
@@ -41,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String username = jwtService.extractUsername(jwt);
 
         if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService.userDetailsService().loadUserByUsername(username);
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext();

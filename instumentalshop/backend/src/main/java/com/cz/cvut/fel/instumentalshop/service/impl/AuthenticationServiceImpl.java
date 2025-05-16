@@ -150,6 +150,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 saved.getUsername(),
                 saved.getEmail(),
                 saved.getRole().name(),
+                saved.getBio(),
                 saved.getRegistrationDate(),
                 saved.getBalance(),
                 saved.getAvatarUrl()

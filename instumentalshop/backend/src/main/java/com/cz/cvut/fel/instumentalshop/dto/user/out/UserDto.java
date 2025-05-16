@@ -21,6 +21,8 @@ public class UserDto {
 
     private String role;
 
+    private String bio;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime registrationDate;
 
@@ -40,6 +42,7 @@ public class UserDto {
                 user.getRole() != null
                         ? user.getRole().name().toLowerCase()
                         : null,
+                user.getBio(),
                 user.getRegistrationDate()
                 ,
                 user.getBalance(),

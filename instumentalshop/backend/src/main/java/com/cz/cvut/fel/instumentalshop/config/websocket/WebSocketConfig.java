@@ -1,6 +1,7 @@
 package com.cz.cvut.fel.instumentalshop.config.websocket;
 
 import com.cz.cvut.fel.instumentalshop.service.UserService;
+import com.cz.cvut.fel.instumentalshop.service.impl.CustomUserDetailsService;
 import com.cz.cvut.fel.instumentalshop.service.security.JWTService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +27,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final JWTService jwtService;
     private final UserService userService;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
@@ -39,8 +41,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     if (bearer != null && bearer.startsWith("Bearer ")) {
                         String token = bearer.substring(7);
                         String username = jwtService.extractUsername(token);
-                        UserDetails user = userService.userDetailsService()
-                                .loadUserByUsername(username);
+                        UserDetails user = customUserDetailsService.loadUserByUsername(username);
                         // вот здесь передаём оба аргумента: токен и пользователя
                         if (jwtService.isTokenValid(token, user)) {
                             Authentication auth = new UsernamePasswordAuthenticationToken(

@@ -82,7 +82,8 @@ public class ProducerServiceImpl implements ProducerService {
 
         producer = producerRepository.save(producer);
 
-        return userMapper.toProducerResponseDto(producer);
+        return null;
+//        return userMapper.toProducerResponseDto(producer);
     }
 
     @Override
@@ -126,7 +127,8 @@ public class ProducerServiceImpl implements ProducerService {
 
         producerRepository.save(producer);
 
-        return userMapper.toProducerResponseDto(producer);
+//        return userMapper.toProducerResponseDto(producer);
+        return null;
     }
 
     @Override

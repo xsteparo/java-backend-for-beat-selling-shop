@@ -47,6 +47,8 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private String bio;
+
     private String avatarUrl;
 
     private BigDecimal balance = BigDecimal.ZERO;
