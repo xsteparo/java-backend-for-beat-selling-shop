@@ -3,7 +3,7 @@ package com.cz.cvut.fel.instumentalshop.service.impl;
 import com.cz.cvut.fel.instumentalshop.domain.PurchasedLicence;
 import com.cz.cvut.fel.instumentalshop.domain.enums.LicenceType;
 import com.cz.cvut.fel.instumentalshop.repository.PurchasedLicenceRepository;
-import com.cz.cvut.fel.instumentalshop.service.LicencePdfService;
+import com.cz.cvut.fel.instumentalshop.service.LicensePdfService;
 import com.cz.cvut.fel.instumentalshop.util.pdf.PdfGenerator;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class LicencePdfServiceImpl implements LicencePdfService {
+public class LicencePdfServiceImpl implements LicensePdfService {
 
     private final PurchasedLicenceRepository purchasedLicenceRepository;
 

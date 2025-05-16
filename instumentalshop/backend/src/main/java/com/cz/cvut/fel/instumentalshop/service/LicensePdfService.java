@@ -1,6 +1,6 @@
 package com.cz.cvut.fel.instumentalshop.service;
 
-public interface LicencePdfService {
+public interface LicensePdfService {
 
     byte[] generateLicencePdf(Long customerId, Long purchaseId);
 

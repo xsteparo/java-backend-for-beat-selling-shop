@@ -26,7 +26,7 @@ public class LicencePdfServiceTest {
 
 
     private PurchasedLicenceRepository purchasedLicenceRepository;
-    private LicencePdfService licencePdfService;
+    private LicensePdfService licencePdfService;
 
     @BeforeEach
     void setUp() {

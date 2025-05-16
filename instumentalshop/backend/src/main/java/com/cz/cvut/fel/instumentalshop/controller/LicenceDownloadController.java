@@ -3,7 +3,7 @@ package com.cz.cvut.fel.instumentalshop.controller;
 
 import com.cz.cvut.fel.instumentalshop.domain.Customer;
 import com.cz.cvut.fel.instumentalshop.service.AuthenticationService;
-import com.cz.cvut.fel.instumentalshop.service.LicencePdfService;
+import com.cz.cvut.fel.instumentalshop.service.LicensePdfService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/licences")
 public class LicenceDownloadController {
 
-    private final LicencePdfService licencePdfService;
+    private final LicensePdfService licencePdfService;
     private final AuthenticationService authenticationService;
 
 
