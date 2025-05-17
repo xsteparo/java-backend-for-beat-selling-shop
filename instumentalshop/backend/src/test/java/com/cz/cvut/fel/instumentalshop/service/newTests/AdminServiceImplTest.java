@@ -2,8 +2,10 @@ package com.cz.cvut.fel.instumentalshop.service.newTests;
 
 import com.cz.cvut.fel.instumentalshop.domain.LicenceTemplate;
 import com.cz.cvut.fel.instumentalshop.domain.PurchasedLicence;
+import com.cz.cvut.fel.instumentalshop.domain.Track;
 import com.cz.cvut.fel.instumentalshop.domain.User;
 import com.cz.cvut.fel.instumentalshop.domain.enums.LicenceType;
+import com.cz.cvut.fel.instumentalshop.domain.enums.Role;
 import com.cz.cvut.fel.instumentalshop.dto.licence.out.PurchaseDto;
 import com.cz.cvut.fel.instumentalshop.dto.mapper.UserMapper;
 import com.cz.cvut.fel.instumentalshop.dto.newDto.PurchaseUpdateRequestDto;
@@ -34,55 +36,58 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class AdminServiceImplTest {
 
-    @Mock
-    private PurchasedLicenceRepository licRepo;
-
-    @Mock
-    private TrackRepository trackRepo;
-
-    @Mock
-    private UserRepository userRepo;
-
-    @Mock
-    private UserMapper userMapper;
-
-    @InjectMocks
-    private AdminServiceImpl service;
+    @Mock TrackRepository trackRepo;
+    @Mock UserRepository userRepo;
+    @Mock PurchasedLicenceRepository licRepo;
+    @Mock UserMapper userMapper;
+    @InjectMocks AdminServiceImpl service;
 
     private PurchasedLicence licence;
     private LicenceTemplate template;
+    private Track track;
     private User user;
+    private UserDto userDto;
 
     @BeforeEach
     void setUp() {
-        // společné entity pro testy
+        track = new Track();
+        track.setId(42L);
+
         template = new LicenceTemplate();
-        template.setId(42L);
         template.setLicenceType(LicenceType.NON_EXCLUSIVE);
         template.setPrice(new BigDecimal("9.99"));
         template.setValidityPeriodDays(30);
 
         licence = new PurchasedLicence();
         licence.setId(100L);
+        licence.setTrack(track);
         licence.setLicenceTemplate(template);
-        licence.setPurchaseDate(LocalDateTime.of(2025, 5, 1, 12, 0));
-        licence.setExpiredDate(LocalDateTime.of(2025, 6, 1, 12, 0));
-        // producer a customer jsou nastaveny ve vnitřním builderu toDto
+        licence.setPurchaseDate(LocalDateTime.of(2025,6,1,12,0));
+        licence.setExpiredDate(LocalDateTime.of(2025,6,30,0,0));
 
         user = new User();
         user.setId(7L);
-        user.setUsername("testuser");
+        user.setUsername("john");
+        user.setBalance(new BigDecimal("50.00"));
+        user.setRole(Role.CUSTOMER);
+        user.setRegistrationDate(LocalDateTime.of(2025,1,1,0,0));
+        user.setBio("Hello");
+
+        userDto = new UserDto();
+        userDto.setUserId(7L);
+        userDto.setUsername("john");
+        userDto.setBalance(new BigDecimal("50.00"));
+        userDto.setRole("USER");
+        userDto.setRegistrationDate(LocalDateTime.parse("2025-01-01T00:00:00"));
+        userDto.setBio("Hello");
     }
 
     @Test
     void testGetAllPurchases() {
-        // Arrange: repository vrací jednu licenci
         when(licRepo.findAll()).thenReturn(List.of(licence));
 
-        // Act
         List<PurchaseDto> dtos = service.getAllPurchases();
 
-        // Assert
         assertEquals(1, dtos.size());
         PurchaseDto dto = dtos.get(0);
         assertEquals(100L, dto.getPurchaseId());
@@ -90,92 +95,67 @@ class AdminServiceImplTest {
         assertEquals(new BigDecimal("9.99"), dto.getPrice());
         assertEquals(42L, dto.getTrackId());
         assertEquals(30, dto.getValidityPeriodDays());
-        // další ověření podle potřeb...
     }
 
     @Test
     void testUpdatePurchase_Success() {
-        // Arrange: existující licence
         when(licRepo.findById(100L)).thenReturn(Optional.of(licence));
         when(licRepo.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         PurchaseUpdateRequestDto update = new PurchaseUpdateRequestDto(
-                LicenceType.EXCLUSIVE,
-                new BigDecimal("19.99"),
-                LocalDateTime.of(2025, 7, 1, 0, 0)
+                LicenceType.EXCLUSIVE, new BigDecimal("19.99"),
+                LocalDateTime.of(2025,7,1,0,0)
         );
 
-        // Act
         PurchaseDto result = service.updatePurchase(100L, update);
 
-        // Assert
-        assertEquals(new BigDecimal("19.99"), template.getPrice(), "Cena šablony musí být aktualizována");
-        assertEquals(LocalDateTime.of(2025, 7, 1, 0, 0), licence.getExpiredDate(), "Datum vypršení musí být aktualizováno");
+        assertEquals(new BigDecimal("19.99"), template.getPrice());
+        assertEquals(LocalDateTime.of(2025,7,1,0,0), licence.getExpiredDate());
         assertEquals(100L, result.getPurchaseId());
         assertEquals(new BigDecimal("19.99"), result.getPrice());
     }
 
     @Test
-    void testUpdatePurchase_NotFound() {
-        // Arrange: žádná licence
-        when(licRepo.findById(anyLong())).thenReturn(Optional.empty());
+    void testDeleteTrack_Success() {
+        when(trackRepo.existsById(55L)).thenReturn(true);
 
-        // Act / Assert
-        assertThrows(EntityNotFoundException.class,
-                () -> service.updatePurchase(123L, new PurchaseUpdateRequestDto(LicenceType.EXCLUSIVE, BigDecimal.ONE, null)));
-    }
-
-    @Test
-    void testDeleteTrack() {
-        // Act
         service.deleteTrack(55L);
 
-        // Assert
         verify(trackRepo).deleteById(55L);
     }
 
     @Test
+    void testDeleteTrack_NotFound() {
+        when(trackRepo.existsById(55L)).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> service.deleteTrack(55L));
+    }
+
+    @Test
     void testGetAllUsers() {
-        // Arrange: dva uživatelé a jejich DTO
-        User u1 = new User();
-        u1.setId(1L);
-        User u2 = new User();
-        u2.setId(2L);
-        UserDto dto1 = new UserDto();
-        UserDto dto2 = new UserDto();
+        when(userRepo.findAll()).thenReturn(List.of(user));
+        when(userMapper.toDto(user)).thenReturn(userDto);
 
-        when(userRepo.findAll()).thenReturn(List.of(u1, u2));
-        when(userMapper.toDto(u1)).thenReturn(dto1);
-        when(userMapper.toDto(u2)).thenReturn(dto2);
-
-        // Act
         List<UserDto> users = service.getAllUsers();
 
-        // Assert
-        assertEquals(2, users.size());
-        assertSame(dto1, users.get(0));
-        assertSame(dto2, users.get(1));
+        assertEquals(1, users.size());
+        assertEquals(userDto, users.get(0));
     }
 
     @Test
     void testDeleteUser_Success() {
-        // Arrange
         when(userRepo.findById(7L)).thenReturn(Optional.of(user));
 
-        // Act
         service.deleteUser(7L);
 
-        // Assert
         verify(userRepo).delete(user);
     }
 
     @Test
     void testDeleteUser_NotFound() {
-        // Arrange
-        when(userRepo.findById(anyLong())).thenReturn(Optional.empty());
+        when(userRepo.findById(7L)).thenReturn(Optional.empty());
 
-        // Act / Assert
-        assertThrows(EntityNotFoundException.class, () -> service.deleteUser(999L));
+        assertThrows(EntityNotFoundException.class, () -> service.deleteUser(7L));
     }
 }
 

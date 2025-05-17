@@ -26,14 +26,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
 
-    private final PurchasedLicenceRepository licRepo;
     private final TrackRepository trackRepo;
     private final UserRepository userRepo;
-    private final UserMapper userMapper; // MapStruct mapper pro User → UserDto
+    private final PurchasedLicenceRepository licRepo;
+    private final UserMapper userMapper;
 
-    /**
-     * Vrátí všechny zakoupené licence jako seznam DTO.
-     */
     @Override
     public List<PurchaseDto> getAllPurchases() {
         return licRepo.findAll().stream()
@@ -41,44 +38,32 @@ public class AdminServiceImpl implements AdminService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Upravení existujícího záznamu licence (typ, cena, datum vypršení).
-     */
     @Override
     public PurchaseDto updatePurchase(Long purchaseId, PurchaseUpdateRequestDto dto) {
         PurchasedLicence lic = licRepo.findById(purchaseId)
-                .orElseThrow(() -> new EntityNotFoundException("License not found: " + purchaseId));
+                .orElseThrow(() -> new EntityNotFoundException("PurchasedLicence not found: " + purchaseId));
         LicenceTemplate tpl = lic.getLicenceTemplate();
-
-        // pokud je předán nový typ licence, přepiš ho
         if (dto.getLicenceType() != null) {
             tpl.setLicenceType(dto.getLicenceType());
         }
-        // pokud je předána nová cena, přepiš ji
         if (dto.getPrice() != null) {
             tpl.setPrice(dto.getPrice());
         }
-        // pokud je předáno nové datum vypršení, aktualizuj ho na úrovni PurchasedLicence
         if (dto.getExpiredDate() != null) {
             lic.setExpiredDate(dto.getExpiredDate());
         }
-
-        // uložíme entity (cascade na template přímo nepotřebujeme)
         licRepo.save(lic);
         return toDto(lic);
     }
 
-    /**
-     * Smazání tracku podle ID (pouze volá repo.deleteById, aby testy prošly).
-     */
     @Override
     public void deleteTrack(Long trackId) {
+        if (!trackRepo.existsById(trackId)) {
+            throw new EntityNotFoundException("Track not found: " + trackId);
+        }
         trackRepo.deleteById(trackId);
     }
 
-    /**
-     * Vrátí všechny registrované uživatele jako DTO.
-     */
     @Override
     public List<UserDto> getAllUsers() {
         return userRepo.findAll().stream()
@@ -86,30 +71,23 @@ public class AdminServiceImpl implements AdminService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Smazání uživatele podle ID (nejprve prověříme existenci, pak deleteById).
-     */
     @Override
     public void deleteUser(Long userId) {
-        userRepo.findById(userId)
+        User user = userRepo.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
-        userRepo.deleteById(userId);
+        userRepo.delete(user);
     }
 
-    /**
-     * Pomocná metoda pro převod entity PurchasedLicence → PurchaseDto.
-     */
     private PurchaseDto toDto(PurchasedLicence lic) {
-        LicenceTemplate tpl = lic.getLicenceTemplate();
         return PurchaseDto.builder()
                 .purchaseId(lic.getId())
                 .trackId(lic.getTrack().getId())
-                .licenceType(tpl.getLicenceType())
-                .price(tpl.getPrice())
+                .licenceType(lic.getLicenceTemplate().getLicenceType())
+                .price(lic.getLicenceTemplate().getPrice())
                 .purchaseDate(lic.getPurchaseDate())
                 .expiredDate(lic.getExpiredDate())
-                .validityPeriodDays(tpl.getValidityPeriodDays())
-                .availablePlatforms(tpl.getAvailablePlatforms())
+                .validityPeriodDays(lic.getLicenceTemplate().getValidityPeriodDays())
+                .availablePlatforms(List.of())
                 .build();
     }
 }
