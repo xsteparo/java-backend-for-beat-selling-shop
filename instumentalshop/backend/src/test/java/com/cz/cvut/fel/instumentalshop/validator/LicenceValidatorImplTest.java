@@ -46,7 +46,7 @@ public class LicenceValidatorImplTest {
         Producer producer = mock(Producer.class);
         Track track = mock(Track.class);
 
-        LicenceType licenceType = LicenceType.STANDARD;
+        LicenceType licenceType = LicenceType.NON_EXCLUSIVE;
 
         ProducerTrackInfo trackInfo = mock(ProducerTrackInfo.class);
         when(trackInfo.getOwnsPublishingTrack()).thenReturn(true);
@@ -64,7 +64,7 @@ public class LicenceValidatorImplTest {
     void validateTemplateCreationRequest_InvalidLicenceType_ExceptionThrown() {
         Producer producer = mock(Producer.class);
         Track track = mock(Track.class);
-        LicenceType licenceType = LicenceType.STANDARD;
+        LicenceType licenceType = LicenceType.NON_EXCLUSIVE;
 
         ProducerTrackInfo trackInfo = mock(ProducerTrackInfo.class);
         when(trackInfo.getOwnsPublishingTrack()).thenReturn(true);
@@ -83,7 +83,7 @@ public class LicenceValidatorImplTest {
     void validatePurchaseCreateRequest_ValidData_NoExceptionThrown() {
         Customer customer = mock(Customer.class);
         Track track = mock(Track.class);
-        LicenceType licenceType = LicenceType.STANDARD;
+        LicenceType licenceType = LicenceType.NON_EXCLUSIVE;
 
         when(customer.getBalance()).thenReturn(new BigDecimal("100.00"));
         LicenceTemplate licenceTemplate = mock(LicenceTemplate.class);
@@ -105,7 +105,7 @@ public class LicenceValidatorImplTest {
     void validatePurchaseCreateRequest_InsufficientBalance_ExceptionThrown() {
         Customer customer = mock(Customer.class);
         Track track = mock(Track.class);
-        LicenceType licenceType = LicenceType.STANDARD;
+        LicenceType licenceType = LicenceType.NON_EXCLUSIVE;
 
         when(customer.getBalance()).thenReturn(new BigDecimal("10.00"));
         when(track.isExclusiveBought()).thenReturn(false);

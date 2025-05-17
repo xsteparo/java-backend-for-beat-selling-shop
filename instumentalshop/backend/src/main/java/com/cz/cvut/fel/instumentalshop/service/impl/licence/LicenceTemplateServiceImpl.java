@@ -45,7 +45,7 @@ public class LicenceTemplateServiceImpl implements LicenceTemplateService {
 
     @PostConstruct
     public void initStrategies() {
-        strategies.put(LicenceType.STANDARD, new StandardLicenceCreationStrategy());
+        strategies.put(LicenceType.NON_EXCLUSIVE, new StandardLicenceCreationStrategy());
         strategies.put(LicenceType.EXCLUSIVE, new ExclusiveLicenceCreationStrategy());
     }
 
@@ -104,7 +104,7 @@ public class LicenceTemplateServiceImpl implements LicenceTemplateService {
     }
 
     private void updateLicenceTemplate(LicenceTemplate licenceTemplate, TemplateUpdateRequestDto requestDto) {
-        if (licenceTemplate.getLicenceType() == LicenceType.STANDARD) {
+        if (licenceTemplate.getLicenceType() == LicenceType.NON_EXCLUSIVE) {
             updateStandardLicenceTemplate(licenceTemplate, requestDto);
         } else if (licenceTemplate.getLicenceType() == LicenceType.EXCLUSIVE) {
             licenceTemplate.setPrice(requestDto.getPrice());

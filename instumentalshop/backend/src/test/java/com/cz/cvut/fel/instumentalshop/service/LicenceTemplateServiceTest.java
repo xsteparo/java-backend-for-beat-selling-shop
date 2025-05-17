@@ -58,7 +58,7 @@ class LicenceTemplateServiceTest {
         producer = TestDataGenerator.createProducer(1L, "producer1");
         track = TestDataGenerator.createTrack(1L, "track1");
 
-        standardLicenceRequestDto = TestDataGenerator.createLicenceRequestDto(LicenceType.STANDARD, new BigDecimal("100.00"));
+        standardLicenceRequestDto = TestDataGenerator.createLicenceRequestDto(LicenceType.NON_EXCLUSIVE, new BigDecimal("100.00"));
         exclusiveLicenceRequestDto = TestDataGenerator.createLicenceRequestDto(LicenceType.EXCLUSIVE, new BigDecimal("100.00"));
 
         responseDto = TestDataGenerator.createResponseDto();
@@ -71,7 +71,7 @@ class LicenceTemplateServiceTest {
 
     @Test
     void createStandardLicenceTemplate_Success() {
-        responseDto.setLicenceType(LicenceType.STANDARD);
+        responseDto.setLicenceType(LicenceType.NON_EXCLUSIVE);
 
         when(trackRepository.findTrackById(eq(track.getId()))).thenReturn(Optional.of(track));
         when(licenceTemplateRepository.save(any(LicenceTemplate.class))).thenAnswer(i -> i.getArgument(0));
@@ -80,8 +80,8 @@ class LicenceTemplateServiceTest {
         TemplateResponseDto result = licenceTemplateService.createTemplate(track.getId(), standardLicenceRequestDto);
 
         assertNotNull(result);
-        assertEquals(LicenceType.STANDARD, result.getLicenceType());
-        verify(licenceValidator).validateTemplateCreationRequest(producer, track.getId(), LicenceType.STANDARD);
+        assertEquals(LicenceType.NON_EXCLUSIVE, result.getLicenceType());
+        verify(licenceValidator).validateTemplateCreationRequest(producer, track.getId(), LicenceType.NON_EXCLUSIVE);
         verify(licenceTemplateRepository).save(any(LicenceTemplate.class));
         verify(licenceMapper).toResponseDto(any(LicenceTemplate.class));
     }
@@ -92,12 +92,12 @@ class LicenceTemplateServiceTest {
         when(trackRepository.findTrackById(eq(track.getId()))).thenReturn(Optional.of(track));
 
         doThrow(new LicenceAlreadyExistsException("Licence already exists"))
-                .when(licenceValidator).validateTemplateCreationRequest(producer, track.getId(), LicenceType.STANDARD);
+                .when(licenceValidator).validateTemplateCreationRequest(producer, track.getId(), LicenceType.NON_EXCLUSIVE);
 
         assertThrows(LicenceAlreadyExistsException.class, () ->
                 licenceTemplateService.createTemplate(track.getId(), standardLicenceRequestDto));
 
-        verify(licenceValidator).validateTemplateCreationRequest(producer, track.getId(), LicenceType.STANDARD);
+        verify(licenceValidator).validateTemplateCreationRequest(producer, track.getId(), LicenceType.NON_EXCLUSIVE);
         verify(licenceTemplateRepository, never()).save(any(LicenceTemplate.class));
     }
     @Test

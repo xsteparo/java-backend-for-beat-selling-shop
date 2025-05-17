@@ -52,7 +52,7 @@ public class LicencePdfServiceTest {
 
         LicenceTemplate template = LicenceTemplate.builder()
                 .id(3L)
-                .licenceType(LicenceType.STANDARD)
+                .licenceType(LicenceType.NON_EXCLUSIVE)
                 .price(BigDecimal.TEN)
                 .build();
 

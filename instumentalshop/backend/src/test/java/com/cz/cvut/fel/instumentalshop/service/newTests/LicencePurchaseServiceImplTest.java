@@ -82,19 +82,19 @@ class LicencePurchaseServiceImplTest {
     @Test
     void testPurchaseLicence_Success() {
         PurchaseRequestDto dto = new PurchaseRequestDto();
-        dto.setLicenceType(LicenceType.STANDARD);
+        dto.setLicenceType(LicenceType.NON_EXCLUSIVE);
 
         when(auth.getRequestingCustomerFromSecurityContext()).thenReturn(customer);
         when(trackRepo.findTrackById(1L)).thenReturn(Optional.of(track));
-        doNothing().when(validator).validatePurchaseCreateRequest(customer, track, LicenceType.STANDARD);
+        doNothing().when(validator).validatePurchaseCreateRequest(customer, track, LicenceType.NON_EXCLUSIVE);
 
         var template = new LicenceTemplate();
-        template.setLicenceType(LicenceType.STANDARD);
+        template.setLicenceType(LicenceType.NON_EXCLUSIVE);
         template.setPrice(BigDecimal.valueOf(100));
         template.setValidityPeriodDays(7);
         template.setTrack(track);
         template.setAvailablePlatforms(List.of(Platform.SPOTIFY));
-        when(tplRepo.findByTrackAndLicenceType(track, LicenceType.STANDARD))
+        when(tplRepo.findByTrackAndLicenceType(track, LicenceType.NON_EXCLUSIVE))
                 .thenReturn(Optional.of(template));
 
         doAnswer(inv -> {
@@ -109,7 +109,7 @@ class LicencePurchaseServiceImplTest {
 
         assertNotNull(result);
         assertEquals(42L, result.getPurchaseId());
-        assertEquals(LicenceType.STANDARD, result.getLicenceType());
+        assertEquals(LicenceType.NON_EXCLUSIVE, result.getLicenceType());
         assertEquals(BigDecimal.valueOf(50), customer.getBalance());
         verify(ptiRepo).findByTrackId(1L);
     }
@@ -148,7 +148,7 @@ class LicencePurchaseServiceImplTest {
         var p1 = new PurchasedLicence();
         p1.setId(1L);
         var tpl = new LicenceTemplate();
-        tpl.setLicenceType(LicenceType.STANDARD);
+        tpl.setLicenceType(LicenceType.NON_EXCLUSIVE);
         tpl.setPrice(BigDecimal.valueOf(100));
         tpl.setValidityPeriodDays(7);
         var t = new Track();
@@ -166,7 +166,7 @@ class LicencePurchaseServiceImplTest {
         assertEquals(1, list.size());
         var dto = list.get(0);
         assertEquals(1L, dto.getPurchaseId());
-        assertEquals(LicenceType.STANDARD, dto.getLicenceType());
+        assertEquals(LicenceType.NON_EXCLUSIVE, dto.getLicenceType());
         assertEquals(7, dto.getValidityPeriodDays());
         assertEquals(10L, dto.getTrackId());
         assertEquals(Map.of(20L, "prodName"), dto.getProducerOwners());
@@ -177,7 +177,7 @@ class LicencePurchaseServiceImplTest {
         var p2 = new PurchasedLicence();
         p2.setId(2L);
         var tpl = new LicenceTemplate();
-        tpl.setLicenceType(LicenceType.ROYALTY);
+        tpl.setLicenceType(LicenceType.EXCLUSIVE);
         tpl.setPrice(BigDecimal.valueOf(150));
         tpl.setValidityPeriodDays(null);
         var t2 = new Track();
@@ -195,7 +195,7 @@ class LicencePurchaseServiceImplTest {
         assertEquals(1, list.size());
         var dto = list.get(0);
         assertEquals(2L, dto.getPurchaseId());
-        assertEquals(LicenceType.ROYALTY, dto.getLicenceType());
+        assertEquals(LicenceType.EXCLUSIVE, dto.getLicenceType());
         assertNull(dto.getValidityPeriodDays());
         assertEquals(20L, dto.getTrackId());
         assertEquals(Map.of(20L, "prodName"), dto.getProducerOwners());
