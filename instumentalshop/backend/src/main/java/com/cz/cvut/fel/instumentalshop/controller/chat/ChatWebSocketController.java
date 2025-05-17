@@ -4,6 +4,7 @@ import com.cz.cvut.fel.instumentalshop.domain.User;
 import com.cz.cvut.fel.instumentalshop.domain.chat.ChatMessage;
 import com.cz.cvut.fel.instumentalshop.dto.chat.ChatMessageDto;
 import com.cz.cvut.fel.instumentalshop.repository.UserRepository;
+import com.cz.cvut.fel.instumentalshop.service.chat.ChatService;
 import com.cz.cvut.fel.instumentalshop.service.impl.chat.ChatServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -17,25 +18,28 @@ import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
 
-@Controller
 @RequiredArgsConstructor
+@Controller
 public class ChatWebSocketController {
     private final SimpMessagingTemplate template;
-    private final ChatServiceImpl chatService;
-    private final UserRepository userRepository;
+    private final ChatService chatService;
 
-    // client sends message to server via websocket
+    /**
+     * Příjem STOMP zpráv z klienta a rozeslání všem odběratelům daného topicu.
+     *
+     * @param roomId    ID místnosti (využito jako součást topicu)
+     * @param payload   DTO přijímané zprávy
+     * @param principal přihlášený uživatel (automatic injection)
+     */
     @MessageMapping("/chat/{roomId}/send")
     public void send(
             @DestinationVariable Long roomId,
             @Payload ChatMessageDto payload,
-            Principal principal  // use java.security.Principal
+            Principal principal
     ) {
-        // Controller is now invoked, because Spring can always inject Principal
-        String username = principal.getName();
-        User sender = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        ChatMessage msg = chatService.saveMessage(roomId, sender.getId(), payload.getContent());
+        // uložíme zprávu do DB
+        var msg = chatService.saveMessage(roomId, Long.valueOf(principal.getName()), payload.getContent());
+        // odešleme všem, kdo poslouchají /topic/chat/{roomId}
         template.convertAndSend("/topic/chat/" + roomId, ChatMessageDto.fromEntity(msg));
     }
 }
