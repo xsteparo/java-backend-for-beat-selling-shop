@@ -129,5 +129,13 @@ public interface TrackService {
      * @return Seznam DTO skladeb (TrackDto)
      */
     List<TrackDto> findCustomerPurchasedTracksForProducer(Long customerId);
+
+    /**
+     * Vrátí seznam nejlépe hodnocených skladeb.
+     *
+     * @param limit maximální počet skladeb
+     * @return seznam DTO skladeb
+     */
+    List<TrackDto> getTopTracks(int limit);
 }
 

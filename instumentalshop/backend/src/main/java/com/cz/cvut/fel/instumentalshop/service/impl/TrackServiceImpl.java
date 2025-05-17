@@ -242,6 +242,17 @@ public class TrackServiceImpl implements TrackService {
         trackRepository.save(track);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<TrackDto> getTopTracks(int limit) {
+        // sestupné řazení podle ratingu
+        Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "rating"));
+        return trackRepository.findAll(pageable)
+                .stream()
+                .map(trackMapper::toResponseDto)
+                .toList();
+    }
+
 
     //=====================================
     //    Private helpers
