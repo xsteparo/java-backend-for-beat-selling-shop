@@ -38,14 +38,14 @@ public class QuerySqlDefinitions {
     public static final String FIND_BOUGHT_TRACKS_BY_CUSTOMER_ID = """
                         SELECT DISTINCT t FROM Track t\s
                         JOIN t.purchasedLicence pl\s
-                        JOIN pl.producers prod\s
+                        JOIN pl.producer prod\s
                         WHERE pl.customer.id = :customerId AND prod.id = :producerId
             """;
 
     public static final String IS_PRODUCER_RELATED_TO_REPORT = """
             SELECT CASE WHEN COUNT(lr) > 0 THEN true ELSE false END FROM LicenceReport lr
             JOIN lr.purchasedLicence pl
-            JOIN pl.producers p
+            JOIN pl.producer p
             WHERE lr.id = :reportId AND p.id = :userId
             """;
 

@@ -30,10 +30,6 @@ public class TrackRequestDto {
 
     private Integer price;
 
-    private Integer mainProducerPercentage;
-
-    private List<@Valid ProducerShareRequestDto> producerShares;
-
     /**
      * Non-Exclusive license: mp3
      */

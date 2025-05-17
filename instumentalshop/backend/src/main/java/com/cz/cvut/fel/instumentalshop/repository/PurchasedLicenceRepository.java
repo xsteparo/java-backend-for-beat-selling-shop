@@ -18,7 +18,7 @@ public interface PurchasedLicenceRepository extends JpaRepository<PurchasedLicen
 
     boolean existsByTrackId(Long id);
 
-    @Query("SELECT pl FROM PurchasedLicence pl JOIN pl.producers p WHERE p.id = :producerId")
+    @Query("SELECT pl FROM PurchasedLicence pl JOIN pl.producer p WHERE p.id = :producerId")
     List<PurchasedLicence> findForProducerByProducerId(@Param("producerId") Long producerId);
 
     List<PurchasedLicence> findByCustomerId(Long customerId);

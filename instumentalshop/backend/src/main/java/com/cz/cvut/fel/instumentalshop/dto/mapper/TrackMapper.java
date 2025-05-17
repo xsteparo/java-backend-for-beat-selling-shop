@@ -14,22 +14,7 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface TrackMapper {
 
-    @Mapping(target = "producerTrackInfoDtoList", source = "producerTrackInfos")
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "genreType" , source = "genre")
-    TrackDto toResponseWithMultipleOwnersDto(Track track);
-
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "genreType" , source = "genre")
-    @Mapping(target = "producerTrackInfoDtoList", ignore = true)
-    TrackDto toResponseWithSingleOwnerDto(Track track);
-
-    @Mapping(target = "producerId", source = "producer.id")
-    @Mapping(target= "producerUsername", source = "producer.username")
-    ProducerTrackInfoDto mapProducerTrackInfo(ProducerTrackInfo producerTrackInfo);
-
-    List<ProducerTrackInfoDto> mapProducerTrackInfos(List<ProducerTrackInfo> producerTrackInfos);
-
+    // URL-ы
     @Mapping(target = "id",                source = "id")
     @Mapping(target = "name",              source = "name")
     @Mapping(target = "genreType",         source = "genre")
@@ -41,21 +26,32 @@ public interface TrackMapper {
     @Mapping(target = "urlExclusive",      source = "urlExclusive")
 
     @Mapping(target = "rating",            source = "rating")
-//    @Mapping(target = "length",            source = "length")
+    // @Mapping(target = "length",         source = "length") // если понадобится
     @Mapping(target = "keyType",           source = "keyType")
 
     // главный продюсер
     @Mapping(
             target     = "producerUsername",
-            expression = "java(track.getProducerTrackInfos().stream()\n" +
-                    "     .filter(ProducerTrackInfo::getOwnsPublishingTrack)\n" +
-                    "     .findFirst()\n" +
-                    "     .map(info -> info.getProducer().getUsername())\n" +
-                    "     .orElse(null))"
+            expression = "java(track.getProducer().getUsername())"
     )
 
     // пока константой, потом можно по-умному
     @Mapping(target = "purchased",         constant = "false")
+
+    // новый маппинг: список трёх шаблонов лицензий
+    @Mapping(
+            target = "licenceTemplates",
+            expression = "java(\n" +
+                    "  track.getLicenceTemplates().stream()\n" +
+                    "    .map(tpl -> new com.cz.cvut.fel.instumentalshop.dto.newDto.LicenceTemplateDto(\n" +
+                    "        tpl.getId(),\n" +
+                    "        tpl.getLicenceType(),\n" +
+                    "        tpl.getPrice(),\n" +
+                    "        tpl.getValidityPeriodDays()\n" +
+                    "    ))\n" +
+                    "    .collect(java.util.stream.Collectors.toList())\n" +
+                    ")"
+    )
     TrackDto toResponseDto(Track track);
 }
 

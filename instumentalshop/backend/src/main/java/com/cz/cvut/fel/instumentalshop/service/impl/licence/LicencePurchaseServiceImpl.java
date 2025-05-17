@@ -100,10 +100,6 @@ public class LicencePurchaseServiceImpl implements LicencePurchaseService {
     private PurchasedLicence processPurchase(Track track,
                                              Customer customer,
                                              LicenceType type) {
-
-        if (type == LicenceType.EXCLUSIVE)
-            track.setExclusiveBought(true);
-
         LicenceTemplate tpl = tplRepo.findByTrackAndLicenceType(track, type)
                 .orElseThrow(() -> new EntityNotFoundException(type + " template not found"));
 
@@ -112,23 +108,22 @@ public class LicencePurchaseServiceImpl implements LicencePurchaseService {
                 ? null
                 : now.plusDays(tpl.getValidityPeriodDays());
 
-        /* баланс клиента */
+        // 1) Списываем со счёта покупателя
         customer.setBalance(customer.getBalance().subtract(tpl.getPrice()));
 
-        /* создаём запись */
-        Producer lead = track.getLeadProducer();
+        // 2) Создаём запись о покупке
         PurchasedLicence lic = PurchasedLicence.builder()
                 .track(track)
                 .licenceTemplate(tpl)
                 .purchaseDate(now)
                 .expiredDate(until)
                 .customer(customer)
-                .producer(lead)
+                .producer(track.getProducer())
                 .build();
 
         lic = licRepo.save(lic);
 
-        /* распределяем доход между со-авторами (если есть проценты) */
+        // 3) Распределяем доход
         distributeIncomeAmongProducers(track.getId(), tpl.getPrice());
 
         return lic;

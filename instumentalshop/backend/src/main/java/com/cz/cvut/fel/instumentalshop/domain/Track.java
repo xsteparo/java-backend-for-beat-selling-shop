@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.cz.cvut.fel.instumentalshop.util.query.QuerySqlDefinitions.FIND_BOUGHT_TRACKS_BY_CUSTOMER_ID;
@@ -53,16 +54,14 @@ public class Track {
 
     private double lastRatingDelta;
 
-    @OneToMany(mappedBy = "track", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProducerTrackInfo> producerTrackInfos;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "producer_id", nullable = false)
+    private Producer producer;
 
-    @OneToMany(mappedBy = "track", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LicenceTemplate> licenceTemplates;
+    @OneToMany(mappedBy="track", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<LicenceTemplate> licenceTemplates = new ArrayList<>();
 
-    @Column(nullable = false)
-    private boolean allProducersAgreedForSelling = false;
-
-    private boolean isExclusiveBought = false;
 
     @OneToMany(mappedBy = "track")
     private List<PurchasedLicence> purchasedLicence;
@@ -79,13 +78,5 @@ public class Track {
     public double getNormalizedScore() {
         if (plays == 0) return 0;
         return (double) likes / plays;
-    }
-
-    public Producer getLeadProducer() {
-        return producerTrackInfos.stream()
-                .filter(ProducerTrackInfo::getOwnsPublishingTrack)
-                .findFirst()
-                .map(ProducerTrackInfo::getProducer)
-                .orElseThrow(() -> new IllegalStateException("Lead producer not set"));
     }
 }

@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ChatServiceImpl {
+public class ChatServiceImpl implements ChatService{
     private final ChatRoomRepository roomRepo;
     private final ChatMessageRepository msgRepo;
     private final UserRepository userRepo;

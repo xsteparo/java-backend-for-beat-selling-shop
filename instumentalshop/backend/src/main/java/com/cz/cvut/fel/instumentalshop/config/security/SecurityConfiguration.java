@@ -2,6 +2,7 @@ package com.cz.cvut.fel.instumentalshop.config.security;
 
 import com.cz.cvut.fel.instumentalshop.service.UserService;
 import com.cz.cvut.fel.instumentalshop.service.impl.CustomUserDetailsService;
+import com.cz.cvut.fel.instumentalshop.service.security.JWTService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,95 +30,77 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-@RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final CustomUserDetailsService userService;  // <-- сюда
+    private final JWTService jwtService;
+    private final CustomUserDetailsService userService;
+
+    public SecurityConfiguration(JWTService jwtService,
+                                 CustomUserDetailsService userService) {
+        this.jwtService = jwtService;
+        this.userService = userService;
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        // создаём фильтр на лету, без инъекции SecurityConfiguration в него
+        return new JwtAuthenticationFilter(jwtService, userService);
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http
-                // 1) выключаем CSRF для REST
                 .csrf(AbstractHttpConfigurer::disable)
-
-                // 2) подключаем CORS
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
-                // 3) правила доступа
                 .authorizeHttpRequests(req -> req
-
-                        // а) регистрации — только анонимные
                         .requestMatchers("/api/v1/customers/register",
-                                "/api/v1/producers/register")
-                        .anonymous()
-
-                        // б) ПУБЛИЧНЫЙ стрим mp3
-                        //    AntPath: * = один сегмент; ** = любое кол-во сегментов
+                                "/api/v1/producers/register").anonymous()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/tracks/*/stream").permitAll()
                         .requestMatchers(HttpMethod.GET,
-                                "/api/v1/tracks/*/stream")
-                        .permitAll()
-
-                        // в) публичные GET-ы, которые у вас были
-                        .requestMatchers(HttpMethod.GET,
-                                "/api/v1/producers",
-                                "/api/v1/producers/*",
-                                "/api/v1/tracks",
-                                "/api/v1/tracks/*",
+                                "/api/v1/producers", "/api/v1/producers/*",
+                                "/api/v1/tracks", "/api/v1/tracks/*",
                                 "/api/v1/tracks/by-producer/*",
                                 "/api/v1/tracks/*/licence-templates",
-                                "/api/v1/tracks/*/licence-templates/*")
-                        .permitAll()
-
-                        // г) auth-эндпоинты остаются открытыми
+                                "/api/v1/tracks/*/licence-templates/*"
+                        ).permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
-
-                        // д) статика / сокеты
                         .requestMatchers("/uploads/**", "/ws/**").permitAll()
-
-                        // е) остальное — только с токеном
                         .anyRequest().authenticated()
                 )
-
-                // 4) stateless-режим (JWT)
-                .sessionManagement(mgr -> mgr
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // 5) цепочка фильтров
+                .sessionManagement(mgr ->
+                        mgr.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                // вставляем фильтр, который создаём через @Bean
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    /** игнорируем прямой доступ к загруженным файлам (если нужно) */
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring().requestMatchers("/uploads/**");
     }
 
-    /** CORS: фронт крутится на http://localhost:5173 */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:5173"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
+        UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
+        src.registerCorsConfiguration("/**", config);
+        return src;
     }
 
-    /** DAO-провайдер + BCrypt */
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userService);
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
+        DaoAuthenticationProvider prov = new DaoAuthenticationProvider();
+        prov.setUserDetailsService(userService);
+        prov.setPasswordEncoder(passwordEncoder());
+        return prov;
     }
 
     @Bean

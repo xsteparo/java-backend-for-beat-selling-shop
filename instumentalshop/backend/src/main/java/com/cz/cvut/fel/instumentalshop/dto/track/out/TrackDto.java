@@ -1,6 +1,7 @@
 package com.cz.cvut.fel.instumentalshop.dto.track.out;
 
 import com.cz.cvut.fel.instumentalshop.domain.enums.GenreType;
+import com.cz.cvut.fel.instumentalshop.dto.newDto.LicenceTemplateDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
@@ -24,8 +25,8 @@ public class TrackDto {
 
         private Integer bpm;
 
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        private List<ProducerTrackInfoDto> producerTrackInfoDtoList;
+//        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private List<LicenceTemplateDto> licenceTemplates;
 
         private String urlNonExclusive;
         private String urlPremium;

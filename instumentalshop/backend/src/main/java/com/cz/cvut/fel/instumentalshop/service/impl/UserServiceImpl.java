@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    @Value("${app.upload.avatars-path}")
+    @Value("${app.upload.path}")
     private String avatarsDir;
     private Path avatarsPath;
 

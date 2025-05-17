@@ -34,6 +34,18 @@ public class TrackController {
 
     private final TrackService trackService;
 
+    @PostMapping(
+            path = "/create",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    @PreAuthorize("hasAuthority('PRODUCER')")
+    public ResponseEntity<TrackDto> createTrack(
+            @Valid @ModelAttribute TrackRequestDto dto
+    ) throws IOException {
+        TrackDto responseDto = trackService.createTrack(dto);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+
     /**
      * FR04, FR05, FR06, FR21
      */

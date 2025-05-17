@@ -1,8 +1,10 @@
 package com.cz.cvut.fel.instumentalshop.service.impl;
 
+import com.cz.cvut.fel.instumentalshop.domain.LicenceTemplate;
 import com.cz.cvut.fel.instumentalshop.domain.Producer;
 import com.cz.cvut.fel.instumentalshop.domain.ProducerTrackInfo;
 import com.cz.cvut.fel.instumentalshop.domain.Track;
+import com.cz.cvut.fel.instumentalshop.domain.enums.LicenceType;
 import com.cz.cvut.fel.instumentalshop.dto.mapper.ProducerTrackInfoMapper;
 import com.cz.cvut.fel.instumentalshop.dto.mapper.TrackMapper;
 import com.cz.cvut.fel.instumentalshop.dto.newDto.TrackFilterDto;
@@ -10,6 +12,7 @@ import com.cz.cvut.fel.instumentalshop.dto.track.in.TrackRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.out.ProducerTrackInfoDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.out.TrackDto;
 import com.cz.cvut.fel.instumentalshop.exception.ProducerTrackInfoNotFoundException;
+import com.cz.cvut.fel.instumentalshop.repository.LicenceTemplateRepository;
 import com.cz.cvut.fel.instumentalshop.repository.ProducerRepository;
 import com.cz.cvut.fel.instumentalshop.repository.ProducerTrackInfoRepository;
 import com.cz.cvut.fel.instumentalshop.repository.TrackRepository;
@@ -60,6 +63,7 @@ public class TrackServiceImpl implements TrackService {
     private final ProducerTrackInfoMapper producerTrackInfoMapper;
     private final TrackMapper trackMapper;
     private final TrackValidator trackValidator;
+    private final LicenceTemplateRepository tplRepo;
 
     @PostConstruct
     public void init() {
@@ -129,8 +133,8 @@ public class TrackServiceImpl implements TrackService {
         }
         HttpRange range = ranges.get(0);
         long start = range.getRangeStart(contentLength);
-        long end   = range.getRangeEnd(contentLength);
-        long len   = Math.min(CHUNK_SIZE, end - start + 1);
+        long end = range.getRangeEnd(contentLength);
+        long len = Math.min(CHUNK_SIZE, end - start + 1);
         return new ResourceRegion(resource, start, len);
     }
 
@@ -143,36 +147,10 @@ public class TrackServiceImpl implements TrackService {
     @Transactional
     public TrackDto createTrack(TrackRequestDto dto) throws IOException {
         Producer lead = authenticationService.getRequestingProducerFromSecurityContext();
-        boolean singleOwner = dto.getMainProducerPercentage() == null
-                && (dto.getProducerShares() == null || dto.getProducerShares().isEmpty());
-        if (singleOwner) {
-            trackValidator.validateTrackCreationRequestWithSingleOwner(dto, lead);
-        } else {
-            trackValidator.validateTrackCreationRequestWithMultiOwners(dto, lead);
-        }
-        return createWithFiles(dto, lead, singleOwner);
-    }
 
-    @Override
-    @Transactional
-    public TrackDto updateTrack(Long trackId, TrackRequestDto dto) {
-        Producer lead = authenticationService.getRequestingProducerFromSecurityContext();
-        Track track = trackRepository.findById(trackId)
-                .orElseThrow(() -> new EntityNotFoundException("Track not found: " + trackId));
-        trackValidator.validateUpdateRequest(dto, trackId, lead.getId());
-        track.setName(dto.getName());
-        track.setBpm(dto.getBpm());
-        track.setGenre(dto.getGenreType());
-        Track updated = trackRepository.save(track);
-        return trackMapper.toResponseDto(updated);
-    }
+        trackValidator.validateTrackCreationRequestWithSingleOwner(dto, lead);
 
-    @Override
-    @Transactional
-    public void deleteTrack(Long trackId) {
-        Producer lead = authenticationService.getRequestingProducerFromSecurityContext();
-        trackValidator.validateTrackDeletionRequest(trackId, lead.getId());
-        trackRepository.deleteById(trackId);
+        return createWithFiles(dto, lead, true);
     }
 
     @Override
@@ -181,31 +159,6 @@ public class TrackServiceImpl implements TrackService {
         Producer lead = authenticationService.getRequestingProducerFromSecurityContext();
         return producerTrackInfoRepository
                 .findByProducerIdAndAgreedForSelling(lead.getId(), false)
-                .stream()
-                .map(producerTrackInfoMapper::toResponseDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional
-    public List<ProducerTrackInfoDto> confirmProducerAgreement(Long trackId) {
-        Producer lead = authenticationService.getRequestingProducerFromSecurityContext();
-        ProducerTrackInfo info = producerTrackInfoRepository
-                .findProducerTrackInfoByTrackIdAndProducerIdAndAgreedStatus(trackId, lead.getId(), false)
-                .orElseThrow(() -> new ProducerTrackInfoNotFoundException(
-                        "No pending agreement for track " + trackId + " and producer " + lead.getId()));
-        info.setAgreedForSelling(true);
-        producerTrackInfoRepository.save(info);
-
-        boolean allAgreed = producerTrackInfoRepository
-                .findByTrackId(trackId)
-                .stream().allMatch(ProducerTrackInfo::getAgreedForSelling);
-
-        Track track = info.getTrack();
-        track.setAllProducersAgreedForSelling(allAgreed);
-        trackRepository.save(track);
-
-        return producerTrackInfoRepository.findByTrackId(trackId)
                 .stream()
                 .map(producerTrackInfoMapper::toResponseDto)
                 .collect(Collectors.toList());
@@ -271,16 +224,14 @@ public class TrackServiceImpl implements TrackService {
                 .name(dto.getName())
                 .genre(dto.getGenreType())
                 .bpm(dto.getBpm())
-                .allProducersAgreedForSelling(allAgreed)
+                .producer(lead)
                 .urlNonExclusive(urlMp3)
                 .urlPremium(urlWav)
                 .urlExclusive(urlZip)
                 .build();
 
-        List<ProducerTrackInfo> infos = buildProducerTrackInfos(track, dto, lead, allAgreed);
-        track.setProducerTrackInfos(infos);
-
         Track saved = trackRepository.save(track);
+        createDefaultLicenceTemplates(saved, dto.getPrice());
         return trackMapper.toResponseDto(saved);
     }
 
@@ -291,35 +242,26 @@ public class TrackServiceImpl implements TrackService {
         return "/uploads/tracks/" + filename;
     }
 
-    private List<ProducerTrackInfo> buildProducerTrackInfos(Track track, TrackRequestDto dto,
-                                                            Producer lead, boolean allAgreed) {
-        List<ProducerTrackInfo> infos = new ArrayList<>();
-        BigDecimal leadShare = allAgreed
-                ? BigDecimal.valueOf(100)
-                : BigDecimal.valueOf(dto.getMainProducerPercentage());
-        infos.add(buildProducerTrackInfo(track, lead, leadShare, true));
-
-        if (dto.getProducerShares() != null) {
-            dto.getProducerShares().forEach(ps -> {
-                Producer co = producerRepository
-                        .findProducerByUsername(ps.getProducerName())
-                        .orElseThrow(() -> new EntityNotFoundException(
-                                "Producer not found: " + ps.getProducerName()));
-                infos.add(buildProducerTrackInfo(track, co,
-                        BigDecimal.valueOf(ps.getProfitPercentage()), false));
-            });
-        }
-        return infos;
-    }
-
-    private ProducerTrackInfo buildProducerTrackInfo(Track track, Producer producer,
-                                                     BigDecimal profitPercentage, boolean isLead) {
-        return ProducerTrackInfo.builder()
+    private void createDefaultLicenceTemplates(Track track, int basePrice) {
+        tplRepo.save(LicenceTemplate.builder()
                 .track(track)
-                .producer(producer)
-                .profitPercentage(profitPercentage)
-                .ownsPublishingTrack(isLead)
-                .agreedForSelling(isLead)
-                .build();
+                .licenceType(LicenceType.NON_EXCLUSIVE)
+                .price(BigDecimal.valueOf(basePrice))
+                .validityPeriodDays(30)
+                .build());
+
+        tplRepo.save(LicenceTemplate.builder()
+                .track(track)
+                .licenceType(LicenceType.PREMIUM)
+                .price(BigDecimal.valueOf(basePrice * 2))
+                .validityPeriodDays(90)
+                .build());
+
+        tplRepo.save(LicenceTemplate.builder()
+                .track(track)
+                .licenceType(LicenceType.EXCLUSIVE)
+                .price(BigDecimal.valueOf(basePrice * 10))
+                .validityPeriodDays(null)
+                .build());
     }
 }

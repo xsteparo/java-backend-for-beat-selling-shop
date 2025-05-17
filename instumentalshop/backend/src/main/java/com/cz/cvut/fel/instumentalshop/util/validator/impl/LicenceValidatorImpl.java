@@ -106,7 +106,7 @@ public class LicenceValidatorImpl extends ValidatorBase implements LicenceValida
 
     @Override
     public void validatePurchaseCreateRequest(Customer customer, Track track, LicenceType licenceType) {
-        validateTrackAvailability(track, licenceType);
+//        validateTrackAvailability(track, licenceType);
         validateCustomerBalance(customer, track, licenceType);
         validateIfTrackAlreadyBoughtByCustomer(customer, track.getId(), licenceType);
     }
@@ -147,11 +147,7 @@ public class LicenceValidatorImpl extends ValidatorBase implements LicenceValida
         }
     }
 
-    private void validateTrackAvailability(Track track, LicenceType licenceType) {
-        areAllProducersAgreed(track);
-        checkIfLicenceIsExclusive(track, licenceType);
-        checkIfLicenceExists(track.getId(), licenceType);
-    }
+
 
     private void validateCustomerBalance(Customer customer, Track track, LicenceType licenceType) {
         LicenceTemplate licenceTemplate = licenceTemplateRepository.findByTrackAndLicenceType(track, licenceType).orElseThrow(() -> new EntityNotFoundException(licenceType + "Template was not found"));
@@ -164,18 +160,6 @@ public class LicenceValidatorImpl extends ValidatorBase implements LicenceValida
     private void validateIfTrackAlreadyBoughtByCustomer(Customer customer, Long trackId, LicenceType licenceType) {
         if (purchasedLicenceRepository.existsByCustomerIdAndTrackIdAndLicenceTemplate_LicenceType(customer.getId(), trackId, licenceType)) {
             throw new TrackIsAlreadyBoughtException("Track is already bought by you");
-        }
-    }
-
-    private void checkIfLicenceIsExclusive(Track track, LicenceType licenceType) {
-        if (track.isExclusiveBought() && licenceType == LicenceType.EXCLUSIVE) {
-            throw new TrackIsAlreadyBoughtException("Exclusive licence already bought by previous customer");
-        }
-    }
-
-    private void areAllProducersAgreed(Track track) {
-        if (!track.isAllProducersAgreedForSelling()) {
-            throw new ProducersAreNotAgreedException("Some co-producers have not approved track selling yet");
         }
     }
 

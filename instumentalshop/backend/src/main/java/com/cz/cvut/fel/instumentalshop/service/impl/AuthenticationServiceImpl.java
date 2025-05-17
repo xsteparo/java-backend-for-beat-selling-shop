@@ -107,7 +107,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             user = Customer.builder().build();
         } else if (requestDto.getRole() == Role.PRODUCER) {
             user = Producer.builder().build();
-        } else {
+        }
+        else if (requestDto.getRole() == Role.ADMIN) {
+            user = new User();
+        }
+        else {
             throw new IllegalArgumentException("Unsupported role: " + requestDto.getRole());
         }
 

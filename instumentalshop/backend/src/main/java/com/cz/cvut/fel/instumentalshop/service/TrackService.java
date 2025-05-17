@@ -81,38 +81,11 @@ public interface TrackService {
     TrackDto createTrack(TrackRequestDto dto) throws IOException;
 
     /**
-     * Aktualizuje metadata existující skladby.
-     *
-     * @param trackId ID skladby k úpravě
-     * @param dto     DTO s novými hodnotami
-     * @return DTO aktualizované skladby
-     * @throws EntityNotFoundException pokud skladba neexistuje
-     */
-    TrackDto updateTrack(Long trackId, TrackRequestDto dto);
-
-    /**
-     * Odstraní skladbu podle ID.
-     *
-     * @param trackId ID skladby k odstranění
-     * @throws EntityNotFoundException pokud skladba neexistuje
-     */
-    void deleteTrack(Long trackId);
-
-    /**
      * Vrátí seznam schválení producenta pro skladby, kde ještě nebylo potvrzeno.
      *
      * @return Seznam DTO informací o potřebě potvrzení (ProducerTrackInfoDto)
      */
     List<ProducerTrackInfoDto> getTrackApprovalsList();
-
-    /**
-     * Potvrdí, že producent souhlasí s prodejem skladby.
-     *
-     * @param trackId ID skladby k potvrzení
-     * @return Aktualizovaný seznam všech potvrzení pro danou skladbu
-     * @throws ProducerTrackInfoNotFoundException pokud není nalezena nevyřízená žádost
-     */
-    List<ProducerTrackInfoDto> confirmProducerAgreement(Long trackId);
 
     /**
      * Vrátí všechny skladby patřící danému producentovi.
