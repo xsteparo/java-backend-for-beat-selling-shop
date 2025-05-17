@@ -1,5 +1,5 @@
 import {ProducerShareRequestDto} from "./ProducerShareRequestDto.tsx";
-import {GenreType} from "./GenreType.ts";
+import {GenreType} from "./newDto/enums/GenreType.ts";
 
 export interface TrackRequestDto {
     name: string

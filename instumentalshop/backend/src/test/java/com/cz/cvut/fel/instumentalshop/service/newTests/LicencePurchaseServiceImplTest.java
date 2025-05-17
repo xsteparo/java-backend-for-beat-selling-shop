@@ -76,7 +76,6 @@ class LicencePurchaseServiceImplTest {
         leadInfo.setTrack(track);
         leadInfo.setProducer(producer);
         leadInfo.setOwnsPublishingTrack(true);
-        track.setProducerTrackInfos(List.of(leadInfo));
     }
 
     @Test
@@ -140,7 +139,7 @@ class LicencePurchaseServiceImplTest {
         assertEquals(BigDecimal.valueOf(200), dto.getPrice());
         assertEquals(14, dto.getValidityPeriodDays());
         assertEquals(10L, dto.getTrackId());
-        assertEquals(Map.of(20L, "prodName"), dto.getProducerOwners());
+        assertEquals("prodName", dto.getProducer().getUsername());
     }
 
     @Test
@@ -169,7 +168,7 @@ class LicencePurchaseServiceImplTest {
         assertEquals(LicenceType.NON_EXCLUSIVE, dto.getLicenceType());
         assertEquals(7, dto.getValidityPeriodDays());
         assertEquals(10L, dto.getTrackId());
-        assertEquals(Map.of(20L, "prodName"), dto.getProducerOwners());
+        assertEquals("prodName", dto.getProducer().getUsername());
     }
 
     @Test
@@ -198,7 +197,7 @@ class LicencePurchaseServiceImplTest {
         assertEquals(LicenceType.EXCLUSIVE, dto.getLicenceType());
         assertNull(dto.getValidityPeriodDays());
         assertEquals(20L, dto.getTrackId());
-        assertEquals(Map.of(20L, "prodName"), dto.getProducerOwners());
+        assertEquals("prodName", dto.getProducer().getUsername());
     }
 
     @Test

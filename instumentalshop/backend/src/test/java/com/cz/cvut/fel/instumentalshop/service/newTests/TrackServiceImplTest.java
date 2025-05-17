@@ -109,15 +109,6 @@ class TrackServiceImplTest {
         assertSame(dto, result.get(0));
     }
 
-    @Test
-    void testConfirmProducerAgreement_NotFound() {
-        Producer producer = new Producer(); producer.setId(7L);
-        when(authenticationService.getRequestingProducerFromSecurityContext()).thenReturn(producer);
-        when(producerTrackInfoRepository.findProducerTrackInfoByTrackIdAndProducerIdAndAgreedStatus(100L, 7L, false))
-                .thenReturn(Optional.empty());
-        assertThrows(ProducerTrackInfoNotFoundException.class,
-                () -> trackService.confirmProducerAgreement(100L));
-    }
 
     @Test
     void testFindAllByProducer() {

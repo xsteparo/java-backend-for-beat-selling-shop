@@ -1,7 +1,7 @@
 import { FC, FormEvent, useState } from 'react'
 import {TrackController} from "../controller/TrackController.tsx";
 import {TrackRequestDto} from "../dto/TrackRequestDto.ts";
-import {GenreType} from "../dto/GenreType.ts";
+import {GenreType} from "../dto/newDto/enums/GenreType.ts";
 
 const GENRES = [
     'hyper-pop','rock','pop','hip-hop','jazz',

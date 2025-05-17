@@ -34,8 +34,7 @@ public class TestDataGenerator {
     public static Track createTrack(Long id, boolean isExclusiveBought, boolean isAllProducersAgreedForSelling) {
         Track track = mock(Track.class);
         when(track.getId()).thenReturn(id);
-        when(track.isExclusiveBought()).thenReturn(isExclusiveBought);
-        when(track.isAllProducersAgreedForSelling()).thenReturn(isAllProducersAgreedForSelling);
+
         return track;
     }
 
@@ -95,8 +94,6 @@ public class TestDataGenerator {
                 .name(name)
                 .genreType(genreType)
                 .bpm(bpm)
-                .mainProducerPercentage(mainProducerPercentage)
-                .producerShares(producerShares)
                 .build();
     }
 
@@ -133,8 +130,6 @@ public class TestDataGenerator {
                 .name("EXAMPLE 1")
                 .bpm(120)
                 .genreType(GenreType.HIPHOP)
-                .mainProducerPercentage(70)
-                .producerShares(List.of(producerShareRequestDto1, producerShareRequestDto2))
                 .build();
     }
 

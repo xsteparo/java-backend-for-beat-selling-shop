@@ -1,5 +1,5 @@
 import {ProducerTrackInfoDto} from "./ProducerTrackInfoDto.ts";
-import {GenreType} from "./GenreType.ts";
+import {GenreType} from "./newDto/enums/GenreType.ts";
 
 export interface TrackDto {
     id: number

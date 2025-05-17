@@ -91,8 +91,6 @@ public class LicenceValidatorImplTest {
         when(licenceTemplateRepository.findByTrackAndLicenceType(track, licenceType))
                 .thenReturn(Optional.of(licenceTemplate));
 
-        when(track.isExclusiveBought()).thenReturn(false);
-        when(track.isAllProducersAgreedForSelling()).thenReturn(true);
         when(licenceTemplateRepository.existsByTrackIdAndLicenceType(track.getId(), licenceType))
                 .thenReturn(true);
         when(purchasedLicenceRepository.existsByCustomerIdAndTrackIdAndLicenceTemplate_LicenceType(customer.getId(), track.getId(), licenceType))
@@ -108,8 +106,6 @@ public class LicenceValidatorImplTest {
         LicenceType licenceType = LicenceType.NON_EXCLUSIVE;
 
         when(customer.getBalance()).thenReturn(new BigDecimal("10.00"));
-        when(track.isExclusiveBought()).thenReturn(false);
-        when(track.isAllProducersAgreedForSelling()).thenReturn(true);
         when(licenceTemplateRepository.existsByTrackIdAndLicenceType(track.getId(), licenceType))
                 .thenReturn(true);
 

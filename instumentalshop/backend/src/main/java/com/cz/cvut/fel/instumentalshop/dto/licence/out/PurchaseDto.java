@@ -1,5 +1,6 @@
 package com.cz.cvut.fel.instumentalshop.dto.licence.out;
 
+import com.cz.cvut.fel.instumentalshop.domain.Producer;
 import com.cz.cvut.fel.instumentalshop.domain.enums.LicenceType;
 import com.cz.cvut.fel.instumentalshop.domain.enums.Platform;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -21,7 +22,7 @@ public class PurchaseDto {
 
     private LicenceType licenceType;
 
-    private Map<Long, String> producerOwners;
+    private Producer producer;
 
     private BigDecimal price;
 

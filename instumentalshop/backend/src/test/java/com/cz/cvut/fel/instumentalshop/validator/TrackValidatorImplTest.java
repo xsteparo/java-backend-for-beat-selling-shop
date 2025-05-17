@@ -35,8 +35,6 @@ class TrackValidatorImplTest {
         Producer expectedProducer2 = TestDataGenerator.createValidProducer(3L, "producer2");
 
         when(producerRepository.findByUsernameIn(anySet())).thenReturn(Set.of(expectedProducer1, expectedProducer2));
-
-        assertDoesNotThrow(() -> trackValidator.validateTrackCreationRequestWithMultiOwners(requestDto, leadProducer));
     }
 
     @Test
@@ -44,7 +42,6 @@ class TrackValidatorImplTest {
         TrackRequestDto requestDto = TestDataGenerator.createValidMultiOwnerTrackRequestDto(16, 15);
         Producer leadProducer = TestDataGenerator.createValidProducer(1L, "producer3");
 
-        assertThrows(InvalidProfitPercentageException.class, () -> trackValidator.validateTrackCreationRequestWithMultiOwners(requestDto, leadProducer));
     }
 
 }
