@@ -60,9 +60,18 @@ const Chats: FC = () => {
 
         const subscribeWithRetry = () => {
             try {
-                wsService.subscribe(activeRoom.id, msg => {
-                    setMessages(prev => [...prev, msg]);
-                    scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
+                wsService.subscribe(activeRoom.id, incoming => {
+                    setMessages(prev => {
+                        // если такое сообщение уже есть — игнорируем
+                        if (prev.some(m => m.id === incoming.id)) {
+                            return prev;
+                        }
+                        return [...prev, incoming];
+                    });
+                    // после того как UI обновился (в следующем тике), проскроллим
+                    setTimeout(() => {
+                        scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
+                    }, 0);
                 });
             } catch {
                 setTimeout(subscribeWithRetry, 500);
@@ -72,18 +81,14 @@ const Chats: FC = () => {
     }, [activeRoom]);
 
     // Отправка сообщения
-    const sendMessage = async () => {
+    const sendMessage = () => {
         if (!activeRoom || !input.trim()) return;
         const content = input.trim();
         setInput('');
-        try {
-            const saved: ChatMessageDto = await ChatController.postMessage(activeRoom.id, { content });
-            setMessages(prev => [...prev, saved]);
-            wsService.send(activeRoom.id, content);
-            scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
-        } catch (e) {
-            console.error('Send message failed', e);
-        }
+        // шлём только по WS — бекенд сам сохранит и расшлёт DTO всем подписчикам
+        wsService.send(activeRoom.id, content);
+        // скролл мы тоже можем делать здесь,
+        // но при подписке придёт наше же сообщение и вызов scroll там
     };
 
     return (
