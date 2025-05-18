@@ -25,7 +25,7 @@ const Purchases: FC = () => {
             .finally(() => setLoading(false));
     }, []);
 
-    const handleDownload = async (purchaseId: number) => {
+    const handleDownloadLicence = async (purchaseId: number) => {
         try {
             const { data, filename } = await LicenceDownloadController.downloadLicence(purchaseId);
             const url = URL.createObjectURL(data);
@@ -38,6 +38,22 @@ const Purchases: FC = () => {
             URL.revokeObjectURL(url);
         } catch (e) {
             console.error('Download licence error', e);
+        }
+    };
+
+    const handleDownloadTrack = async (purchaseId: number) => {
+        try {
+            const { data, filename } = await PurchaseController.downloadTrack(purchaseId);
+            const url = URL.createObjectURL(data);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        } catch (e) {
+            console.error('Download track error', e);
         }
     };
 
@@ -83,12 +99,18 @@ const Purchases: FC = () => {
                             <td className="px-4 py-2 text-right">${p.price.toFixed(2)}</td>
                             <td className="px-4 py-2">{format(new Date(p.purchaseDate), 'dd.MM.yyyy')}</td>
                             <td className="px-4 py-2">{format(new Date(p.expiredDate), 'dd.MM.yyyy')}</td>
-                            <td className="px-4 py-2 text-center">
+                            <td className="px-4 py-2 text-center space-x-2">
                                 <button
-                                    onClick={() => handleDownload(p.purchaseId)}
-                                    className="px-3 py-1 bg-blue-600 rounded hover:bg-blue-500 text-sm"
+                                    onClick={() => handleDownloadLicence(p.purchaseId)}
+                                    className="px-3 py-1 bg-blue-600 rounded hover:bg-blue-500 text-sm mr-2"
                                 >
-                                    Download
+                                    Download PDF
+                                </button>
+                                <button
+                                    onClick={() => handleDownloadTrack(p.purchaseId)}
+                                    className="px-3 py-1 bg-green-600 rounded hover:bg-green-500 text-sm"
+                                >
+                                    Download Track
                                 </button>
                             </td>
                         </tr>
