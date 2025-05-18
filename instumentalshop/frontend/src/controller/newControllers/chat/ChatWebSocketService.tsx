@@ -2,23 +2,31 @@ import { Client, IMessage, StompSubscription } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 
 export class ChatWebSocketService {
-    private static readonly WS_ENDPOINT = 'ws://localhost:8080/ws'
+    private static readonly WS_ENDPOINT = '/ws';
     private client: Client
     private subscriptions = new Map<number, StompSubscription>()
 
     constructor() {
         this.client = new Client({
-            webSocketFactory: () => new SockJS('/ws'),
+            // не используем brokerURL, а фабрику SockJS
+            webSocketFactory: () => new SockJS(ChatWebSocketService.WS_ENDPOINT),
+
             reconnectDelay: 5000,
-            onConnect: frame => {
-                console.log('STOMP connected', frame);
-            },
-            onStompError: err => console.error('STOMP error', err),
+            // вот тут добавляем JWT в заголовки
+            connectHeaders: (() => {
+                const token = localStorage.getItem('beatshop_jwt');
+                const headers: Record<string, string> = {};
+                if (token) {
+                    headers.Authorization = `Bearer ${token}`;
+                }
+                return headers;
+            })(),
+            onConnect: frame => console.log('STOMP connected', frame),
+            onStompError: frame => {
+                console.error('Broker reported error: ' + frame.headers['message']);
+                console.error('Additional details: ' + frame.body);
+            }
         });
-        this.client.onStompError = frame => {
-            console.error('Broker reported error: ' + frame.headers['message'])
-            console.error('Additional details: ' + frame.body)
-        }
     }
 
     connect(): void {

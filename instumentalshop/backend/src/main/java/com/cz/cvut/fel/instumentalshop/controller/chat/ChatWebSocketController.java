@@ -11,6 +11,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,14 +33,15 @@ public class ChatWebSocketController {
      * @param principal přihlášený uživatel (automatic injection)
      */
     @MessageMapping("/chat/{roomId}/send")
-    public void send(
-            @DestinationVariable Long roomId,
-            @Payload ChatMessageDto payload,
-            Principal principal
-    ) {
-        // uložíme zprávu do DB
-        var msg = chatService.saveMessage(roomId, Long.valueOf(principal.getName()), payload.getContent());
-        // odešleme všem, kdo poslouchají /topic/chat/{roomId}
-        template.convertAndSend("/topic/chat/" + roomId, ChatMessageDto.fromEntity(msg));
+    public void handleSend(@DestinationVariable Long roomId, ChatMessageDto dto, Principal principal) {
+        // 1) Сохраняем новое сообщение в базе
+        Long senderId = ((User) ((Authentication) principal).getPrincipal()).getId();
+        ChatMessage saved = chatService.saveMessage(roomId, senderId, dto.getContent());
+
+        // 2) Маппим его в DTO (предположим, у вас есть ChatMessageDto.fromEntity)
+        ChatMessageDto out = ChatMessageDto.fromEntity(saved);
+
+        // 3) И рассылаем всем подписанным на /topic/chat/{roomId}
+        template.convertAndSend("/topic/chat/" + roomId, out);
     }
 }
