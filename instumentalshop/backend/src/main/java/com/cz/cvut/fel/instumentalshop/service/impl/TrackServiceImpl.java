@@ -75,45 +75,56 @@ public class TrackServiceImpl implements TrackService {
     @Override
     @Transactional(readOnly = true)
     public Page<TrackDto> findAll(TrackFilterDto filter, Pageable pageable) {
+        // Vytvoření specifikace na základě filtračního DTO
         Specification<Track> spec = TrackSpecificationBuilder.fromFilter(filter);
 
-        // 1) определяем Sort
+        // 1) Určení řazení podle zadaného filtru
         Sort sort = determineSort(filter);
 
-        // 2) создаём новую PageRequest
-        Pageable pageReq = PageRequest.of(pageable.getPageNumber(),
-                pageable.getPageSize(),
-                sort);
+        // 2) Vytvoření nového PageRequest s aktuální stránkou, velikostí stránky a řazením
+        Pageable pageReq = PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(),sort);
 
-        // 3) выполняем запрос
+        // 3) Provedení dotazu s danou specifikací a stránkováním, a mapování entit na DTO
         return trackRepository.findAll(spec, pageReq)
                 .map(trackMapper::toResponseDto);
     }
 
     private Sort determineSort(TrackFilterDto filter) {
-        String tab  = Optional.ofNullable(filter.getTab()).orElse("").toLowerCase();
-        String sort = Optional.ofNullable(filter.getSort()).orElse("").trim();
+        // Získáme hodnotu „tab“ z filtru, pokud chybí, použijeme prázdný řetězec, a převedeme na malá písmena
+        String tab  = Optional.ofNullable(filter.getTab())
+                .orElse("")
+                .toLowerCase();
+        // Získáme hodnotu pro řazení, odstraníme přebytečné mezery
+        String sort = Optional.ofNullable(filter.getSort())
+                .orElse("")
+                .trim();
 
-        // табы имеют приоритет над ручной сортировкой
+        // Záložky (tabs) mají vždy přednost před ručně zadaným řazením
         switch (tab) {
             case "trending":
+                // „Trending“ – řadíme sestupně podle změny hodnocení
                 return Sort.by(Sort.Direction.DESC, "lastRatingDelta");
             case "top":
+                // „Top“ – řadíme sestupně podle celkového hodnocení
                 return Sort.by(Sort.Direction.DESC, "rating");
             case "new":
+                // „New“ – řadíme sestupně podle data vytvoření
                 return Sort.by(Sort.Direction.DESC, "createdAt");
         }
 
-        // если юзер передал sort (например "-rating" или "createdAt")
+        // Pokud uživatel zadal parametr sort (např. "-rating" nebo "createdAt")
         if (!sort.isEmpty()) {
+            // Určíme směr řazení podle prefixu „-“
             Sort.Direction dir = sort.startsWith("-")
                     ? Sort.Direction.DESC
                     : Sort.Direction.ASC;
+            // Odstraníme případný prefix „-“, abychom získali název vlastnosti
             String property = sort.replaceFirst("^-", "");
+            // Vrátíme řazení podle zjištěného směru a vlastnosti
             return Sort.by(dir, property);
         }
 
-        // fallback
+        // Výchozí fallback – pokud nic jiného, řadíme sestupně podle data vytvoření
         return Sort.by(Sort.Direction.DESC, "createdAt");
     }
 

@@ -50,22 +50,23 @@ public class TrackController {
      * FR04, FR05, FR06, FR21
      */
     @GetMapping
-    public ResponseEntity<Page<TrackDto>> list(
-            TrackFilterDto filter,
-            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
-    ) {
+    public ResponseEntity<Page<TrackDto>> list(TrackFilterDto filter, @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<TrackDto> page = trackService.findAll(filter, pageable);
         return ResponseEntity.ok(page);
     }
 
-    /** FR04 */
+    /**
+     * FR04
+     */
     @GetMapping("/{id}")
     public ResponseEntity<TrackDto> getOne(@PathVariable Long id) {
         TrackDto dto = trackService.findById(id);
         return ResponseEntity.ok(dto);
     }
 
-    /** FR18 */
+    /**
+     * FR18
+     */
     @GetMapping("/{id}/stream")
     public ResponseEntity<ResourceRegion> stream(
             @PathVariable Long id,
