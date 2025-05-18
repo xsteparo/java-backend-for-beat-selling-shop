@@ -26,10 +26,10 @@ public class ChatRoom {
     )
     private Set<User> participants = new HashSet<>();
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne()
     @JoinColumn(name = "last_message_id")
     private ChatMessage lastMessage;
 
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "chatRoom")
     private List<ChatMessage> messages = new ArrayList<>();
 }

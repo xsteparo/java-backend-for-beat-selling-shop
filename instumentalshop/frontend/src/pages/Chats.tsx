@@ -121,7 +121,7 @@ const Chats: FC = () => {
                             {messages.map(msg => (
                                 <div
                                     key={msg.id}
-                                    className={`max-w-xs p-2 rounded ${
+                                    className={`max-w-xs p-2 rounded  mb-4 ${
                                         msg.senderUsername === user?.username
                                             ? 'bg-green-600 self-end'
                                             : 'bg-gray-800 self-start'
