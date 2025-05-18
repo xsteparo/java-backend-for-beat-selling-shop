@@ -1,10 +1,18 @@
 package com.cz.cvut.fel.instumentalshop.domain.enums;
 
 public enum GenreType {
-    DNB,
-    ELECTRO,
+    HYPERPOP,
+    ROCK,
     POP,
     HIPHOP,
-    ROCK,
     JAZZ,
+    CLASSICAL,
+    DRILL,
+    PHONK,
+    TRAP,
+    EDM,
+    TECHNO,
+    AMBIENT,
+    LOFI,
+    SYNTHWAVE;
 }

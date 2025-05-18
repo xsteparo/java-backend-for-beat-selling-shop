@@ -119,11 +119,11 @@ export const Tracks: FC = () => {
         TrackController.listTracks(
             {
                 tab: activeTab,
-                search,
-                genre: filters.genre,
-                tempoRange: filters.tempoRange,
-                key: filters.key,
-                sort: filters.sort,
+                search: search || undefined,
+                genre: filters.genre || undefined,
+                tempoRange: filters.tempoRange || undefined,
+                key: filters.key || undefined,
+                sort: filters.sort || undefined,
             },
             page,
             10

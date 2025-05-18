@@ -1,6 +1,6 @@
 import { FC } from 'react';
 
-import {TrackDto} from "../../dto/TrackDto.ts";
+import {TrackDto} from "../../dto/newDto/tracks/TrackDto.ts";
 import HeartIcon from '../icons/HeartIcon.tsx';
 import BagIcon from "../icons/BagIcon.tsx";
 
@@ -51,14 +51,17 @@ export const TrackRow: FC<TrackRowProps> = ({
             </div>
 
             {/* Остальные поля */}
-            <div className="flex-none w-16 text-center text-gray-300">
+            <div className="flex-none w-16 text-start text-gray-300">
                 {track.rating}
             </div>
             <div className="flex-none w-16 text-center text-gray-300">
-                {track.genreType}
+                {track.plays}
             </div>
             <div className="flex-none w-16 text-center text-gray-300">
-                {track.length}
+                {track.likes}
+            </div>
+            <div className="flex-none w-16 text-center text-gray-300">
+                {track.genreType}
             </div>
             <div className="flex-none w-16 text-center text-gray-300">
                 {track.key}

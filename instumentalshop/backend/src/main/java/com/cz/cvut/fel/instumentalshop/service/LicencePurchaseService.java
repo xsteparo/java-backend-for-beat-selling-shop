@@ -14,6 +14,4 @@ public interface LicencePurchaseService {
 
     List<PurchaseDto> getAllPurchasedLicences();
 
-    List<ProducerIncomeDto> getProducerIncomesByTracks();
-
 }

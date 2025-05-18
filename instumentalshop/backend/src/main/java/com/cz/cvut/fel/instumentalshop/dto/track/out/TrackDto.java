@@ -1,9 +1,8 @@
 package com.cz.cvut.fel.instumentalshop.dto.track.out;
 
 import com.cz.cvut.fel.instumentalshop.domain.enums.GenreType;
+import com.cz.cvut.fel.instumentalshop.domain.enums.KeyType;
 import com.cz.cvut.fel.instumentalshop.dto.newDto.LicenceTemplateDto;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,8 +33,9 @@ public class TrackDto {
 
         // Новые поля для списка:
         private double rating;
-        private String length;             // например "3:45"
-        private String keyType;                // например "C#"
+        private int likes;
+        private int plays;
+        private KeyType key;                // например "C#"
         private String producerUsername;   // главный продюсер
         private Boolean purchased;         // для состояний Buy / Download
 

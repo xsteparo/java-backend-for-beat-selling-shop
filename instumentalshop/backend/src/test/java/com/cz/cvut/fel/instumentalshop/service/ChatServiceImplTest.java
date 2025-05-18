@@ -1,4 +1,4 @@
-package com.cz.cvut.fel.instumentalshop.service.newTests;
+package com.cz.cvut.fel.instumentalshop.service;
 
 import com.cz.cvut.fel.instumentalshop.domain.User;
 import com.cz.cvut.fel.instumentalshop.domain.chat.ChatMessage;

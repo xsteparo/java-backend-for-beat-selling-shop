@@ -6,7 +6,6 @@ import com.cz.cvut.fel.instumentalshop.exception.LicenceAlreadyExistsException;
 import com.cz.cvut.fel.instumentalshop.exception.NotEnoughBalanceException;
 import com.cz.cvut.fel.instumentalshop.repository.LicenceReportRepository;
 import com.cz.cvut.fel.instumentalshop.repository.LicenceTemplateRepository;
-import com.cz.cvut.fel.instumentalshop.repository.ProducerTrackInfoRepository;
 import com.cz.cvut.fel.instumentalshop.repository.PurchasedLicenceRepository;
 import com.cz.cvut.fel.instumentalshop.util.validator.impl.LicenceValidatorImpl;
 import org.junit.jupiter.api.Test;
@@ -27,9 +26,6 @@ import static org.mockito.Mockito.when;
 public class LicenceValidatorImplTest {
 
     @Mock
-    private ProducerTrackInfoRepository producerTrackInfoRepository;
-
-    @Mock
     private LicenceTemplateRepository licenceTemplateRepository;
 
     @Mock
@@ -41,43 +37,8 @@ public class LicenceValidatorImplTest {
     @InjectMocks
     private LicenceValidatorImpl licenceValidator;
 
-    @Test
-    void validateTemplateCreationRequest_ValidData_NoExceptionThrown() {
-        Producer producer = mock(Producer.class);
-        Track track = mock(Track.class);
-
-        LicenceType licenceType = LicenceType.NON_EXCLUSIVE;
-
-        ProducerTrackInfo trackInfo = mock(ProducerTrackInfo.class);
-        when(trackInfo.getOwnsPublishingTrack()).thenReturn(true);
-        when(producerTrackInfoRepository.findByTrackIdAndProducerId(track.getId(), producer.getId()))
-                .thenReturn(Optional.of(trackInfo));
-
-        when(licenceTemplateRepository.existsByTrackIdAndLicenceType(track.getId(), licenceType))
-                .thenReturn(false);
-
-        assertDoesNotThrow(() ->
-                licenceValidator.validateTemplateCreationRequest(producer, track.getId(), licenceType));
-    }
-
-    @Test
-    void validateTemplateCreationRequest_InvalidLicenceType_ExceptionThrown() {
-        Producer producer = mock(Producer.class);
-        Track track = mock(Track.class);
-        LicenceType licenceType = LicenceType.NON_EXCLUSIVE;
-
-        ProducerTrackInfo trackInfo = mock(ProducerTrackInfo.class);
-        when(trackInfo.getOwnsPublishingTrack()).thenReturn(true);
-        when(producerTrackInfoRepository.findByTrackIdAndProducerId(track.getId(), producer.getId()))
-                .thenReturn(Optional.of(trackInfo));
-
-        when(licenceTemplateRepository.existsByTrackIdAndLicenceType(track.getId(), licenceType))
-                .thenReturn(true);
 
 
-        assertThrows(LicenceAlreadyExistsException.class, () ->
-                licenceValidator.validateTemplateCreationRequest(producer, track.getId(), licenceType));
-    }
 
     @Test
     void validatePurchaseCreateRequest_ValidData_NoExceptionThrown() {

@@ -2,6 +2,7 @@ package com.cz.cvut.fel.instumentalshop.config;
 
 import com.cz.cvut.fel.instumentalshop.domain.Customer;
 import com.cz.cvut.fel.instumentalshop.domain.enums.GenreType;
+import com.cz.cvut.fel.instumentalshop.domain.enums.KeyType;
 import com.cz.cvut.fel.instumentalshop.domain.enums.LicenceType;
 import com.cz.cvut.fel.instumentalshop.domain.enums.Role;
 import com.cz.cvut.fel.instumentalshop.dto.licence.in.PurchaseRequestDto;
@@ -77,8 +78,9 @@ public class DataInitializer implements CommandLineRunner {
                     .name("Beat #" + i)
                     .genreType(GenreType.HIPHOP)
                     .bpm(120)
-                    .key("A minor")
+                    .key(KeyType.A.name())
                     .price(100)
+
                     .nonExclusiveFile(dummyFile)
                     .premiumFile(dummyFile)
                     .exclusiveFile(dummyFile)

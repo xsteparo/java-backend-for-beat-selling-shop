@@ -6,7 +6,10 @@ import com.cz.cvut.fel.instumentalshop.domain.enums.Role;
 import com.cz.cvut.fel.instumentalshop.dto.balance.out.ProducerIncomeDto;
 import com.cz.cvut.fel.instumentalshop.dto.licence.in.PurchaseRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.licence.out.PurchaseDto;
-import com.cz.cvut.fel.instumentalshop.repository.*;
+import com.cz.cvut.fel.instumentalshop.repository.LicenceTemplateRepository;
+import com.cz.cvut.fel.instumentalshop.repository.ProducerRepository;
+import com.cz.cvut.fel.instumentalshop.repository.PurchasedLicenceRepository;
+import com.cz.cvut.fel.instumentalshop.repository.TrackRepository;
 import com.cz.cvut.fel.instumentalshop.service.AuthenticationService;
 import com.cz.cvut.fel.instumentalshop.service.LicencePurchaseService;
 import com.cz.cvut.fel.instumentalshop.util.validator.LicenceValidator;
@@ -22,7 +25,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 
 @Service
@@ -37,7 +39,6 @@ public class LicencePurchaseServiceImpl implements LicencePurchaseService {
     private final PurchasedLicenceRepository licRepo;
     private final ProducerRepository producerRepo;
     private final TrackRepository trackRepo;
-    private final ProducerTrackInfoRepository ptiRepo;
     private final LicenceValidator validator;
 
     /*─────────────────────────────────── API ───────────────────────────────────*/
@@ -84,16 +85,7 @@ public class LicencePurchaseServiceImpl implements LicencePurchaseService {
         return list.stream().map(this::buildDto).toList();
     }
 
-    @Override
-    @Transactional
-    public List<ProducerIncomeDto> getProducerIncomesByTracks() {
-        Producer producer = auth.getRequestingProducerFromSecurityContext();
-        return em.createNamedQuery(
-                        "ProducerTrackInfo.findProducerIncomeByTracks",
-                        ProducerIncomeDto.class)
-                .setParameter("producerId", producer.getId())
-                .getResultList();
-    }
+
 
     /*────────────────────────────  INTERNAL  ────────────────────────────*/
 
@@ -124,7 +116,10 @@ public class LicencePurchaseServiceImpl implements LicencePurchaseService {
         lic = licRepo.save(lic);
 
         // 3) Распределяем доход
-        distributeIncomeAmongProducers(track.getId(), tpl.getPrice());
+        Producer producer = track.getProducer();
+        BigDecimal balance = producer.getBalance();
+        producer.setBalance(balance.add(tpl.getPrice()));
+        producerRepo.save(producer);
 
         return lic;
     }
@@ -144,21 +139,6 @@ public class LicencePurchaseServiceImpl implements LicencePurchaseService {
                 .availablePlatforms(tpl.getAvailablePlatforms())
                 .producer(lic.getProducer())
                 .build();
-    }
-
-    private void distributeIncomeAmongProducers(Long trackId, BigDecimal total) {
-
-        List<ProducerTrackInfo> infos = ptiRepo.findByTrackId(trackId);
-
-        infos.forEach(info -> {
-            BigDecimal pct = info.getProfitPercentage();                // %
-            BigDecimal income = total.multiply(pct)
-                    .divide(BigDecimal.valueOf(100), RoundingMode.HALF_EVEN);
-
-            Producer p = info.getProducer();
-            p.setBalance(p.getBalance().add(income));
-            producerRepo.save(p);
-        });
     }
 }
 

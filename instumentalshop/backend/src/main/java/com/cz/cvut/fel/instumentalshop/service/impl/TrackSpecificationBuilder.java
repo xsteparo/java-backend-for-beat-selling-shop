@@ -2,7 +2,6 @@ package com.cz.cvut.fel.instumentalshop.service.impl;
 
 
 import com.cz.cvut.fel.instumentalshop.domain.Producer;
-import com.cz.cvut.fel.instumentalshop.domain.ProducerTrackInfo;
 import com.cz.cvut.fel.instumentalshop.domain.Track;
 import com.cz.cvut.fel.instumentalshop.domain.enums.GenreType;
 import com.cz.cvut.fel.instumentalshop.domain.enums.KeyType;
@@ -17,13 +16,13 @@ import java.util.List;
 /**
  * {@link TrackSpecificationBuilder} vytváří JPA {@link Specification} pro entitu {@link Track}
  * na základě parametrů z {@link TrackFilterDto}.
- *
+ * <p>
  * Podporované filtry:
  * - Hledání dle názvu skladby nebo uživatelského jména producenta (search)
  * - Filtr žánru (genre)
  * - Rozsah tempa BPM (tempoRange)
  * - Klíč tóniny (key)
- *
+ * <p>
  * Specifikace jsou skládány pomocí logického AND.
  */
 public class TrackSpecificationBuilder {

@@ -5,13 +5,14 @@ import com.cz.cvut.fel.instumentalshop.domain.enums.LicenceType;
 import com.cz.cvut.fel.instumentalshop.domain.enums.ReportStatus;
 import com.cz.cvut.fel.instumentalshop.domain.enums.Role;
 import com.cz.cvut.fel.instumentalshop.dto.licence.in.TemplateUpdateRequestDto;
-import com.cz.cvut.fel.instumentalshop.exception.*;
+import com.cz.cvut.fel.instumentalshop.exception.DeleteRequestException;
+import com.cz.cvut.fel.instumentalshop.exception.LicenceAlreadyExistsException;
+import com.cz.cvut.fel.instumentalshop.exception.NotEnoughBalanceException;
+import com.cz.cvut.fel.instumentalshop.exception.TrackIsAlreadyBoughtException;
 import com.cz.cvut.fel.instumentalshop.repository.LicenceReportRepository;
 import com.cz.cvut.fel.instumentalshop.repository.LicenceTemplateRepository;
-import com.cz.cvut.fel.instumentalshop.repository.ProducerTrackInfoRepository;
 import com.cz.cvut.fel.instumentalshop.repository.PurchasedLicenceRepository;
 import com.cz.cvut.fel.instumentalshop.util.validator.LicenceValidator;
-import com.cz.cvut.fel.instumentalshop.util.validator.ValidatorBase;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -22,9 +23,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class LicenceValidatorImpl extends ValidatorBase implements LicenceValidator {
-
-    private final ProducerTrackInfoRepository producerTrackInfoRepository;
+public class LicenceValidatorImpl implements LicenceValidator {
 
     private final LicenceTemplateRepository licenceTemplateRepository;
 
@@ -34,15 +33,12 @@ public class LicenceValidatorImpl extends ValidatorBase implements LicenceValida
 
     @Override
     public void validateTemplateCreationRequest(Producer producer, Long trackId, LicenceType licenceType) {
-        validateIsLeadProducer(producerTrackInfoRepository, trackId, producer.getId());
         validateIfCurrentLicenceTypeExists(trackId, licenceType);
         validateTemplateType(licenceType);
     }
 
     @Override
     public void validateTemplateUpdateRequest(Producer producer, Long trackId, TemplateUpdateRequestDto requestDto) {
-        validateIsLeadProducer(producerTrackInfoRepository, trackId, producer.getId());
-
         List<PurchasedLicence> purchasedLicences = purchasedLicenceRepository.findPurchasedLicenceByTrackId(trackId);
         if (!purchasedLicences.isEmpty()) {
             throw new TrackIsAlreadyBoughtException("You can't UPDATE licence template, because track is already bought");
@@ -58,7 +54,6 @@ public class LicenceValidatorImpl extends ValidatorBase implements LicenceValida
 
     @Override
     public void validateTemplateDeleteRequest(Producer producer, Long trackId) {
-        validateIsLeadProducer(producerTrackInfoRepository, trackId, producer.getId());
         List<PurchasedLicence> purchasedLicences = purchasedLicenceRepository.findPurchasedLicenceByTrackId(trackId);
 
         if (!purchasedLicences.isEmpty()) {
@@ -146,7 +141,6 @@ public class LicenceValidatorImpl extends ValidatorBase implements LicenceValida
             throw new IllegalArgumentException("Invalid licence type: " + licenceType);
         }
     }
-
 
 
     private void validateCustomerBalance(Customer customer, Track track, LicenceType licenceType) {

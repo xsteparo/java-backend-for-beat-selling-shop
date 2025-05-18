@@ -20,7 +20,7 @@ import java.util.Set;
 public class Producer extends User {
 
     @OneToMany(mappedBy = "producer")
-    private Set<ProducerTrackInfo> tracks = new HashSet<>();
+    private Set<Track> tracks = new HashSet<>();
 
     @ManyToMany
     @JoinTable(

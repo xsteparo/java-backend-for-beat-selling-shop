@@ -1,5 +1,5 @@
 export interface TrackFilter {
-    tab?: 'new' | 'top' | 'trending';
+    tab?: string; //'new' | 'top' | 'trending';
     search?: string;
     genre?: string;
     tempoRange?: string;

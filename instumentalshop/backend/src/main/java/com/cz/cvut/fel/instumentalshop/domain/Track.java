@@ -10,13 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.cz.cvut.fel.instumentalshop.util.query.QuerySqlDefinitions.FIND_BOUGHT_TRACKS_BY_CUSTOMER_ID;
-import static com.cz.cvut.fel.instumentalshop.util.query.QuerySqlDefinitions.FIND_TRACKS_BY_PRODUCER_ID;
 
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "Track.findTracksByProducerId",
-                query = FIND_TRACKS_BY_PRODUCER_ID
-        ),
         @NamedQuery(name = "Track.findCustomerBoughtTracksForProducer",
                 query = FIND_BOUGHT_TRACKS_BY_CUSTOMER_ID
         )

@@ -3,7 +3,7 @@ import { FC, useState } from 'react'
 interface FiltersProps {
     onChange: (filters: {
         genre: string
-        bpm: string
+        tempoRange: string
         key: string
         sort: string
     }) => void
@@ -12,26 +12,28 @@ interface FiltersProps {
 export const Filters: FC<FiltersProps> = ({ onChange }) => {
     const [open, setOpen] = useState({
         genre: false,
-        bpm:   false,
+        tempoRange:   false,
         key:   false,
         sort:  false,
     })
 
     const options = {
-        genre: ['hyper-pop','rock','pop','hip-hop','jazz','classical','drill','phonk','trap','edm','techno','ambient','lo-fi','synthwave'],
-        bpm:   ['60-90','90-110','110-130','130-150','150+'],
+        genre: ['hyperpop','rock','pop','hiphop','jazz','classical','drill','phonk','trap','edm','techno','ambient','lofi','synthwave'],
+        tempoRange:   ['60-90','90-110','110-130','130-150','150-999'],
         key:   ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'],
         sort: [
-            { value: 'price_asc',  label: 'Price: Low→High' },
-            { value: 'price_desc', label: 'Price: High→Low' },
-            { value: 'created_at_asc',  label: 'Upload: Old→New' },
-            { value: 'created_at_desc', label: 'Upload: New→Old' },
+            { value: '-rating',    label: 'Hodnocení: sestupně' },
+            { value: 'rating',     label: 'Hodnocení: vzestupně' },
+            { value: '-createdAt', label: 'Nejnovější nahoře' },
+            { value: 'createdAt',  label: 'Nejstarší nahoře' },
+            { value: '-plays',     label: 'Přehrání: sestupně' },
+            { value: 'plays',      label: 'Přehrání: vzestupně' },
         ],
     }
 
     const [filters, setFilters] = useState({
         genre: '',
-        bpm:   '',
+        tempoRange:   '',
         key:   '',
         sort:  '',
     })
@@ -46,7 +48,7 @@ export const Filters: FC<FiltersProps> = ({ onChange }) => {
     }
 
     const resetAll = () => {
-        const empty = { genre: '', bpm: '', key: '', sort: '' }
+        const empty = { genre: '', tempoRange: '', key: '', sort: '' }
         setFilters(empty)
         onChange(empty)
     }
@@ -63,7 +65,7 @@ export const Filters: FC<FiltersProps> = ({ onChange }) => {
                 </button>
             </div>
 
-            {(['genre','bpm','key','sort'] as const).map(k => (
+            {(['genre','tempoRange','key','sort'] as const).map(k => (
                 <div key={k}>
                     <button
                         onClick={() => toggle(k)}
@@ -101,7 +103,7 @@ export const Filters: FC<FiltersProps> = ({ onChange }) => {
                                             : 'text-gray-300 hover:bg-gray-700'
                                     }`}
                                 >
-                                    {k === 'bpm' ? `${val} BPM` : val}
+                                    {k === 'tempoRange' ? `${val} BPM` : val}
                                 </li>
                             ))}
                     </ul>

@@ -1,15 +1,11 @@
-package com.cz.cvut.fel.instumentalshop.service.newTests;
+package com.cz.cvut.fel.instumentalshop.service;
 
 import com.cz.cvut.fel.instumentalshop.domain.Producer;
-import com.cz.cvut.fel.instumentalshop.domain.ProducerTrackInfo;
 import com.cz.cvut.fel.instumentalshop.domain.Track;
-import com.cz.cvut.fel.instumentalshop.dto.mapper.ProducerTrackInfoMapper;
 import com.cz.cvut.fel.instumentalshop.dto.mapper.TrackMapper;
 import com.cz.cvut.fel.instumentalshop.dto.newDto.TrackFilterDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.out.ProducerTrackInfoDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.out.TrackDto;
-import com.cz.cvut.fel.instumentalshop.exception.ProducerTrackInfoNotFoundException;
-import com.cz.cvut.fel.instumentalshop.repository.ProducerTrackInfoRepository;
 import com.cz.cvut.fel.instumentalshop.repository.TrackRepository;
 import com.cz.cvut.fel.instumentalshop.service.AuthenticationService;
 import com.cz.cvut.fel.instumentalshop.service.impl.TrackServiceImpl;
@@ -42,14 +38,12 @@ class TrackServiceImplTest {
 
     @Mock
     private AuthenticationService authenticationService;
-    @Mock
-    private ProducerTrackInfoRepository producerTrackInfoRepository;
+
     @Mock
     private TrackRepository trackRepository;
     @Mock
     private TrackMapper trackMapper;
     @Mock
-    private ProducerTrackInfoMapper producerTrackInfoMapper;
 
     @InjectMocks
     private TrackServiceImpl trackService;
@@ -95,20 +89,6 @@ class TrackServiceImplTest {
         assertThrows(EntityNotFoundException.class, () -> trackService.findById(42L));
     }
 
-    @Test
-    void testGetTrackApprovalsList() {
-        Producer producer = new Producer(); producer.setId(5L);
-        when(authenticationService.getRequestingProducerFromSecurityContext()).thenReturn(producer);
-        ProducerTrackInfo info = new ProducerTrackInfo();
-        when(producerTrackInfoRepository.findByProducerIdAndAgreedForSelling(5L, false))
-                .thenReturn(List.of(info));
-        ProducerTrackInfoDto dto = new ProducerTrackInfoDto();
-        when(producerTrackInfoMapper.toResponseDto(info)).thenReturn(dto);
-        List<ProducerTrackInfoDto> result = trackService.getTrackApprovalsList();
-        assertEquals(1, result.size());
-        assertSame(dto, result.get(0));
-    }
-
 
     @Test
     void testFindAllByProducer() {
@@ -123,7 +103,8 @@ class TrackServiceImplTest {
 
     @Test
     void testFindCustomerPurchasedTracksForProducer() {
-        Producer producer = new Producer(); producer.setId(9L);
+        Producer producer = new Producer();
+        producer.setId(9L);
         when(authenticationService.getRequestingProducerFromSecurityContext()).thenReturn(producer);
         Track track = new Track();
         TrackDto dto = new TrackDto();

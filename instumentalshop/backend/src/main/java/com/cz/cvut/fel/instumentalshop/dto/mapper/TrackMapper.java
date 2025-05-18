@@ -1,42 +1,38 @@
 package com.cz.cvut.fel.instumentalshop.dto.mapper;
 
-import com.cz.cvut.fel.instumentalshop.domain.ProducerTrackInfo;
 import com.cz.cvut.fel.instumentalshop.domain.Track;
-import com.cz.cvut.fel.instumentalshop.dto.track.out.ProducerTrackInfoDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.out.TrackDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface TrackMapper {
 
     // URL-ы
-    @Mapping(target = "id",                source = "id")
-    @Mapping(target = "name",              source = "name")
-    @Mapping(target = "genreType",         source = "genre")
-    @Mapping(target = "bpm",               source = "bpm")
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "genreType", source = "genre")
+    @Mapping(target = "bpm", source = "bpm")
 
     // URL-ы
-    @Mapping(target = "urlNonExclusive",   source = "urlNonExclusive")
-    @Mapping(target = "urlPremium",        source = "urlPremium")
-    @Mapping(target = "urlExclusive",      source = "urlExclusive")
+    @Mapping(target = "urlNonExclusive", source = "urlNonExclusive")
+    @Mapping(target = "urlPremium", source = "urlPremium")
+    @Mapping(target = "urlExclusive", source = "urlExclusive")
 
-    @Mapping(target = "rating",            source = "rating")
+    @Mapping(target = "rating", source = "rating")
     // @Mapping(target = "length",         source = "length") // если понадобится
-    @Mapping(target = "keyType",           source = "keyType")
+    @Mapping(source = "keyType", target = "key")
 
     // главный продюсер
     @Mapping(
-            target     = "producerUsername",
+            target = "producerUsername",
             expression = "java(track.getProducer().getUsername())"
     )
 
     // пока константой, потом можно по-умному
-    @Mapping(target = "purchased",         constant = "false")
+    @Mapping(target = "purchased", constant = "false")
+    @Mapping(target = "likes", source = "likes")
+    @Mapping(target = "plays", source = "plays")
 
     // новый маппинг: список трёх шаблонов лицензий
     @Mapping(

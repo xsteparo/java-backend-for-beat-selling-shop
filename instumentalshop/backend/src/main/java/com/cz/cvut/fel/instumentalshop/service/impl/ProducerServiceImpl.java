@@ -1,9 +1,7 @@
 package com.cz.cvut.fel.instumentalshop.service.impl;
 
 import com.cz.cvut.fel.instumentalshop.domain.Producer;
-import com.cz.cvut.fel.instumentalshop.domain.ProducerTrackInfo;
 import com.cz.cvut.fel.instumentalshop.domain.Track;
-import com.cz.cvut.fel.instumentalshop.domain.enums.Role;
 import com.cz.cvut.fel.instumentalshop.dto.balance.out.BalanceResponseDto;
 import com.cz.cvut.fel.instumentalshop.dto.mapper.BalanceMapper;
 import com.cz.cvut.fel.instumentalshop.dto.mapper.ProducerMapper;
@@ -19,9 +17,7 @@ import com.cz.cvut.fel.instumentalshop.service.AuthenticationService;
 import com.cz.cvut.fel.instumentalshop.service.ProducerService;
 import com.cz.cvut.fel.instumentalshop.util.validator.UserValidator;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -164,7 +160,7 @@ public class ProducerServiceImpl implements ProducerService {
         List<Producer> all = producerRepository.findAll();
         for (Producer p : all) {
             double avg = p.getTracks().stream()
-                    .map(ProducerTrackInfo::getTrack)
+//                    .map(ProducerTrackInfo::getTrack)
                     .sorted((t1, t2) -> t2.getCreatedAt().compareTo(t1.getCreatedAt()))
                     .limit(10)
                     .mapToDouble(Track::getRating)

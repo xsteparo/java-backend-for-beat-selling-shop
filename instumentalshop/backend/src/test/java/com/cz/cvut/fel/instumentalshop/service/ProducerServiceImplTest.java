@@ -1,9 +1,7 @@
-package com.cz.cvut.fel.instumentalshop.service.newTests;
-
+package com.cz.cvut.fel.instumentalshop.service;
 
 
 import com.cz.cvut.fel.instumentalshop.domain.Producer;
-import com.cz.cvut.fel.instumentalshop.domain.ProducerTrackInfo;
 import com.cz.cvut.fel.instumentalshop.domain.Track;
 import com.cz.cvut.fel.instumentalshop.dto.balance.out.BalanceResponseDto;
 import com.cz.cvut.fel.instumentalshop.dto.mapper.BalanceMapper;
@@ -23,7 +21,8 @@ import jakarta.persistence.TypedQuery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,7 +34,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -207,12 +207,17 @@ class ProducerServiceImplTest {
     @Test
     void testUpdateProducerRatings() {
         // Arrange
-        Producer p = new Producer(); p.setId(3L);
-        Track t1 = new Track(); t1.setRating(5.0); t1.setCreatedAt(LocalDateTime.now().minusDays(1));
-        Track t2 = new Track(); t2.setRating(1.0); t2.setCreatedAt(LocalDateTime.now().minusDays(2));
-        ProducerTrackInfo info1 = new ProducerTrackInfo(); info1.setTrack(t1);
-        ProducerTrackInfo info2 = new ProducerTrackInfo(); info2.setTrack(t2);
-        p.setTracks(Set.of(info1, info2));
+        Producer p = new Producer();
+        p.setId(3L);
+        Track t1 = new Track();
+        t1.setRating(5.0);
+        t1.setCreatedAt(LocalDateTime.now().minusDays(1));
+        t1.setProducer(p);
+        Track t2 = new Track();
+        t2.setRating(1.0);
+        t2.setCreatedAt(LocalDateTime.now().minusDays(2));
+        t2.setProducer(p);
+        p.setTracks(Set.of(t1, t2));
         when(producerRepository.findAll()).thenReturn(List.of(p));
 
         // Act

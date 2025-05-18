@@ -75,20 +75,6 @@ public class TestDataGenerator {
         return customer;
     }
 
-    public static ProducerTrackInfo createProducerTrackInfo(Producer producer, Track track, BigDecimal profitPercentage) {
-        ProducerTrackInfo producerTrackInfo = new ProducerTrackInfo();
-        producerTrackInfo.setProducer(producer);
-        producerTrackInfo.setTrack(track);
-        producerTrackInfo.setProfitPercentage(profitPercentage);
-        return producerTrackInfo;
-    }
-
-    public static ProducerTrackInfo createProducerTrackInfo(boolean ownsPublishingTrack) {
-        ProducerTrackInfo trackInfo = mock(ProducerTrackInfo.class);
-        when(trackInfo.getOwnsPublishingTrack()).thenReturn(ownsPublishingTrack);
-        return trackInfo;
-    }
-
     public static TrackRequestDto createTrackRequestDto(String name, GenreType genreType, int bpm, Integer mainProducerPercentage, List<ProducerShareRequestDto> producerShares) {
         return TrackRequestDto.builder()
                 .name(name)

@@ -1,4 +1,4 @@
-package com.cz.cvut.fel.instumentalshop.service.newTests;
+package com.cz.cvut.fel.instumentalshop.service;
 
 import com.cz.cvut.fel.instumentalshop.domain.*;
 import com.cz.cvut.fel.instumentalshop.domain.enums.LicenceType;
@@ -8,7 +8,6 @@ import com.cz.cvut.fel.instumentalshop.dto.balance.out.ProducerIncomeDto;
 import com.cz.cvut.fel.instumentalshop.dto.licence.in.PurchaseRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.licence.out.PurchaseDto;
 import com.cz.cvut.fel.instumentalshop.repository.LicenceTemplateRepository;
-import com.cz.cvut.fel.instumentalshop.repository.ProducerTrackInfoRepository;
 import com.cz.cvut.fel.instumentalshop.repository.PurchasedLicenceRepository;
 import com.cz.cvut.fel.instumentalshop.repository.TrackRepository;
 import com.cz.cvut.fel.instumentalshop.service.AuthenticationService;
@@ -47,8 +46,6 @@ class LicencePurchaseServiceImplTest {
     @Mock
     private TrackRepository trackRepo;
     @Mock
-    private ProducerTrackInfoRepository ptiRepo;
-    @Mock
     private LicenceValidator validator;
 
     @InjectMocks
@@ -71,11 +68,8 @@ class LicencePurchaseServiceImplTest {
         producer.setRole(Role.PRODUCER);
 
         track = new Track();
+        track.setProducer(producer);
         track.setId(1L);
-        ProducerTrackInfo leadInfo = new ProducerTrackInfo();
-        leadInfo.setTrack(track);
-        leadInfo.setProducer(producer);
-        leadInfo.setOwnsPublishingTrack(true);
     }
 
     @Test
@@ -102,15 +96,12 @@ class LicencePurchaseServiceImplTest {
             return arg;
         }).when(licRepo).save(any(PurchasedLicence.class));
 
-        when(ptiRepo.findByTrackId(1L)).thenReturn(List.of());
-
         PurchaseDto result = service.purchaseLicence(dto, 1L);
 
         assertNotNull(result);
         assertEquals(42L, result.getPurchaseId());
         assertEquals(LicenceType.NON_EXCLUSIVE, result.getLicenceType());
         assertEquals(BigDecimal.valueOf(50), customer.getBalance());
-        verify(ptiRepo).findByTrackId(1L);
     }
 
     @Test
@@ -200,22 +191,22 @@ class LicencePurchaseServiceImplTest {
         assertEquals("prodName", dto.getProducer().getUsername());
     }
 
-    @Test
-    void testGetProducerIncomesByTracks() {
-        var incomeDto = new ProducerIncomeDto(1L, "Track1", BigDecimal.valueOf(300));
-        @SuppressWarnings("unchecked")
-        var query = mock(TypedQuery.class);
-        when(auth.getRequestingProducerFromSecurityContext()).thenReturn(producer);
-        when(em.createNamedQuery(eq("ProducerTrackInfo.findProducerIncomeByTracks"), eq(ProducerIncomeDto.class)))
-                .thenReturn(query);
-        when(query.setParameter(eq("producerId"), eq(20L))).thenReturn(query);
-        when(query.getResultList()).thenReturn(List.of(incomeDto));
-
-        var result = service.getProducerIncomesByTracks();
-
-        assertEquals(1, result.size());
-        assertSame(incomeDto, result.get(0));
-    }
+//    @Test
+//    void testGetProducerIncomesByTracks() {
+//        var incomeDto = new ProducerIncomeDto(1L, "Track1", BigDecimal.valueOf(300));
+//        @SuppressWarnings("unchecked")
+//        var query = mock(TypedQuery.class);
+//        when(auth.getRequestingProducerFromSecurityContext()).thenReturn(producer);
+//        when(em.createNamedQuery(eq("ProducerTrackInfo.findProducerIncomeByTracks"), eq(ProducerIncomeDto.class)))
+//                .thenReturn(query);
+//        when(query.setParameter(eq("producerId"), eq(20L))).thenReturn(query);
+//        when(query.getResultList()).thenReturn(List.of(incomeDto));
+//
+//        var result = service.getProducerIncomesByTracks();
+//
+//        assertEquals(1, result.size());
+//        assertSame(incomeDto, result.get(0));
+//    }
 }
 
 

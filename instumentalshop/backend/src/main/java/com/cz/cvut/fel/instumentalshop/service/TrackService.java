@@ -81,13 +81,6 @@ public interface TrackService {
     TrackDto createTrack(TrackRequestDto dto) throws IOException;
 
     /**
-     * Vrátí seznam schválení producenta pro skladby, kde ještě nebylo potvrzeno.
-     *
-     * @return Seznam DTO informací o potřebě potvrzení (ProducerTrackInfoDto)
-     */
-    List<ProducerTrackInfoDto> getTrackApprovalsList();
-
-    /**
      * Vrátí všechny skladby patřící danému producentovi.
      *
      * @param producerId ID producenta

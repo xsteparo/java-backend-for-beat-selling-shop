@@ -24,10 +24,6 @@ public interface TrackRepository extends JpaRepository<Track, Long>, JpaSpecific
     @Query(name = "Track.findCustomerBoughtTracksForProducer")
     List<Track> findCustomerBoughtTracksForProducer(@Param("customerId") Long customerId, @Param("producerId") Long producerId);
 
-    @EntityGraph(attributePaths = {
-            "producerTrackInfos",
-            "producerTrackInfos.producer"
-    })
     Page<Track> findAll(Specification<Track> spec, Pageable pageable);
 
     @Query("SELECT AVG(t.rating) FROM Track t")

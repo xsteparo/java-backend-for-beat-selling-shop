@@ -1,5 +1,5 @@
 import { FC, FormEvent, useState } from 'react'
-import {TrackController} from "../controller/TrackController.tsx";
+import {TrackController} from "../controller/newControllers/TrackController.tsx";
 import {TrackRequestDto} from "../dto/TrackRequestDto.ts";
 import {GenreType} from "../dto/newDto/enums/GenreType.ts";
 
@@ -86,7 +86,7 @@ export const Upload: FC = () => {
                         <select
                             required
                             value={genre}
-                            onChange={e => setGenre(e.target.value)}
+                            onChange={e => setGenre(e.target.value as GenreType)}
                             className="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             <option value="">Select genre…</option>

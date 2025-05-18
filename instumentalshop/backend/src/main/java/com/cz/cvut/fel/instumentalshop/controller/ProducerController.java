@@ -162,18 +162,6 @@ public class ProducerController {
     }
 
     /**
-     * FR10: Výpis příjmů podle skladeb.
-     *
-     * @return seznam příjmů
-     */
-    @GetMapping("/me/incomes")
-    @PreAuthorize("hasRole('PRODUCER')")
-    public ResponseEntity<List<ProducerIncomeDto>> getMyIncomes() {
-        List<ProducerIncomeDto> incomes = licenceService.getProducerIncomesByTracks();
-        return ResponseEntity.ok(incomes);
-    }
-
-    /**
      * FR10: Výpis prodejů (zakoupených licencí) pro tohoto producenta.
      *
      * @return seznam prodejů

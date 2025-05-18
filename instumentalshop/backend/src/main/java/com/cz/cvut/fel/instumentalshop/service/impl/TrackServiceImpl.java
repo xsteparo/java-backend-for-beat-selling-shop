@@ -2,19 +2,14 @@ package com.cz.cvut.fel.instumentalshop.service.impl;
 
 import com.cz.cvut.fel.instumentalshop.domain.LicenceTemplate;
 import com.cz.cvut.fel.instumentalshop.domain.Producer;
-import com.cz.cvut.fel.instumentalshop.domain.ProducerTrackInfo;
 import com.cz.cvut.fel.instumentalshop.domain.Track;
+import com.cz.cvut.fel.instumentalshop.domain.enums.KeyType;
 import com.cz.cvut.fel.instumentalshop.domain.enums.LicenceType;
-import com.cz.cvut.fel.instumentalshop.dto.mapper.ProducerTrackInfoMapper;
 import com.cz.cvut.fel.instumentalshop.dto.mapper.TrackMapper;
 import com.cz.cvut.fel.instumentalshop.dto.newDto.TrackFilterDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.in.TrackRequestDto;
-import com.cz.cvut.fel.instumentalshop.dto.track.out.ProducerTrackInfoDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.out.TrackDto;
-import com.cz.cvut.fel.instumentalshop.exception.ProducerTrackInfoNotFoundException;
 import com.cz.cvut.fel.instumentalshop.repository.LicenceTemplateRepository;
-import com.cz.cvut.fel.instumentalshop.repository.ProducerRepository;
-import com.cz.cvut.fel.instumentalshop.repository.ProducerTrackInfoRepository;
 import com.cz.cvut.fel.instumentalshop.repository.TrackRepository;
 import com.cz.cvut.fel.instumentalshop.service.AuthenticationService;
 import com.cz.cvut.fel.instumentalshop.service.TrackService;
@@ -41,8 +36,9 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -57,10 +53,7 @@ public class TrackServiceImpl implements TrackService {
     private static final long CHUNK_SIZE = 1024 * 1024; // 1 MB
 
     private final AuthenticationService authenticationService;
-    private final ProducerTrackInfoRepository producerTrackInfoRepository;
     private final TrackRepository trackRepository;
-    private final ProducerRepository producerRepository;
-    private final ProducerTrackInfoMapper producerTrackInfoMapper;
     private final TrackMapper trackMapper;
     private final TrackValidator trackValidator;
     private final LicenceTemplateRepository tplRepo;
@@ -83,19 +76,45 @@ public class TrackServiceImpl implements TrackService {
     @Transactional(readOnly = true)
     public Page<TrackDto> findAll(TrackFilterDto filter, Pageable pageable) {
         Specification<Track> spec = TrackSpecificationBuilder.fromFilter(filter);
-        // Специальная логика для "trending" вкладки, если нужна
-        if ("trending".equalsIgnoreCase(filter.getTab())) {
-            Double avgRating = trackRepository.findAverageRating();
-            if (avgRating != null) {
-                spec = spec.and((root, cq, cb) ->
-                        cb.greaterThan(root.get("rating"), avgRating)
-                );
-            }
-            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
-                    Sort.by(Sort.Direction.DESC, "lastRatingDelta"));
-        }
-        return trackRepository.findAll(spec, pageable)
+
+        // 1) определяем Sort
+        Sort sort = determineSort(filter);
+
+        // 2) создаём новую PageRequest
+        Pageable pageReq = PageRequest.of(pageable.getPageNumber(),
+                pageable.getPageSize(),
+                sort);
+
+        // 3) выполняем запрос
+        return trackRepository.findAll(spec, pageReq)
                 .map(trackMapper::toResponseDto);
+    }
+
+    private Sort determineSort(TrackFilterDto filter) {
+        String tab  = Optional.ofNullable(filter.getTab()).orElse("").toLowerCase();
+        String sort = Optional.ofNullable(filter.getSort()).orElse("").trim();
+
+        // табы имеют приоритет над ручной сортировкой
+        switch (tab) {
+            case "trending":
+                return Sort.by(Sort.Direction.DESC, "lastRatingDelta");
+            case "top":
+                return Sort.by(Sort.Direction.DESC, "rating");
+            case "new":
+                return Sort.by(Sort.Direction.DESC, "createdAt");
+        }
+
+        // если юзер передал sort (например "-rating" или "createdAt")
+        if (!sort.isEmpty()) {
+            Sort.Direction dir = sort.startsWith("-")
+                    ? Sort.Direction.DESC
+                    : Sort.Direction.ASC;
+            String property = sort.replaceFirst("^-", "");
+            return Sort.by(dir, property);
+        }
+
+        // fallback
+        return Sort.by(Sort.Direction.DESC, "createdAt");
     }
 
     @Override
@@ -151,17 +170,6 @@ public class TrackServiceImpl implements TrackService {
         trackValidator.validateTrackCreationRequestWithSingleOwner(dto, lead);
 
         return createWithFiles(dto, lead, true);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ProducerTrackInfoDto> getTrackApprovalsList() {
-        Producer lead = authenticationService.getRequestingProducerFromSecurityContext();
-        return producerTrackInfoRepository
-                .findByProducerIdAndAgreedForSelling(lead.getId(), false)
-                .stream()
-                .map(producerTrackInfoMapper::toResponseDto)
-                .collect(Collectors.toList());
     }
 
     //=====================================
@@ -224,10 +232,13 @@ public class TrackServiceImpl implements TrackService {
                 .name(dto.getName())
                 .genre(dto.getGenreType())
                 .bpm(dto.getBpm())
+                .keyType(KeyType.valueOf(dto.getKey()))
                 .producer(lead)
                 .urlNonExclusive(urlMp3)
                 .urlPremium(urlWav)
                 .urlExclusive(urlZip)
+                .createdAt(LocalDateTime.now())
+                .rating(1000.00)
                 .build();
 
         Track saved = trackRepository.save(track);
