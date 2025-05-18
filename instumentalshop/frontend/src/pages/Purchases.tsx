@@ -5,6 +5,8 @@ import {PurchaseDto} from "../dto/newDto/purchase/PurchaseDto.tsx";
 import {format} from 'date-fns';
 import {PurchaseController} from "../controller/newControllers/PurchaseController.tsx";
 import {LicenceDownloadController} from "../controller/newControllers/LicenceDownloadController.tsx";
+import {ChatController} from "../controller/newControllers/chat/ChatController.tsx";
+import {useNavigate} from "react-router-dom";
 
 const licenceLabels: Record<LicenceType, string> = {
     NON_EXCLUSIVE: 'Non-exclusive',
@@ -14,6 +16,7 @@ const licenceLabels: Record<LicenceType, string> = {
 
 const Purchases: FC = () => {
     const { role } = useAuth();
+    const navigate = useNavigate();
     const [purchases, setPurchases] = useState<PurchaseDto[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -54,6 +57,15 @@ const Purchases: FC = () => {
             URL.revokeObjectURL(url);
         } catch (e) {
             console.error('Download track error', e);
+        }
+    };
+
+    const handleStartChat = async (producerId: number) => {
+        try {
+            const room = await ChatController.openRoom(producerId);
+            navigate('/chats', { state: { openRoomId: room.id } });
+        } catch (e) {
+            console.error('Start chat error', e);
         }
     };
 
@@ -108,9 +120,15 @@ const Purchases: FC = () => {
                                 </button>
                                 <button
                                     onClick={() => handleDownloadTrack(p.purchaseId)}
-                                    className="px-3 py-1 bg-green-600 rounded hover:bg-green-500 text-sm"
+                                    className="px-3 py-1 bg-green-600 rounded hover:bg-green-500 text-sm mr-2"
                                 >
                                     Download Track
+                                </button>
+                                <button
+                                    onClick={() => handleStartChat(p.producerId)}
+                                    className="px-3 py-1 bg-purple-600 rounded hover:bg-purple-500 text-sm"
+                                >
+                                    Start Chat
                                 </button>
                             </td>
                         </tr>

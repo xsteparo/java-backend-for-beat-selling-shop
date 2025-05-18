@@ -138,6 +138,7 @@ public class LicencePurchaseServiceImpl implements LicencePurchaseService {
                 .validityPeriodDays(tpl.getValidityPeriodDays())
                 .availablePlatforms(tpl.getAvailablePlatforms())
                 .producer(lic.getProducer().getUsername())
+                .producerId(lic.getProducer().getId())
                 .build();
     }
 }

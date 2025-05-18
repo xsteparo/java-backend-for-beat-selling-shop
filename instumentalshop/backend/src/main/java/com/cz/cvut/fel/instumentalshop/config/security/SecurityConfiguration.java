@@ -65,6 +65,7 @@ public class SecurityConfiguration {
                         ).permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/uploads/**", "/ws/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(mgr ->

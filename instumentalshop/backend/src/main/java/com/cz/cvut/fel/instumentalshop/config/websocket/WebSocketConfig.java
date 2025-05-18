@@ -26,7 +26,6 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final JWTService jwtService;
-    private final UserService userService;
     private final CustomUserDetailsService customUserDetailsService;
 
     @Override
@@ -42,7 +41,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         String token = bearer.substring(7);
                         String username = jwtService.extractUsername(token);
                         UserDetails user = customUserDetailsService.loadUserByUsername(username);
-                        // вот здесь передаём оба аргумента: токен и пользователя
                         if (jwtService.isTokenValid(token, user)) {
                             Authentication auth = new UsernamePasswordAuthenticationToken(
                                     user, null, user.getAuthorities());
@@ -57,9 +55,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*") // по необходимости
-                .withSockJS();
+        registry
+                .addEndpoint("/ws")                                  // именно этот путь
+                .setAllowedOriginPatterns("http://localhost:5173")   // ваш фронтенд
+                .withSockJS();                                       // включаем SockJS
     }
 
     @Override

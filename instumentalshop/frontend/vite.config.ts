@@ -8,6 +8,9 @@ export default defineConfig({
     tailwindcss(),
     react()
   ],
+  define: {
+    global: 'window',
+  },
   server: {
     proxy: {
       '/api': {
@@ -21,6 +24,11 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
         rewrite: path => path,   // сохраняем /uploads/… в итоговом URL
+      },
+      '/ws': {
+        target: 'http://localhost:8080',
+        ws: true,
+        secure: false,
       },
     },
   },

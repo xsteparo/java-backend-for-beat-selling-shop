@@ -20,6 +20,8 @@ public class PurchaseDto {
 
     private LicenceType licenceType;
 
+    private Long producerId;
+
     private String producer;
 
     private BigDecimal price;

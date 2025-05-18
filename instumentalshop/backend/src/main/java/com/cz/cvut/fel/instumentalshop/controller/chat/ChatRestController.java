@@ -37,9 +37,7 @@ public class ChatRestController {
     public ResponseEntity<List<ChatRoomDto>> listRooms(
             @AuthenticationPrincipal(expression = "id") Long userId
     ) {
-        List<ChatRoomDto> rooms = chatService.getUserRooms(userId).stream()
-                .map(ChatRoomDto::fromEntity)
-                .collect(Collectors.toList());
+        List<ChatRoomDto> rooms = chatService.getUserRooms(userId);
         return ResponseEntity.ok(rooms);
     }
 
@@ -56,8 +54,8 @@ public class ChatRestController {
             @AuthenticationPrincipal(expression = "id") Long userId,
             @PathVariable Long otherUserId
     ) {
-        var room = chatService.openRoom(userId, otherUserId);
-        return ResponseEntity.ok(ChatRoomDto.fromEntity(room));
+        ChatRoomDto room = chatService.openRoom(userId, otherUserId);
+        return ResponseEntity.ok(room);
     }
 
     /**

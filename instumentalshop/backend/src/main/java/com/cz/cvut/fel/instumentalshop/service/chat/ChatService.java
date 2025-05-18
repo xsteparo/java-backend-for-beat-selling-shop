@@ -2,6 +2,7 @@ package com.cz.cvut.fel.instumentalshop.service.chat;
 
 import com.cz.cvut.fel.instumentalshop.domain.chat.ChatMessage;
 import com.cz.cvut.fel.instumentalshop.domain.chat.ChatRoom;
+import com.cz.cvut.fel.instumentalshop.dto.chat.ChatRoomDto;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public interface ChatService {
      * @param userId ID uživatele
      * @return seznam entit ChatRoom
      */
-    List<ChatRoom> getUserRooms(Long userId);
+    List<ChatRoomDto> getUserRooms(Long userId);
 
     /**
      * Otevře novou chatovací místnost mezi dvěma uživateli,
@@ -26,7 +27,7 @@ public interface ChatService {
      * @param userId2 ID druhého uživatele
      * @return entita ChatRoom
      */
-    ChatRoom openRoom(Long userId1, Long userId2);
+    ChatRoomDto openRoom(Long userId1, Long userId2);
 
     /**
      * Vrátí historii zpráv v dané místnosti, seřazenou podle času odeslání vzestupně.

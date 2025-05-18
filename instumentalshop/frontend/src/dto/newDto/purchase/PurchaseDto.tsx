@@ -5,6 +5,7 @@ export interface PurchaseDto {
     purchaseId: number;
     trackId: number;
     licenceType: LicenceType;
+    producerId: number;
     producer: String;
     price: number;
     purchaseDate: string;
