@@ -1,6 +1,5 @@
 package com.cz.cvut.fel.instumentalshop.dto.licence.out;
 
-import com.cz.cvut.fel.instumentalshop.domain.Producer;
 import com.cz.cvut.fel.instumentalshop.domain.enums.LicenceType;
 import com.cz.cvut.fel.instumentalshop.domain.enums.Platform;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -10,7 +9,6 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @Builder
@@ -22,7 +20,7 @@ public class PurchaseDto {
 
     private LicenceType licenceType;
 
-    private Producer producer;
+    private String producer;
 
     private BigDecimal price;
 

@@ -20,6 +20,7 @@ public interface LicenceMapper {
 
     List<TemplateResponseDto> toResponseDto(List<LicenceTemplate> source);
 
+    @Mapping(target = "producer", source = "producer.username")
     PurchaseDto toResponseDto(PurchasedLicence purchasedLicence);
 
     @Mapping(target = "id", source = "id")

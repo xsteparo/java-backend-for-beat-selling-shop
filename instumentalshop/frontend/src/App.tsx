@@ -6,7 +6,7 @@ import {Login} from './pages/Login'
 import {Register} from './pages/Register'
 import {Tracks} from './pages/Tracks'
 // import { Profile }     from './pages/Profile'
-// import { Purchases }   from './pages/Purchases'
+import Purchases   from './pages/Purchases'
 // import { Chats }       from './pages/Chats'
 import {Upload} from './pages/Upload'
 // import { Sales }       from './pages/Sales'
@@ -43,7 +43,7 @@ export const App = () => (
                         {/* только для залогиненных user или producer */}
                         <Route element={<RequireAuth allowedRoles={['customer', 'producer']}/>}>
                             {/*<Route path="profile"   element={<Profile />}   />*/}
-                            {/*<Route path="purchases" element={<Purchases />} />*/}
+                            <Route path="purchases" element={<Purchases />} />
                             {/*<Route path="chats"     element={<Chats />}     />*/}
                         </Route>
 
