@@ -25,13 +25,13 @@ export const Tracks: FC = () => {
         { key: 'trending', label: 'Na vzestupu' },
         { key: 'new', label: 'Novinky' },
     ] as const
-    const [activeTab, setActiveTab] = useState<(typeof tabs)[number]['key']>('trending')
+    const [activeTab, setActiveTab] = useState<typeof tabs[number]['key']>('trending')
 
-    // ───── список треков, поиск, фильтры ─────
+    // ───── list, search, filters ─────
     const [tracks, setTracks] = useState<TrackDto[]>([])
-    const [search, setSearch] = useState('')
-    const [page, setPage] = useState(1)
-    const [totalPages, setTotalPages] = useState(1)
+    const [search, setSearch] = useState<string>('')
+    const [page, setPage] = useState<number>(1)
+    const [totalPages, setTotalPages] = useState<number>(1)
     const [filters, setFilters] = useState<Pick<TrackFilter, 'genre' | 'tempoRange' | 'key' | 'sort'>>({
         genre: '',
         tempoRange: '',
@@ -39,56 +39,82 @@ export const Tracks: FC = () => {
         sort: '',
     })
 
-    // ───── лайки ─────
+    // ───── likes ─────
     const [liked, setLiked] = useState<Set<string>>(new Set())
-    // загрузка лайков из localStorage
-    useEffect(() => {
-        const stored = localStorage.getItem('likedTracks')
-        if (stored) {
-            try {
-                setLiked(new Set(JSON.parse(stored)))
-            } catch {}
-        }
-    }, [])
 
-    const toggleLike = async (id: string) => {
-        try {
-            if (liked.has(id)) {
-                await LikeController.unlike(Number(id))
-                setLiked(prev => {
-                    const next = new Set(prev)
-                    next.delete(id)
-                    localStorage.setItem('likedTracks', JSON.stringify(Array.from(next)))
-                    return next
-                })
-            } else {
-                await LikeController.like(Number(id))
-                setLiked(prev => {
-                    const next = new Set(prev)
-                    next.add(id)
-                    localStorage.setItem('likedTracks', JSON.stringify(Array.from(next)))
-                    return next
-                })
-            }
-        } catch (e) {
-            console.error('Like toggle error:', e)
-        }
-    }
-
-    // ───── модалка лицензий ─────
+    // ───── modal track ─────
     const [modalTrack, setModalTrack] = useState<TrackDto | null>(null)
 
-    // ═════════ АУДИО ═════════
+    // ═════════ AUDIO ═════════
     const audioRef = useRef<HTMLAudioElement>(null)
     const [currentTrack, setCurrentTrack] = useState<TrackDto | null>(null)
 
+    // ───── load tracks & likes ─────
+    useEffect(() => {
+        let mounted = true
+        Promise.all([
+            TrackController.listTracks(
+                {
+                    tab: activeTab,
+                    search: search || undefined,
+                    genre: filters.genre || undefined,
+                    tempoRange: filters.tempoRange || undefined,
+                    key: filters.key || undefined,
+                    sort: filters.sort || undefined,
+                },
+                page,
+                10
+            ),
+            LikeController.getMyLikes(),
+        ])
+            .then(([pageData, likedIds]) => {
+                if (!mounted) return
+                setTracks(pageData.content)
+                setTotalPages(pageData.totalPages)
+                setLiked(new Set(likedIds.map(String)))
+
+                if (currentTrack && !pageData.content.some(t => t.id === currentTrack.id)) {
+                    audioRef.current?.pause()
+                    setCurrentTrack(null)
+                }
+            })
+            .catch(console.error)
+
+        return () => { mounted = false }
+    }, [activeTab, page, search, filters])
+
+    // ───── toggle like ─────
+    const toggleLike = async (id: string) => {
+        const trackId = Number(id)
+        if (liked.has(id)) {
+            // optimistic
+            setLiked(prev => { const next = new Set(prev); next.delete(id); return next })
+            try {
+                await LikeController.unlike(trackId)
+            } catch (e) {
+                console.error('Unlike failed', e)
+                // rollback
+                setLiked(prev => { const next = new Set(prev); next.add(id); return next })
+            }
+        } else {
+            setLiked(prev => { const next = new Set(prev); next.add(id); return next })
+            try {
+                await LikeController.like(trackId)
+            } catch (e) {
+                console.error('Like failed', e)
+                // rollback
+                setLiked(prev => { const next = new Set(prev); next.delete(id); return next })
+            }
+        }
+    }
+
+    // ═════════ audio controls ═════════
     const play = async (id: string) => {
         const audio = audioRef.current
         if (!audio) return
         const track = tracks.find(t => String(t.id) === id)
         if (!track) return
 
-        // пауза / воспроизведение
         if (currentTrack?.id === track.id) {
             audio.pause()
             setCurrentTrack(null)
@@ -105,42 +131,15 @@ export const Tracks: FC = () => {
         }
     }
 
-    // закрываем бар, когда закончился трек
     useEffect(() => {
-        const a = audioRef.current
-        if (!a) return
-        const ended = () => setCurrentTrack(null)
-        a.addEventListener('ended', ended)
-        return () => a.removeEventListener('ended', ended)
+        const audio = audioRef.current
+        if (!audio) return
+        const onEnded = () => setCurrentTrack(null)
+        audio.addEventListener('ended', onEnded)
+        return () => audio.removeEventListener('ended', onEnded)
     }, [])
 
-    // ───── загрузка треков ─────
-    useEffect(() => {
-        TrackController.listTracks(
-            {
-                tab: activeTab,
-                search: search || undefined,
-                genre: filters.genre || undefined,
-                tempoRange: filters.tempoRange || undefined,
-                key: filters.key || undefined,
-                sort: filters.sort || undefined,
-            },
-            page,
-            10
-        )
-            .then(data => {
-                setTracks(data.content)
-                setTotalPages(data.totalPages)
-
-                if (currentTrack && !data.content.some(t => t.id === currentTrack.id)) {
-                    audioRef.current?.pause()
-                    setCurrentTrack(null)
-                }
-            })
-            .catch(console.error)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeTab, page, search, filters])
-
+    // ═════════ render ═════════
     const onSearch = (e: FormEvent) => {
         e.preventDefault()
         setPage(1)
@@ -150,11 +149,11 @@ export const Tracks: FC = () => {
         const track = tracks.find(t => String(t.id) === id)
         if (track) setModalTrack(track)
     }
+
     const remove = async (id: string) => {
-        // реализация удаления
+        // TODO: implement remove
     }
 
-    // ═════════ RENDER ═════════
     return (
         <main className="flex flex-col bg-gray-900 min-h-screen p-6">
             <h1 className="text-3xl text-white text-center mb-6">All beats</h1>
@@ -163,24 +162,23 @@ export const Tracks: FC = () => {
             <div className="mb-6 grid grid-cols-[1fr_auto_1fr] items-center">
                 <div />
                 <div className="flex space-x-4">
-                    {tabs.map(t => (
+                    {tabs.map(tab => (
                         <button
-                            key={t.key}
+                            key={tab.key}
                             className={`px-4 py-2 rounded-t-lg ${
-                                activeTab === t.key
+                                activeTab === tab.key
                                     ? 'bg-green-600 text-white'
                                     : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                             }`}
                             onClick={() => {
-                                setActiveTab(t.key)
+                                setActiveTab(tab.key)
                                 setPage(1)
                             }}
                         >
-                            {t.label}
+                            {tab.label}
                         </button>
                     ))}
                 </div>
-
                 <form onSubmit={onSearch} className="justify-self-end flex space-x-2">
                     <input
                         type="text"
@@ -189,16 +187,13 @@ export const Tracks: FC = () => {
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                     />
-                    <button
-                        type="submit"
-                        className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-                    >
+                    <button type="submit" className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">
                         Go
                     </button>
                 </form>
             </div>
 
-            {/* контент */}
+            {/* content */}
             <div className="flex flex-1 gap-6">
                 <Filters onChange={setFilters} />
 
@@ -219,17 +214,13 @@ export const Tracks: FC = () => {
                                 onToggleLike={toggleLike}
                                 currentTrackId={currentTrack?.id?.toString() ?? null}
                             />
-                            <Pagination
-                                page={page}
-                                totalPages={totalPages}
-                                onPageChange={setPage}
-                            />
+                            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
                         </>
                     )}
                 </div>
             </div>
 
-            {/* модалка лицензии */}
+            {/* license modal */}
             {modalTrack && (
                 <LicenseModal
                     track={modalTrack}
@@ -241,10 +232,10 @@ export const Tracks: FC = () => {
                 />
             )}
 
-            {/* скрытый <audio> */}
+            {/* hidden audio */}
             <audio ref={audioRef} preload="none" />
 
-            {/* плеер-бар */}
+            {/* player bar */}
             <AnimatePresence>
                 {currentTrack && (
                     <motion.div
@@ -255,10 +246,7 @@ export const Tracks: FC = () => {
                     >
                         <PlayerBar
                             audio={audioRef.current}
-                            track={{
-                                title: currentTrack.name,
-                                producer: currentTrack.producerUsername || '',
-                            }}
+                            track={{ title: currentTrack.name, producer: currentTrack.producerUsername || '' }}
                         />
                     </motion.div>
                 )}

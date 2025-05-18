@@ -10,11 +10,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class LikeServiceImpl implements LikeService {
     private final TrackLikeRepository likeRepo;
     private final TrackRepository trackRepo;  // pro update počtu lajků v entitě Track
+
+    @Override
+    public List<Long> findLikedTrackIdsByUser(Long userId) {
+        return likeRepo.findAllByUserId(userId)
+                .stream()
+                .map(tl -> tl.getTrack().getId())
+                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional

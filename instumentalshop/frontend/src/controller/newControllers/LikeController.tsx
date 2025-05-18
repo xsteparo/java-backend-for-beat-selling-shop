@@ -25,4 +25,13 @@ export class LikeController {
             throw new Error(`Unlike track failed: ${res.status}`)
         }
     }
+
+    static async getMyLikes(): Promise<number[]> {
+        const res = await fetch(`${this.BASE}/like/me`, {
+            method: 'GET',
+            headers: this.getAuthHeader(),
+        })
+        if (!res.ok) throw new Error(`Fetch my likes failed: ${res.status}`)
+        return res.json()
+    }
 }

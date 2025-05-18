@@ -30,6 +30,8 @@ import org.springframework.http.HttpRange;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -37,6 +39,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -78,6 +81,17 @@ public class TrackServiceImpl implements TrackService {
         // Vytvoření specifikace na základě filtračního DTO
         Specification<Track> spec = TrackSpecificationBuilder.fromFilter(filter);
 
+        // Специальная логика для "trending"
+        //Сначала мы добавляем фильтр по среднему (rating > avgRating),
+        //затем уже применяем Sort.by(DESC, "lastRatingDelta") из determineSort().
+        if ("trending".equalsIgnoreCase(filter.getTab())) {
+            Double avgRating = trackRepository.findAverageRating();
+            if (avgRating != null) {
+                spec = spec.and((root, cq, cb) ->
+                        cb.greaterThan(root.get("rating"), avgRating)
+                );
+            }
+        }
         // 1) Určení řazení podle zadaného filtru
         Sort sort = determineSort(filter);
 
@@ -90,42 +104,46 @@ public class TrackServiceImpl implements TrackService {
     }
 
     private Sort determineSort(TrackFilterDto filter) {
-        // Získáme hodnotu „tab“ z filtru, pokud chybí, použijeme prázdný řetězec, a převedeme na malá písmena
-        String tab  = Optional.ofNullable(filter.getTab())
+        String tab       = Optional.ofNullable(filter.getTab())
                 .orElse("")
+                .trim()
                 .toLowerCase();
-        // Získáme hodnotu pro řazení, odstraníme přebytečné mezery
-        String sort = Optional.ofNullable(filter.getSort())
+        String sortParam = Optional.ofNullable(filter.getSort())
                 .orElse("")
                 .trim();
 
-        // Záložky (tabs) mají vždy přednost před ručně zadaným řazením
+        List<Order> orders = new ArrayList<>();
+
+        // 1) Табовая сортировка (первичный ключ)
         switch (tab) {
             case "trending":
-                // „Trending“ – řadíme sestupně podle změny hodnocení
-                return Sort.by(Sort.Direction.DESC, "lastRatingDelta");
+                orders.add(Order.desc("lastRatingDelta"));
+                break;
             case "top":
-                // „Top“ – řadíme sestupně podle celkového hodnocení
-                return Sort.by(Sort.Direction.DESC, "rating");
+                orders.add(Order.desc("rating"));
+                break;
             case "new":
-                // „New“ – řadíme sestupně podle data vytvoření
-                return Sort.by(Sort.Direction.DESC, "createdAt");
+                orders.add(Order.desc("createdAt"));
+                break;
+            default:
+                break;
         }
 
-        // Pokud uživatel zadal parametr sort (např. "-rating" nebo "createdAt")
-        if (!sort.isEmpty()) {
-            // Určíme směr řazení podle prefixu „-“
-            Sort.Direction dir = sort.startsWith("-")
+        // 2) Ручная сортировка (вторичный ключ)
+        if (!sortParam.isEmpty()) {
+            Sort.Direction dir  = sortParam.startsWith("-")
                     ? Sort.Direction.DESC
                     : Sort.Direction.ASC;
-            // Odstraníme případný prefix „-“, abychom získali název vlastnosti
-            String property = sort.replaceFirst("^-", "");
-            // Vrátíme řazení podle zjištěného směru a vlastnosti
-            return Sort.by(dir, property);
+            String        prop = sortParam.replaceFirst("^-", "");
+            orders.add(new Order(dir, prop));
         }
 
-        // Výchozí fallback – pokud nic jiného, řadíme sestupně podle data vytvoření
-        return Sort.by(Sort.Direction.DESC, "createdAt");
+        // 3) Фолбэк — если до сих пор нет ни одного Order, сортируем по дате создания
+        if (orders.isEmpty()) {
+            orders.add(Order.desc("createdAt"));
+        }
+
+        return Sort.by(orders);
     }
 
     @Override
@@ -249,7 +267,7 @@ public class TrackServiceImpl implements TrackService {
                 .urlPremium(urlWav)
                 .urlExclusive(urlZip)
                 .createdAt(LocalDateTime.now())
-                .rating(1000.00)
+                .rating(BigDecimal.valueOf(1000.00))
                 .build();
 
         Track saved = trackRepository.save(track);

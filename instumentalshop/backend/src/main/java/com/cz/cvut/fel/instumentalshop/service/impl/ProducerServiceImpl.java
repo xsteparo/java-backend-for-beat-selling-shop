@@ -163,7 +163,7 @@ public class ProducerServiceImpl implements ProducerService {
 //                    .map(ProducerTrackInfo::getTrack)
                     .sorted((t1, t2) -> t2.getCreatedAt().compareTo(t1.getCreatedAt()))
                     .limit(10)
-                    .mapToDouble(Track::getRating)
+                    .mapToDouble(track -> track.getRating().doubleValue())
                     .average().orElse(0.0);
             p.setRating(avg);
             producerRepository.save(p);
