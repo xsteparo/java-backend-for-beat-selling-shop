@@ -19,9 +19,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
-    private final ChatRoomRepository    roomRepo;
+    private final ChatRoomRepository roomRepo;
     private final ChatMessageRepository msgRepo;
-    private final UserRepository        userRepo;
+    private final UserRepository userRepo;
 
     @Override
     @Transactional(readOnly = true)
@@ -73,15 +73,22 @@ public class ChatServiceImpl implements ChatService {
         User sender = userRepo.findById(senderId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found: " + senderId));
 
+        // 1) создаём и сохраняем новое сообщение
         ChatMessage msg = new ChatMessage();
         msg.setChatRoom(room);
         msg.setSender(sender);
         msg.setContent(content);
         msg = msgRepo.save(msg);
 
-        // aktualizuj poslední zprávu
+        // 2) Обязательно добавляем его в коллекцию сообщений комнаты
+        room.getMessages().add(msg);
+
+        // 3) Обновляем указатель lastMessage
         room.setLastMessage(msg);
+
+        // 4) Сохраняем комнату — но теперь старые сообщения остаются в списке => не удаляются
         roomRepo.save(room);
+
         return msg;
     }
 }

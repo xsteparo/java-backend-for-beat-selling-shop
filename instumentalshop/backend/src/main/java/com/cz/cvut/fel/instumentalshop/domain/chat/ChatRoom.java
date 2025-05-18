@@ -30,6 +30,6 @@ public class ChatRoom {
     @JoinColumn(name = "last_message_id")
     private ChatMessage lastMessage;
 
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     private List<ChatMessage> messages = new ArrayList<>();
 }

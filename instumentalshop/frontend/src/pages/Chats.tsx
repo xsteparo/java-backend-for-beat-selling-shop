@@ -9,28 +9,27 @@ import {useParams} from "react-router-dom";
 const wsService = new ChatWebSocketService();
 
 const Chats: FC = () => {
-    const { role } = useAuth();
-    const { roomId } = useParams<{ roomId: string }>();
+    // 1) Теперь захватываем именно username, а не role
+    const {user} = useAuth();
+    const {roomId} = useParams<{ roomId: string }>();
     const [rooms, setRooms] = useState<ChatRoomDto[]>([]);
     const [activeRoom, setActiveRoom] = useState<ChatRoomDto | null>(null);
     const [messages, setMessages] = useState<ChatMessageDto[]>([]);
     const [input, setInput] = useState<string>('');
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    // 1) Устанавливаем WS-соединение один раз при монтировании
+    // 1. WS-коннект при монтировании
     useEffect(() => {
         wsService.connect();
         return () => wsService.disconnect();
     }, []);
 
-    // 2) Загружаем список комнат
+    // 2. Список комнат
     useEffect(() => {
-        ChatController.listRooms()
-            .then(setRooms)
-            .catch(console.error);
+        ChatController.listRooms().then(setRooms).catch(console.error);
     }, []);
 
-    // 3) Открываем комнату из URL или по клику
+    // 3. Открываем комнату по URL
     useEffect(() => {
         if (!roomId) return;
         const id = Number(roomId);
@@ -47,48 +46,40 @@ const Chats: FC = () => {
         }
     }, [roomId, rooms]);
 
-    // 4) При смене активной комнаты: отписка, загрузка истории, подписка с retry
+    // 4. При смене activeRoom: отписка, загрузка истории и подписка
     useEffect(() => {
         if (!activeRoom) return;
         wsService.unsubscribe(activeRoom.id);
+
         ChatController.getMessages(activeRoom.id)
             .then(msgs => {
                 setMessages(msgs);
-                setTimeout(() => scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight), 50);
+                setTimeout(() => {
+                    scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
+                }, 50);
             })
             .catch(console.error);
 
-        const subscribeWithRetry = () => {
-            try {
-                wsService.subscribe(activeRoom.id, incoming => {
-                    setMessages(prev => {
-                        // если такое сообщение уже есть — игнорируем
-                        if (prev.some(m => m.id === incoming.id)) {
-                            return prev;
-                        }
-                        return [...prev, incoming];
-                    });
-                    // после того как UI обновился (в следующем тике), проскроллим
-                    setTimeout(() => {
-                        scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
-                    }, 0);
-                });
-            } catch {
-                setTimeout(subscribeWithRetry, 500);
-            }
-        };
-        subscribeWithRetry();
+        wsService.subscribe(activeRoom.id, incoming => {
+            setMessages(prev => {
+                // 2) фильтруем по id, чтобы не было дубликатов
+                if (prev.some(m => m.id === incoming.id)) return prev;
+                return [...prev, incoming];
+            });
+            // скроллим в следующий тик
+            setTimeout(() => {
+                scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
+            }, 0);
+        });
     }, [activeRoom]);
 
-    // Отправка сообщения
+    // 5. Отправка по WS — без REST
     const sendMessage = () => {
         if (!activeRoom || !input.trim()) return;
         const content = input.trim();
         setInput('');
-        // шлём только по WS — бекенд сам сохранит и расшлёт DTO всем подписчикам
         wsService.send(activeRoom.id, content);
-        // скролл мы тоже можем делать здесь,
-        // но при подписке придёт наше же сообщение и вызов scroll там
+        // локально не пушим — ждём прихода по WS
     };
 
     return (
@@ -96,7 +87,9 @@ const Chats: FC = () => {
             <aside className="w-1/4 border-r border-gray-700 p-4 overflow-y-auto">
                 <h2 className="text-xl mb-4">Chats</h2>
                 {rooms.map(room => {
-                    const other = room.participants.find(p => p.username !== role) ?? room.participants[0];
+                    // 3) Находим «другого» участника корректно
+                    const other = room.participants.find(p => p.username !== user?.username)
+                        ?? room.participants[0];
                     return (
                         <button
                             key={room.id}
@@ -116,20 +109,35 @@ const Chats: FC = () => {
                     <>
                         <header className="p-4 border-b border-gray-700">
                             <h3 className="text-lg">
-                                Conversation with {activeRoom.participants.find(p => p.username !== role)?.username}
+                                {/* тоже исправлено: сравниваем на username */}
+                                Conversation
+                                with {activeRoom.participants.find(p => p.username !== user?.username)?.username}
                             </h3>
                         </header>
-                        <div ref={scrollRef} className="flex-1 p-4 overflow-y-auto space-y-2">
+                        <div
+                            ref={scrollRef}
+                            className="flex-1 p-4 overflow-y-auto flex flex-col space-y-4"
+                        >
                             {messages.map(msg => (
                                 <div
                                     key={msg.id}
                                     className={`max-w-xs p-2 rounded ${
-                                        msg.senderUsername === role ? 'bg-green-600 self-end' : 'bg-gray-800 self-start'
+                                        msg.senderUsername === user?.username
+                                            ? 'bg-green-600 self-end'
+                                            : 'bg-gray-800 self-start'
                                     }`}
                                 >
                                     <div className="text-sm font-semibold">{msg.senderUsername}</div>
                                     <div>{msg.content}</div>
-                                    <div className="text-xs text-gray-400 mt-1">{new Date(msg.sentAt).toLocaleString()}</div>
+                                    <div
+                                        className={`text-xs mt-1 ${
+                                            msg.senderUsername === user?.username
+                                                ? 'text-gray-200'   /* на зелёном фоне — светлее */
+                                                : 'text-gray-400'   /* на сером — как было */
+                                        }`}
+                                    >
+                                        {new Date(msg.sentAt).toLocaleString()}
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -145,7 +153,9 @@ const Chats: FC = () => {
                             <button
                                 onClick={sendMessage}
                                 className="px-4 py-2 bg-blue-600 rounded-r hover:bg-blue-500"
-                            >Send</button>
+                            >
+                                Send
+                            </button>
                         </footer>
                     </>
                 ) : (
