@@ -71,8 +71,8 @@ public class TrackSpecificationBuilder {
     private static Specification<Track> searchSpec(String search) {
         String lowered = search.toLowerCase().trim();
         return (root, query, cb) -> {
-            Join<Track, ProducerTrackInfo> ptiJoin = root.join("producerTrackInfos", JoinType.LEFT);
-            Join<ProducerTrackInfo, Producer> producerJoin = ptiJoin.join("producer", JoinType.LEFT);
+            Join<Track, Producer> producerJoin = root.join("producer", JoinType.LEFT);
+
             return cb.or(
                     cb.like(cb.lower(root.get("name")), "%" + lowered + "%"),
                     cb.like(cb.lower(producerJoin.get("username")), "%" + lowered + "%")

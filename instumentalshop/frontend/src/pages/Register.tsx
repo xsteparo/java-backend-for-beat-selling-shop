@@ -1,6 +1,5 @@
-import { FC, FormEvent, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import {CustomerController} from "../controller/CustomerController.ts";
+import {FC, FormEvent, useState} from 'react'
+import {Link, useNavigate} from 'react-router-dom'
 import {UserCreationRequestDto} from "../dto/UserCreationRequestDto.ts";
 import {UserDto} from "../dto/UserDto.ts";
 import {AuthController} from "../controller/AuthConrtoller.ts";
@@ -8,13 +7,13 @@ import {AuthController} from "../controller/AuthConrtoller.ts";
 export const Register: FC = () => {
     const navigate = useNavigate()
     const [username, setUsername] = useState('')
-    const [email, setEmail]       = useState('')
+    const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [confirm, setConfirm]   = useState('')
-    const [role, setRole]         = useState<'producer'|'customer'>('producer')
-    const [avatar, setAvatar]     = useState<File | null>(null)
-    const [error, setError]       = useState<string | null>(null)
-    const [success, setSuccess]   = useState<string | null>(null)
+    const [confirm, setConfirm] = useState('')
+    const [role, setRole] = useState<'producer' | 'customer'>('producer')
+    const [avatar, setAvatar] = useState<File | null>(null)
+    const [error, setError] = useState<string | null>(null)
+    const [success, setSuccess] = useState<string | null>(null)
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -194,7 +193,8 @@ export const Register: FC = () => {
 
                 <p className="form__footer mt-8 text-sm text-gray-400">
                     Already have an account?{' '}
-                    <Link to="/login" className="form-container__link text-[#1db954] hover:text-[#17a44a] hover:underline">
+                    <Link to="/login"
+                          className="form-container__link text-[#1db954] hover:text-[#17a44a] hover:underline">
                         Sign In
                     </Link>
                 </p>

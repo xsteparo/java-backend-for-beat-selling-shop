@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { TrackRow } from './TrackRow';
-import {TrackDto} from "../../dto/TrackDto.ts";
+import {TrackDto} from "../../dto/newDto/tracks/TrackDto.ts";
 
 
 interface TracksTableProps {

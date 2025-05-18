@@ -3,116 +3,163 @@ import {FC, FormEvent, useEffect, useRef, useState} from 'react'
 import {useAuth} from '../context/AuthContext'
 import {Filters} from '../components/Filters'
 import '../index.css'
-import {TrackController} from "../controller/TrackController.tsx";
-import {TrackDto} from "../dto/TrackDto.ts"; // Tailwind
+import {TrackController} from "../controller/newControllers/TrackController.tsx";
+import {TrackDto} from "../dto/newDto/tracks/TrackDto.ts"; // Tailwind
 import Pagination from '../components/Pagination.tsx';
 import {TracksTable} from "../components/tracks/TracksTable.tsx";
 import {LicenseModal} from "../components/LicenseModal.tsx";
 import PlayerBar from "../components/PlayerBar.tsx";
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCart } from '../context/CartContext.tsx';
+import {TrackFilter} from "../dto/newDto/tracks/TrackFilter.tsx";
+import {LikeController} from "../controller/newControllers/LikeController.tsx";
 
 
 export const Tracks: FC = () => {
-    const { role }      = useAuth();
-    const { addItem }   = useCart();          // ← глобальная корзина
+    const { role } = useAuth()
+    const { addItem } = useCart()
 
-    /* ───── Tabs ───── */
+    // ───── Tabs ─────
     const tabs = [
-        { key: 'top',      label: 'Nejlepší beaty' },
-        { key: 'trending', label: 'Na vzestupu'    },
-        { key: 'new',      label: 'Novinky'        },
-    ] as const;
-    const [activeTab, setActiveTab] = useState<(typeof tabs)[number]['key']>('trending');
+        { key: 'top', label: 'Nejlepší beaty' },
+        { key: 'trending', label: 'Na vzestupu' },
+        { key: 'new', label: 'Novinky' },
+    ] as const
+    const [activeTab, setActiveTab] = useState<(typeof tabs)[number]['key']>('trending')
 
-    /* ───── список треков, поиск, фильтры ───── */
-    const [tracks,     setTracks]     = useState<TrackDto[]>([]);
-    const [search,     setSearch]     = useState('');
-    const [page,       setPage]       = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [filters,    setFilters]    = useState({ genre:'', bpm:'', key:'', sort:'' });
+    // ───── список треков, поиск, фильтры ─────
+    const [tracks, setTracks] = useState<TrackDto[]>([])
+    const [search, setSearch] = useState('')
+    const [page, setPage] = useState(1)
+    const [totalPages, setTotalPages] = useState(1)
+    const [filters, setFilters] = useState<Pick<TrackFilter, 'genre' | 'tempoRange' | 'key' | 'sort'>>({
+        genre: '',
+        tempoRange: '',
+        key: '',
+        sort: '',
+    })
 
-    /* ───── лайки ───── */
-    const [liked, setLiked] = useState<Set<string>>(new Set());
-    const toggleLike = (id: string) =>
-        setLiked(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
+    // ───── лайки ─────
+    const [liked, setLiked] = useState<Set<string>>(new Set())
+    // загрузка лайков из localStorage
+    useEffect(() => {
+        const stored = localStorage.getItem('likedTracks')
+        if (stored) {
+            try {
+                setLiked(new Set(JSON.parse(stored)))
+            } catch {}
+        }
+    }, [])
 
-    /* ───── модалка лицензий ───── */
-    const [modalTrack, setModalTrack] = useState<TrackDto | null>(null);
+    const toggleLike = async (id: string) => {
+        try {
+            if (liked.has(id)) {
+                await LikeController.unlike(Number(id))
+                setLiked(prev => {
+                    const next = new Set(prev)
+                    next.delete(id)
+                    localStorage.setItem('likedTracks', JSON.stringify(Array.from(next)))
+                    return next
+                })
+            } else {
+                await LikeController.like(Number(id))
+                setLiked(prev => {
+                    const next = new Set(prev)
+                    next.add(id)
+                    localStorage.setItem('likedTracks', JSON.stringify(Array.from(next)))
+                    return next
+                })
+            }
+        } catch (e) {
+            console.error('Like toggle error:', e)
+        }
+    }
 
-    /* ═════════  АУДИО  ═════════ */
-    const audioRef       = useRef<HTMLAudioElement>(null);
-    const [currentTrack, setCurrentTrack] = useState<TrackDto | null>(null);
+    // ───── модалка лицензий ─────
+    const [modalTrack, setModalTrack] = useState<TrackDto | null>(null)
+
+    // ═════════ АУДИО ═════════
+    const audioRef = useRef<HTMLAudioElement>(null)
+    const [currentTrack, setCurrentTrack] = useState<TrackDto | null>(null)
 
     const play = async (id: string) => {
-        const audio = audioRef.current;
-        if (!audio) return;
-        const track = tracks.find(t => String(t.id) === id);
-        if (!track) return;
+        const audio = audioRef.current
+        if (!audio) return
+        const track = tracks.find(t => String(t.id) === id)
+        if (!track) return
 
         // пауза / воспроизведение
         if (currentTrack?.id === track.id) {
-            audio.pause();
-            setCurrentTrack(null);
-            return;
+            audio.pause()
+            setCurrentTrack(null)
+            return
         }
 
-        audio.src = `/api/v1/tracks/${id}/stream`;
-        audio.currentTime = 0;
+        audio.src = `/api/v1/tracks/${id}/stream`
+        audio.currentTime = 0
         try {
-            await audio.play();
-            setCurrentTrack(track);
-        } catch (e) { console.error(e); }
-    };
+            await audio.play()
+            setCurrentTrack(track)
+        } catch (e) {
+            console.error(e)
+        }
+    }
 
-    /* закрываем бар, когда закончился трек */
+    // закрываем бар, когда закончился трек
     useEffect(() => {
-        const a = audioRef.current;
-        if (!a) return;
-        const ended = () => setCurrentTrack(null);
-        a.addEventListener('ended', ended);
-        return () => a.removeEventListener('ended', ended);
-    }, []);
+        const a = audioRef.current
+        if (!a) return
+        const ended = () => setCurrentTrack(null)
+        a.addEventListener('ended', ended)
+        return () => a.removeEventListener('ended', ended)
+    }, [])
 
-    /* ───── загрузка треков ───── */
+    // ───── загрузка треков ─────
     useEffect(() => {
-        TrackController.listTracks({
-            tab:        activeTab,
-            search,
-            genre:      filters.genre,
-            tempoRange: filters.bpm,
-            key:        filters.key,
-            sort:       filters.sort,
+        TrackController.listTracks(
+            {
+                tab: activeTab,
+                search,
+                genre: filters.genre,
+                tempoRange: filters.tempoRange,
+                key: filters.key,
+                sort: filters.sort,
+            },
             page,
-            size:       10,
-        })
+            10
+        )
             .then(data => {
-                setTracks(data.content);
-                setTotalPages(data.totalPages);
+                setTracks(data.content)
+                setTotalPages(data.totalPages)
 
                 if (currentTrack && !data.content.some(t => t.id === currentTrack.id)) {
-                    audioRef.current?.pause();
-                    setCurrentTrack(null);
+                    audioRef.current?.pause()
+                    setCurrentTrack(null)
                 }
             })
-            .catch(console.error);
+            .catch(console.error)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeTab, page, search, filters]);
+    }, [activeTab, page, search, filters])
 
-    const onSearch = (e: FormEvent) => { e.preventDefault(); setPage(1); };
+    const onSearch = (e: FormEvent) => {
+        e.preventDefault()
+        setPage(1)
+    }
 
     const buy = (id: string) => {
-        const track = tracks.find(t => String(t.id) === id);
-        if (track) setModalTrack(track);
-    };
-    const remove = async (id: string) => { /* реализация удаления */ };
+        const track = tracks.find(t => String(t.id) === id)
+        if (track) setModalTrack(track)
+    }
+    const remove = async (id: string) => {
+        // реализация удаления
+    }
 
-    /* ═════════  RENDER  ═════════ */
+    // ═════════ RENDER ═════════
     return (
         <main className="flex flex-col bg-gray-900 min-h-screen p-6">
             <h1 className="text-3xl text-white text-center mb-6">All beats</h1>
 
-            {/* ───── Tabs + Search ───── */}
+            {/* Tabs + Search */}
             <div className="mb-6 grid grid-cols-[1fr_auto_1fr] items-center">
                 <div />
                 <div className="flex space-x-4">
@@ -124,7 +171,10 @@ export const Tracks: FC = () => {
                                     ? 'bg-green-600 text-white'
                                     : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                             }`}
-                            onClick={() => { setActiveTab(t.key); setPage(1); }}
+                            onClick={() => {
+                                setActiveTab(t.key)
+                                setPage(1)
+                            }}
                         >
                             {t.label}
                         </button>
@@ -148,7 +198,7 @@ export const Tracks: FC = () => {
                 </form>
             </div>
 
-            {/* ───── контент ───── */}
+            {/* контент */}
             <div className="flex flex-1 gap-6">
                 <Filters onChange={setFilters} />
 
@@ -179,14 +229,14 @@ export const Tracks: FC = () => {
                 </div>
             </div>
 
-            {/* ───── модалка лицензии ───── */}
+            {/* модалка лицензии */}
             {modalTrack && (
                 <LicenseModal
                     track={modalTrack}
                     onClose={() => setModalTrack(null)}
                     onChoose={(t, lic, price) => {
-                        addItem({ track: t, license: lic, price });   // глобальный cart
-                        setModalTrack(null);
+                        addItem({ track: t, license: lic, price })
+                        setModalTrack(null)
                     }}
                 />
             )}
@@ -194,25 +244,25 @@ export const Tracks: FC = () => {
             {/* скрытый <audio> */}
             <audio ref={audioRef} preload="none" />
 
-            {/* ───── плеер-бар ───── */}
+            {/* плеер-бар */}
             <AnimatePresence>
                 {currentTrack && (
                     <motion.div
                         initial={{ y: 80, opacity: 0 }}
-                        animate={{ y: 0,  opacity: 1 }}
-                        exit={{    y: 80, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 80, opacity: 0 }}
                         transition={{ duration: 0.25 }}
                     >
                         <PlayerBar
                             audio={audioRef.current}
                             track={{
-                                title:    currentTrack.name,
-                                producer: currentTrack.producerUsername.toString() ?? '',
+                                title: currentTrack.name,
+                                producer: currentTrack.producerUsername || '',
                             }}
                         />
                     </motion.div>
                 )}
             </AnimatePresence>
         </main>
-    );
-};
+    )
+}

@@ -1,4 +1,4 @@
-import {TrackDto} from "./TrackDto.ts";
+import {TrackDto} from "./newDto/tracks/TrackDto.ts";
 
 export type LicenseType = 'nonexclusive' | 'premium' | 'exclusive';
 

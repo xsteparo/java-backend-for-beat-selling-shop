@@ -1,6 +1,6 @@
 // src/components/LicenseModal.tsx
 import { FC } from 'react';
-import { TrackDto } from '../dto/TrackDto';
+import { TrackDto } from '../dto/newDto/tracks/TrackDto';
 import {LicenseType} from "../dto/CartItem.tsx";
 
 interface Option {
