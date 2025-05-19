@@ -2,9 +2,11 @@ package com.cz.cvut.fel.instumentalshop.service.impl;
 
 
 import com.cz.cvut.fel.instumentalshop.domain.Producer;
+import com.cz.cvut.fel.instumentalshop.domain.PurchasedLicence;
 import com.cz.cvut.fel.instumentalshop.domain.Track;
 import com.cz.cvut.fel.instumentalshop.domain.enums.GenreType;
 import com.cz.cvut.fel.instumentalshop.domain.enums.KeyType;
+import com.cz.cvut.fel.instumentalshop.domain.enums.LicenceType;
 import com.cz.cvut.fel.instumentalshop.dto.newDto.TrackFilterDto;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -48,6 +50,9 @@ public class TrackSpecificationBuilder {
         if (filter.getKey() != null && !filter.getKey().isBlank()) {
             specs.add(keySpec(filter.getKey()));
         }
+
+        specs.add(excludeExclusiveSoldSpec());
+
 
         // Spojit všechny specifikace pomocí AND
         Specification<Track> result = specs.stream()
@@ -109,5 +114,20 @@ public class TrackSpecificationBuilder {
     private static Specification<Track> keySpec(String key) {
         KeyType kt = KeyType.fromString(key.trim().toUpperCase());
         return (root, query, cb) -> cb.equal(root.get("keyType"), kt);
+    }
+
+    private static Specification<Track> excludeExclusiveSoldSpec() {
+        return (root, query, cb) -> {
+            // EXISTS podmínka: je někdo, kdo koupil EXCLUSIVE licenci na tento track
+            var subquery = query.subquery(Long.class);
+            var purchased = subquery.from(PurchasedLicence.class);
+            subquery.select(cb.literal(1L));
+            subquery.where(
+                    cb.equal(purchased.get("track"), root),
+                    cb.equal(purchased.get("licenceTemplate").get("licenceType"), LicenceType.EXCLUSIVE)
+            );
+
+            return cb.not(cb.exists(subquery));
+        };
     }
 }

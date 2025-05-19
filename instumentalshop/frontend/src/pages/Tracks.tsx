@@ -52,21 +52,23 @@ export const Tracks: FC = () => {
     // ───── load tracks & likes ─────
     useEffect(() => {
         let mounted = true
-        Promise.all([
-            TrackController.listTracks(
-                {
-                    tab: activeTab,
-                    search: search || undefined,
-                    genre: filters.genre || undefined,
-                    tempoRange: filters.tempoRange || undefined,
-                    key: filters.key || undefined,
-                    sort: filters.sort || undefined,
-                },
-                page,
-                10
-            ),
-            LikeController.getMyLikes(),
-        ])
+
+        const trackPromise = TrackController.listTracks(
+            {
+                tab: activeTab,
+                search: search || undefined,
+                genre: filters.genre || undefined,
+                tempoRange: filters.tempoRange || undefined,
+                key: filters.key || undefined,
+                sort: filters.sort || undefined,
+            },
+            page,
+            5
+        )
+
+        const likePromise = role !== 'guest' ? LikeController.getMyLikes() : Promise.resolve([])
+
+        Promise.all([trackPromise, likePromise])
             .then(([pageData, likedIds]) => {
                 if (!mounted) return
                 setTracks(pageData.content)
@@ -81,7 +83,7 @@ export const Tracks: FC = () => {
             .catch(console.error)
 
         return () => { mounted = false }
-    }, [activeTab, page, search, filters])
+    }, [activeTab, page, search, filters, role])
 
     // ───── toggle like ─────
     const toggleLike = async (id: string) => {

@@ -32,4 +32,13 @@ public interface TrackRepository extends JpaRepository<Track, Long>, JpaSpecific
     @Query("select t.urlNonExclusive from Track t where t.id = :id")
     String findFilePathById(@Param("id") Long id);
 
+    @Query("""
+    SELECT t FROM Track t
+    WHERE NOT EXISTS (
+        SELECT 1 FROM PurchasedLicence pl
+        WHERE pl.track = t AND pl.licenceTemplate.licenceType = com.cz.cvut.fel.instumentalshop.domain.enums.LicenceType.EXCLUSIVE
+    )
+""")
+    Page<Track> findAllAvailable(Pageable pageable);
+
 }

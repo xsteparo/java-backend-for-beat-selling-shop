@@ -25,18 +25,20 @@ export const TracksTable: FC<TracksTableProps> = ({
                     text-xs text-gray-400 uppercase mb-3">
             <div className="flex-none w-10 mr-4" />
             <div className="flex-none w-10 mr-4" />
-            <div className="flex-1  min-w-0">NAZEV</div>
-            <div className="flex-none w-20 text-center truncate">HODNOCENÍ</div>
+            <div className="flex-1 min-w-0">NAZEV</div>
+            <div className="flex-none w-20 text-center truncate">ELO</div>
             <div className="flex-none w-20 text-center truncate">PLAYS</div>
             <div className="flex-none w-20 text-center truncate">LIKES</div>
             <div className="flex-none w-16 text-center truncate">ŽÁNR</div>
             <div className="flex-none w-16 text-center">TÓNINA</div>
             <div className="flex-none w-16 text-center">BPM</div>
-            <div className="flex-none w-24" />
+
+            {/* Столбец под действия только если не guest */}
+            {role !== 'guest' && <div className="flex-none w-24" />}
         </div>
 
         {/* ─── строки ─── */}
-        <div className="flex flex-col gap-3">{/* можно space-y-3, но gap проще */}
+        <div className="flex flex-col gap-3">
             {tracks.map(track => (
                 <TrackRow
                     key={track.id}
@@ -52,4 +54,4 @@ export const TracksTable: FC<TracksTableProps> = ({
             ))}
         </div>
     </div>
-);
+)

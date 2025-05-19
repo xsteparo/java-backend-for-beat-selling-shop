@@ -73,7 +73,7 @@ public class DataInitializer implements CommandLineRunner {
         );
 
         // 3) Создать 5 треков (single-owner: mainProducerPercentage=100, producerShares=empty)
-        for (int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 15; i++) {
             TrackRequestDto dto = TrackRequestDto.builder()
                     .name("Beat #" + i)
                     .genreType(GenreType.HIPHOP)

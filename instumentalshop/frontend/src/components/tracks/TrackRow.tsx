@@ -20,12 +20,12 @@ export const TrackRow: FC<TrackRowProps> = ({
                                                 track, role, liked, currentTrackId,
                                                 onPlay, onBuy, onRemove, onToggleLike
                                             }) => {
-    const idStr = String(track.id);
-    const isPlaying = idStr === currentTrackId;
+    const idStr = String(track.id)
+    const isPlaying = idStr === currentTrackId
 
     return (
         <div className="flex w-full items-center bg-gray-800 rounded-xl px-6 py-4 space-x-2">
-            {/* ▶ с отступом вправо */}
+            {/* ▶ Кнопка проигрывания */}
             <button
                 onClick={() => onPlay(idStr)}
                 className="flex-none w-10 h-10 mr-4 flex items-center justify-center text-teal-400 hover:text-teal-300"
@@ -33,24 +33,24 @@ export const TrackRow: FC<TrackRowProps> = ({
                 {isPlaying ? '❚❚' : '▶'}
             </button>
 
-            {/* Иконка с отступом вправо */}
+            {/* Иконка */}
             <img
                 src="/images/note-icon.svg"
                 alt="icon"
                 className="flex-none w-10 h-10 rounded-full object-cover mr-4"
             />
 
-            {/* Название + продюсер (растягивается) */}
+            {/* Название и продюсер */}
             <div className="flex-1 min-w-0 flex flex-col">
-        <span className="text-white font-semibold truncate">
-          {track.name}
-        </span>
+                <span className="text-white font-semibold truncate">
+                    {track.name}
+                </span>
                 <span className="text-gray-400 text-sm truncate">
-          {track.producerUsername}
-        </span>
+                    {track.producerUsername}
+                </span>
             </div>
 
-            {/* Остальные поля */}
+            {/* Характеристики */}
             <div className="flex-none w-16 text-start text-gray-300">
                 {track.rating}
             </div>
@@ -70,30 +70,35 @@ export const TrackRow: FC<TrackRowProps> = ({
                 {track.bpm}
             </div>
 
-            {/* Кнопки действий */}
-            <div className="flex-none w-24 flex items-center justify-end space-x-3">
-                <button onClick={() => onToggleLike(idStr)} className="p-1">
-                    <HeartIcon filled={liked} className="w-5 h-5 text-red-500" />
-                </button>
-                {role === 'admin' ? (
-                    <>
+            {/* Кнопки (если не guest) */}
+            {role !== 'guest' && (
+                <div className="flex-none w-24 flex items-center justify-end space-x-3">
+                    {/* Лайк */}
+                    <button onClick={() => onToggleLike(idStr)} className="p-1">
+                        <HeartIcon filled={liked} className="w-5 h-5 text-red-500" />
+                    </button>
+
+                    {/* Скачивание / покупка / удаление */}
+                    {role === 'admin' ? (
+                        <>
+                            <a href={`/api/v1/tracks/${track.id}/download`} className="p-1 hover:text-blue-400">
+                                <BagIcon className="w-5 h-5 text-blue-500" />
+                            </a>
+                            <button onClick={() => onRemove(idStr)} className="text-red-500 hover:text-red-400">
+                                ✕
+                            </button>
+                        </>
+                    ) : track.purchased ? (
                         <a href={`/api/v1/tracks/${track.id}/download`} className="p-1 hover:text-blue-400">
                             <BagIcon className="w-5 h-5 text-blue-500" />
                         </a>
-                        <button onClick={() => onRemove(idStr)} className="text-red-500 hover:text-red-400">
-                            ✕
+                    ) : (
+                        <button onClick={() => onBuy(idStr)} className="p-1 hover:text-blue-400">
+                            <BagIcon className="w-5 h-5 text-blue-500" />
                         </button>
-                    </>
-                ) : track.purchased ? (
-                    <a href={`/api/v1/tracks/${track.id}/download`} className="p-1 hover:text-blue-400">
-                        <BagIcon className="w-5 h-5 text-blue-500" />
-                    </a>
-                ) : (
-                    <button onClick={() => onBuy(idStr)} className="p-1 hover:text-blue-400">
-                        <BagIcon className="w-5 h-5 text-blue-500" />
-                    </button>
-                )}
-            </div>
+                    )}
+                </div>
+            )}
         </div>
-    );
-};
+    )
+}
