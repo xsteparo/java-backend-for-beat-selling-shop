@@ -1,5 +1,6 @@
 import { PurchaseDto } from "../../dto/newDto/purchase/PurchaseDto";
 import {UserDto} from "../../dto/newDto/auth/UserDto.tsx";
+import {UpdateUserRoleRequest} from "../../dto/newDto/user/UpdateUserRoleRequest.tsx";
 
 const BASE = "/api/v1/admin";
 
@@ -65,5 +66,18 @@ export class AdminController {
             headers: getAuthHeader(),
         });
         if (!res.ok) throw new Error(`Failed to delete purchase: ${res.status}`);
+    }
+
+    static async updateUserRole(userId: number, role: UpdateUserRoleRequest['role']): Promise<UserDto> {
+        const res = await fetch(`/api/v1/admin/users/${userId}/role`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                ...getAuthHeader(),
+            },
+            body: JSON.stringify({ role }),
+        });
+        if (!res.ok) throw new Error(`Failed to update user role: ${res.status}`);
+        return res.json();
     }
 }

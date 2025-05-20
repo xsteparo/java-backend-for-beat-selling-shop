@@ -1,5 +1,6 @@
 package com.cz.cvut.fel.instumentalshop.service;
 
+import com.cz.cvut.fel.instumentalshop.domain.enums.Role;
 import com.cz.cvut.fel.instumentalshop.dto.licence.out.PurchaseDto;
 import com.cz.cvut.fel.instumentalshop.dto.newDto.PurchaseUpdateRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.user.out.UserDto;
@@ -10,6 +11,8 @@ import java.util.List;
  * Service vrstva pro administrátorské operace.
  */
 public interface AdminService {
+
+    UserDto updateUserRole(Long userId, Role newRole);
 
     void deletePurchase(Long purchaseId);
 

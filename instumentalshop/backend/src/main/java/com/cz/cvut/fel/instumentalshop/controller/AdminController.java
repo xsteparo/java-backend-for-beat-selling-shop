@@ -2,6 +2,7 @@ package com.cz.cvut.fel.instumentalshop.controller;
 
 import com.cz.cvut.fel.instumentalshop.dto.licence.out.PurchaseDto;
 import com.cz.cvut.fel.instumentalshop.dto.newDto.PurchaseUpdateRequestDto;
+import com.cz.cvut.fel.instumentalshop.dto.newDto.user.UpdateUserRoleRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.user.out.UserDto;
 import com.cz.cvut.fel.instumentalshop.service.AdminService;
 import lombok.RequiredArgsConstructor;
@@ -77,5 +78,14 @@ public class AdminController {
     public ResponseEntity<Void> deletePurchase(@PathVariable Long purchaseId) {
         adminService.deletePurchase(purchaseId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/users/{userId}/role")
+    public ResponseEntity<UserDto> updateUserRole(
+            @PathVariable Long userId,
+            @RequestBody UpdateUserRoleRequestDto dto
+    ) {
+        UserDto updated = adminService.updateUserRole(userId, dto.getRole());
+        return ResponseEntity.ok(updated);
     }
 }

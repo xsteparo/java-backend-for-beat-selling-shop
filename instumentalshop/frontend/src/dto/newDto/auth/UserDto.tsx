@@ -1,9 +1,9 @@
 export interface UserDto {
-    id: number
+    userId: number
     username: string
     email: string
     avatarUrl: string
-    role: string
+    role: 'CUSTOMER' | 'PRODUCER' | 'ADMIN';
     registrationDate: string
     bio?: string
 }

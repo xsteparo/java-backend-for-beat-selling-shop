@@ -1,6 +1,7 @@
 package com.cz.cvut.fel.instumentalshop.service.impl;
 
 import com.cz.cvut.fel.instumentalshop.domain.*;
+import com.cz.cvut.fel.instumentalshop.domain.enums.Role;
 import com.cz.cvut.fel.instumentalshop.dto.licence.out.PurchaseDto;
 import com.cz.cvut.fel.instumentalshop.dto.mapper.UserMapper;
 import com.cz.cvut.fel.instumentalshop.dto.newDto.PurchaseUpdateRequestDto;
@@ -32,6 +33,17 @@ public class AdminServiceImpl implements AdminService {
     private final UserRepository userRepo;
     private final PurchasedLicenceRepository licRepo;
     private final UserMapper userMapper;
+
+    @Override
+    public UserDto updateUserRole(Long userId, Role newRole) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        user.setRole(newRole);
+        userRepo.save(user);
+
+        return userMapper.toDto(user); // или вручную, если без маппера
+    }
 
     @Override
     public void deletePurchase(Long id) {

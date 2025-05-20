@@ -21,6 +21,7 @@ import About from "./pages/About.tsx";
 import {ProfilePage} from "./pages/ProfilePage.tsx";
 import {SalesPage} from "./pages/SalesPage.tsx";
 import {AdminPurchasesPage} from "./pages/AdminPurchases.tsx";
+import {AdminUsersPage} from "./pages/AdminUsersPage.tsx";
 
 export const App = () => (
     <BrowserRouter>
@@ -62,6 +63,7 @@ export const App = () => (
                         {/* только для admin */}
                         <Route element={<RequireAuth allowedRoles={['admin']}/>}>
                             <Route path="admin/purchases" element={<AdminPurchasesPage />} />
+                            <Route path="/admin/users" element={<AdminUsersPage />} />
                         </Route>
                     </Route>
                 </Routes>
