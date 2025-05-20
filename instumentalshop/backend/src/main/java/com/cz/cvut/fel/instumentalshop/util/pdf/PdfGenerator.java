@@ -5,6 +5,9 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.layout.element.Image;
 
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
@@ -18,7 +21,16 @@ public class PdfGenerator {
             PdfWriter writer = new PdfWriter(baos);
             PdfDocument pdfDoc = new PdfDocument(writer);
             Document document = new Document(pdfDoc);
+            document.setMargins(120, 36, 36, 36); // top, right, bottom, left
 
+
+            String logoPath = PdfGenerator.class.getClassLoader().getResource("logo.png").getPath();
+            ImageData imageData = ImageDataFactory.create(logoPath);
+            Image logo = new Image(imageData)
+                    .scaleToFit(100, 100)      // масштаб — можно уменьшить или увеличить
+                    .setFixedPosition(40, 750); // x: слева, y: сверху
+
+            document.add(logo);
             document.add(new Paragraph("Licence Certificate").setBold().setFontSize(20));
             document.add(new Paragraph("Buyer: " + buyerName));
             document.add(new Paragraph("Track: " + trackName));
