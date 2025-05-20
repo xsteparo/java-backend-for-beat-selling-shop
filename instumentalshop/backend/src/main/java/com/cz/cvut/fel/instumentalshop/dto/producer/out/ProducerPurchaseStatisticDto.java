@@ -7,7 +7,6 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@AllArgsConstructor
 public class ProducerPurchaseStatisticDto {
 
     private Long customerId;
@@ -18,5 +17,12 @@ public class ProducerPurchaseStatisticDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime lastPurchaseDate;
+
+    public ProducerPurchaseStatisticDto(Long customerId, String customerUsername, Long totalPurchases, LocalDateTime lastPurchaseDate) {
+        this.customerId = customerId;
+        this.customerUsername = customerUsername;
+        this.totalPurchases = Math.toIntExact(totalPurchases);
+        this.lastPurchaseDate = lastPurchaseDate;
+    }
 
 }

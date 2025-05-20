@@ -1,5 +1,6 @@
 import { UpdateProfileDto } from "../../dto/newDto/profile/UpdateProfileDto.tsx";
 import {UserProfileDto} from "../../dto/newDto/profile/UserProfileDto.tsx";
+import {UserDto} from "../../dto/newDto/auth/UserDto.tsx";
 
 export class ProfileController {
     private static readonly BASE = '/api/v1/me'
@@ -45,5 +46,22 @@ export class ProfileController {
         if (!res.ok) {
             throw new Error(`Update avatar failed: ${res.status}`)
         }
+    }
+
+    static async depositBalance(amount: number): Promise<UserDto> {
+        const res = await fetch(`${this.BASE}/deposit`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...this.getAuthHeader(),
+            },
+            body: JSON.stringify({ amount }),
+        });
+
+        if (!res.ok) {
+            throw new Error(`Deposit failed: ${res.status}`);
+        }
+
+        return res.json();
     }
 }

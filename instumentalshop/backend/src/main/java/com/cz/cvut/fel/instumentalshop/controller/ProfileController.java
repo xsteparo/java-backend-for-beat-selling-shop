@@ -1,7 +1,9 @@
 package com.cz.cvut.fel.instumentalshop.controller;
 
+import com.cz.cvut.fel.instumentalshop.dto.newDto.DepositRequest;
 import com.cz.cvut.fel.instumentalshop.dto.newDto.user.UpdateProfileDto;
 import com.cz.cvut.fel.instumentalshop.dto.newDto.user.UserProfileDto;
+import com.cz.cvut.fel.instumentalshop.dto.user.out.UserDto;
 import com.cz.cvut.fel.instumentalshop.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/v1/me")
@@ -49,5 +52,11 @@ public class ProfileController {
     ) throws IOException {
         userService.updateAvatar(file);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/deposit")
+    public ResponseEntity<UserDto> deposit(@RequestBody DepositRequest request, Principal principal) {
+        UserDto updated = userService.depositToBalance(principal.getName(), request.getAmount());
+        return ResponseEntity.ok(updated);
     }
 }

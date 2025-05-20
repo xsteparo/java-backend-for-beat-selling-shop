@@ -71,7 +71,7 @@ export const TrackRow: FC<TrackRowProps> = ({
             </div>
 
             {/* Кнопки (если не guest) */}
-            {role !== 'guest' && (
+            {(role !== 'producer' && role !== 'guest') && (
                 <div className="flex-none w-24 flex items-center justify-end space-x-3">
                     {/* Лайк */}
                     <button onClick={() => onToggleLike(idStr)} className="p-1">

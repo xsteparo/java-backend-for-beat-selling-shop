@@ -56,7 +56,7 @@ public class Track {
     @JoinColumn(name = "producer_id", nullable = false)
     private Producer producer;
 
-    @OneToMany(mappedBy="track", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy="track", orphanRemoval = true)
     @Builder.Default
     private List<LicenceTemplate> licenceTemplates = new ArrayList<>();
 

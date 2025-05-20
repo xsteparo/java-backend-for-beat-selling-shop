@@ -4,6 +4,7 @@ import com.cz.cvut.fel.instumentalshop.domain.User;
 import com.cz.cvut.fel.instumentalshop.dto.mapper.UserMapper;
 import com.cz.cvut.fel.instumentalshop.dto.newDto.user.UpdateProfileDto;
 import com.cz.cvut.fel.instumentalshop.dto.newDto.user.UserProfileDto;
+import com.cz.cvut.fel.instumentalshop.dto.user.out.UserDto;
 import com.cz.cvut.fel.instumentalshop.repository.UserRepository;
 import com.cz.cvut.fel.instumentalshop.service.AuthenticationService;
 import com.cz.cvut.fel.instumentalshop.service.UserService;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -50,6 +52,21 @@ public class UserServiceImpl implements UserService {
     public void init() throws IOException {
         avatarsPath = Paths.get(avatarsDir).toAbsolutePath().normalize();
         Files.createDirectories(avatarsPath);
+    }
+
+    @Override
+    public UserDto depositToBalance(String username, BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Amount must be positive");
+        }
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        user.setBalance(user.getBalance().add(amount));
+        userRepository.save(user);
+
+        return userMapper.toDto(user); 
     }
 
     @Override

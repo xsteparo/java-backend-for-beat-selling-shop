@@ -93,7 +93,7 @@ public class ProducerController {
      * @return DTO profilu
      */
     @GetMapping("/me")
-    @PreAuthorize("hasRole('PRODUCER')")
+    @PreAuthorize("hasAuthority('PRODUCER')")
     public ResponseEntity<UserDto> getMyProfile() {
         Long id = auth.getRequestingProducerFromSecurityContext().getId();
         UserDto dto = producerService.getProducerById(id);
@@ -107,7 +107,7 @@ public class ProducerController {
      * @return aktualizovaný profil
      */
     @PutMapping("/me")
-    @PreAuthorize("hasRole('PRODUCER')")
+    @PreAuthorize("hasAuthority('PRODUCER')")
     public ResponseEntity<UserDto> updateMyProfile(
             @Valid @RequestBody UserUpdateRequestDto dto) {
         UserDto updated = producerService.updateProducer(dto);
@@ -118,7 +118,7 @@ public class ProducerController {
      * Smazání vlastního účtu producenta.
      */
     @DeleteMapping("/me")
-    @PreAuthorize("hasRole('PRODUCER')")
+    @PreAuthorize("hasAuthority('PRODUCER')")
     public ResponseEntity<Void> deleteMyAccount() {
         producerService.deleteProducer();
         return ResponseEntity.noContent().build();
@@ -130,7 +130,7 @@ public class ProducerController {
      * @return seznam skladeb producenta
      */
     @GetMapping("/me/tracks")
-    @PreAuthorize("hasRole('PRODUCER')")
+    @PreAuthorize("hasAuthority('PRODUCER')")
     public ResponseEntity<List<TrackDto>> getMyTracks() {
         Long id = auth.getRequestingProducerFromSecurityContext().getId();
         List<TrackDto> tracks = trackService.findAllByProducer(id);
@@ -143,7 +143,7 @@ public class ProducerController {
      * @return seznam statistik nákupů podle zákazníka
      */
     @GetMapping("/me/customer-stats")
-    @PreAuthorize("hasRole('PRODUCER')")
+    @PreAuthorize("hasAuthority('PRODUCER')")
     public ResponseEntity<List<ProducerPurchaseStatisticDto>> getCustomerStats() {
         List<ProducerPurchaseStatisticDto> stats = producerService.getCustomerPurchaseStatisticsForProducer();
         return ResponseEntity.ok(stats);
@@ -155,7 +155,7 @@ public class ProducerController {
      * @return DTO se zůstatkem
      */
     @GetMapping("/me/balance")
-    @PreAuthorize("hasRole('PRODUCER')")
+    @PreAuthorize("hasAuthority('PRODUCER')")
     public ResponseEntity<BalanceResponseDto> getMyBalance() {
         BalanceResponseDto bal = producerService.getBalance();
         return ResponseEntity.ok(bal);
@@ -167,7 +167,7 @@ public class ProducerController {
      * @return seznam prodejů
      */
     @GetMapping("/me/sales")
-    @PreAuthorize("hasRole('PRODUCER')")
+    @PreAuthorize("hasAuthority('PRODUCER')")
     public ResponseEntity<List<PurchaseDto>> getMySales() {
         List<PurchaseDto> sales = licenceService.getAllPurchasedLicences();
         return ResponseEntity.ok(sales);

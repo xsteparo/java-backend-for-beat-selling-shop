@@ -11,6 +11,8 @@ import java.util.List;
  */
 public interface AdminService {
 
+    void deletePurchase(Long purchaseId);
+
     /** Vrátí všechny záznamy o zakoupených licencích. */
     List<PurchaseDto> getAllPurchases();
 

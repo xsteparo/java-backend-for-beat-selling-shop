@@ -18,6 +18,9 @@ import {CartProvider, useCart} from "./context/CartContext.tsx";
 import {Cart} from "./components/Cart.tsx";
 import {AuthProvider} from './context/AuthContext.tsx'
 import About from "./pages/About.tsx";
+import {ProfilePage} from "./pages/ProfilePage.tsx";
+import {SalesPage} from "./pages/SalesPage.tsx";
+import {AdminPurchasesPage} from "./pages/AdminPurchases.tsx";
 
 export const App = () => (
     <BrowserRouter>
@@ -42,21 +45,23 @@ export const App = () => (
 
                         {/* только для залогиненных user или producer */}
                         <Route element={<RequireAuth allowedRoles={['customer', 'producer']}/>}>
-                            {/*<Route path="profile"   element={<Profile />}   />*/}
-                            <Route path="purchases" element={<Purchases/>}/>
+                            <Route path="profile"   element={<ProfilePage />}   />
                             <Route path="chats"     element={<Chats />}     />
                             <Route path="/chats/:roomId" element={<Chats />} />
                         </Route>
 
                         {/* только для producer */}
+                        <Route element={<RequireAuth allowedRoles={['customer']}/>}>
+                            <Route path="purchases" element={<Purchases/>}/>
+                        </Route>
                         <Route element={<RequireAuth allowedRoles={['producer']}/>}>
                             <Route path="upload" element={<Upload/>}/>
-                            {/*<Route path="sales"  element={<Sales />}  />*/}
+                            <Route path="sales"  element={<SalesPage />}  />
                         </Route>
 
                         {/* только для admin */}
                         <Route element={<RequireAuth allowedRoles={['admin']}/>}>
-                            {/*<Route path="admin/purchases" element={<AdminPurchases />} />*/}
+                            <Route path="admin/purchases" element={<AdminPurchasesPage />} />
                         </Route>
                     </Route>
                 </Routes>

@@ -35,14 +35,17 @@ export const Header: FC = () => {
                                 About
                             </Link>
                         </li>
-
-                        {token && (
+                        {token && role === 'customer' &&(
                             <>
                                 <li>
                                     <Link to="/purchases" className="text-[#edf0f1] text-base font-medium hover:text-[#0088a9] transition-colors">
                                         Purchases
                                     </Link>
                                 </li>
+                            </>
+                        )}
+                        {token && (
+                            <>
                                 <li>
                                     <Link to="/chats" className="text-[#edf0f1] text-base font-medium hover:text-[#0088a9] transition-colors">
                                         Chats
@@ -120,9 +123,10 @@ export const Header: FC = () => {
                                     alt={user?.username || 'User Avatar'}
                                     className="w-10 h-10 rounded-full object-cover"
                                 />
-                                <span className="text-white text-base px-2">
-                  {user?.username || 'User'}
-                </span>
+                                <div className="flex flex-col text-white text-base px-2">
+                                    <span>{user?.username || 'User'}</span>
+                                    <span className="text-sm text-gray-400">Balance: ${user?.balance?.toFixed(2) ?? '0.00'}</span>
+                                </div>
                             </Link>
                             <button
                                 onClick={logout}

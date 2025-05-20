@@ -12,6 +12,7 @@ import com.cz.cvut.fel.instumentalshop.dto.user.in.UserCreationRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.user.in.UserUpdateRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.user.out.UserDto;
 import com.cz.cvut.fel.instumentalshop.repository.ProducerRepository;
+import com.cz.cvut.fel.instumentalshop.repository.PurchasedLicenceRepository;
 import com.cz.cvut.fel.instumentalshop.repository.UserRepository;
 import com.cz.cvut.fel.instumentalshop.service.AuthenticationService;
 import com.cz.cvut.fel.instumentalshop.service.ProducerService;
@@ -47,6 +48,7 @@ public class ProducerServiceImpl implements ProducerService {
     private final BalanceMapper balanceMapper;
     private final PasswordEncoder passwordEncoder;
     private final UserValidator userValidator;
+    private final PurchasedLicenceRepository purchasedLicenceRepository;
 
     /**
      * FR22 - Vrací seznam top producentů podle hodnocení.
@@ -95,12 +97,7 @@ public class ProducerServiceImpl implements ProducerService {
     @Transactional
     public List<ProducerPurchaseStatisticDto> getCustomerPurchaseStatisticsForProducer() {
         Long producerId = authenticationService.getRequestingProducerFromSecurityContext().getId();
-        TypedQuery<ProducerPurchaseStatisticDto> query =
-                entityManager.createNamedQuery(
-                        "Customer.getCustomerPurchaseInfoForProducer",
-                        ProducerPurchaseStatisticDto.class);
-        query.setParameter("producerId", producerId);
-        return query.getResultList();
+        return purchasedLicenceRepository.findCustomerStatsByProducerId(producerId);
     }
 
     /**

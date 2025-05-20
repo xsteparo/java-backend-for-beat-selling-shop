@@ -119,7 +119,7 @@ class ProducerServiceImplTest {
         when(authenticationService.getRequestingProducerFromSecurityContext()).thenReturn(p);
         TypedQuery<ProducerPurchaseStatisticDto> query = mock(TypedQuery.class);
         when(entityManager.createNamedQuery(eq("Customer.getCustomerPurchaseInfoForProducer"), eq(ProducerPurchaseStatisticDto.class))).thenReturn(query);
-        ProducerPurchaseStatisticDto stat = new ProducerPurchaseStatisticDto(10L, "cust1", 5, LocalDateTime.now());
+        ProducerPurchaseStatisticDto stat = new ProducerPurchaseStatisticDto(10L, "cust1", 5L, LocalDateTime.now());
         when(query.setParameter(eq("producerId"), eq(7L))).thenReturn(query);
         when(query.getResultList()).thenReturn(List.of(stat));
 
@@ -210,11 +210,11 @@ class ProducerServiceImplTest {
         Producer p = new Producer();
         p.setId(3L);
         Track t1 = new Track();
-        t1.setRating(5.0);
+        t1.setRating(BigDecimal.valueOf(5.0));
         t1.setCreatedAt(LocalDateTime.now().minusDays(1));
         t1.setProducer(p);
         Track t2 = new Track();
-        t2.setRating(1.0);
+        t2.setRating(BigDecimal.valueOf(1.0));
         t2.setCreatedAt(LocalDateTime.now().minusDays(2));
         t2.setProducer(p);
         p.setTracks(Set.of(t1, t2));

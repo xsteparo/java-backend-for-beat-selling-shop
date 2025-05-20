@@ -72,4 +72,10 @@ public class AdminController {
         adminService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/purchases/{purchaseId}")
+    public ResponseEntity<Void> deletePurchase(@PathVariable Long purchaseId) {
+        adminService.deletePurchase(purchaseId);
+        return ResponseEntity.noContent().build();
+    }
 }

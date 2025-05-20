@@ -11,8 +11,10 @@ import com.cz.cvut.fel.instumentalshop.repository.UserRepository;
 import com.cz.cvut.fel.instumentalshop.service.AdminService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,6 +32,14 @@ public class AdminServiceImpl implements AdminService {
     private final UserRepository userRepo;
     private final PurchasedLicenceRepository licRepo;
     private final UserMapper userMapper;
+
+    @Override
+    public void deletePurchase(Long id) {
+        if (!licRepo.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Purchase not found");
+        }
+        licRepo.deleteById(id);
+    }
 
     @Override
     public List<PurchaseDto> getAllPurchases() {

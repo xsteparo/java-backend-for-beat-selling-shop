@@ -13,6 +13,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useCart } from '../context/CartContext.tsx';
 import {TrackFilter} from "../dto/newDto/tracks/TrackFilter.tsx";
 import {LikeController} from "../controller/newControllers/LikeController.tsx";
+import {AdminController} from "../controller/newControllers/AdminController.tsx";
 
 
 export const Tracks: FC = () => {
@@ -25,7 +26,7 @@ export const Tracks: FC = () => {
         { key: 'trending', label: 'Na vzestupu' },
         { key: 'new', label: 'Novinky' },
     ] as const
-    const [activeTab, setActiveTab] = useState<typeof tabs[number]['key']>('trending')
+    const [activeTab, setActiveTab] = useState<typeof tabs[number]['key']>('top')
 
     // ───── list, search, filters ─────
     const [tracks, setTracks] = useState<TrackDto[]>([])
@@ -66,7 +67,7 @@ export const Tracks: FC = () => {
             5
         )
 
-        const likePromise = role !== 'guest' ? LikeController.getMyLikes() : Promise.resolve([])
+        const likePromise = role == 'customer'   ? LikeController.getMyLikes() : Promise.resolve([])
 
         Promise.all([trackPromise, likePromise])
             .then(([pageData, likedIds]) => {
@@ -153,7 +154,12 @@ export const Tracks: FC = () => {
     }
 
     const remove = async (id: string) => {
-        // TODO: implement remove
+        try {
+            await AdminController.deleteTrack(parseInt(id));
+            window.location.reload(); // или обнови список вручную
+        } catch (e) {
+            console.error("Failed to delete track", e);
+        }
     }
 
     return (

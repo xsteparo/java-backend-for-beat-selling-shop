@@ -2,10 +2,12 @@ package com.cz.cvut.fel.instumentalshop.service;
 
 import com.cz.cvut.fel.instumentalshop.dto.newDto.user.UpdateProfileDto;
 import com.cz.cvut.fel.instumentalshop.dto.newDto.user.UserProfileDto;
+import com.cz.cvut.fel.instumentalshop.dto.user.out.UserDto;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 /**
  * {@code UserService} poskytuje operace pro správu profilu
@@ -16,6 +18,8 @@ import java.io.IOException;
 public interface UserService {
 
     void init() throws IOException;
+
+    UserDto depositToBalance(String username, BigDecimal amount);
 
     /**
      * Získá profil přihlášeného uživatele.

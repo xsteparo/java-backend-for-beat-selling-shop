@@ -50,6 +50,7 @@ export const Cart: FC<CartProps> = ({ open, items, onRemove, onClose }) => {
             toast.success('Platba proběhla úspěšně 🎉')
             clear()
             onClose()
+            window.location.reload();
         } catch (e: any) {
             console.error(e)
             toast.error(e.message ?? 'Platba selhala')
