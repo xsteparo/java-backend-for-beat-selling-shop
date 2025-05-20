@@ -53,7 +53,7 @@ public class DataInitializer implements CommandLineRunner {
 
         Customer customer = customerRepo.findByUsername("customer1")
                 .orElseThrow(() -> new IllegalStateException("Customer не найден"));
-        customer.setBalance(new BigDecimal("1000.00"));
+        customer.setBalance(new BigDecimal("10000.00"));
         customerRepo.save(customer);
 
         // --- эмулируем login producer1 ---

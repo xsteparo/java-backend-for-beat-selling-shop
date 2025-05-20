@@ -46,7 +46,7 @@ export const LicenseModal: FC<LicenseModalProps> = ({ track, onClose, onChoose }
             <h2 className="text-xl text-white mb-6">Vyberte licenci pro&nbsp;«{track.name}»</h2>
             <div className="flex flex-col md:flex-row gap-4">
                 {OPTIONS.map(o => (
-                    <div key={o.type} className="flex-1 bg-gray-700 rounded-lg p-4 flex flex-col">
+                    <div key={o.type} className="flex-1 bg-gray-700 rounded-lg p-4 flex flex-col" data-testid={`license-option-${o.type}`} >
                         <h3 className="text-lg text-white mb-1">{o.title}</h3>
                         <div className="text-gray-300 mb-4">${o.price}</div>
                         <ul className="flex-1 space-y-1 text-gray-300 text-sm mb-4">
@@ -65,6 +65,7 @@ export const LicenseModal: FC<LicenseModalProps> = ({ track, onClose, onChoose }
                         <button
                             onClick={() => onChoose(track, o.type, o.price)}
                             className="mt-auto bg-blue-600 text-white py-2 rounded hover:bg-blue-500"
+                            data-testid="add-to-cart"
                         >
                             Do košíku
                         </button>

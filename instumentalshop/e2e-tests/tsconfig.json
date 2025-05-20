@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ES6",
+    "lib": ["esnext", "dom"],
+    "types": ["cypress"]
+  },
+  "include": ["cypress/**/*.ts", "cypress/support/index.d.ts"]
+}

@@ -108,7 +108,8 @@ export const Header: FC = () => {
                     {/* иконка корзины */}
                     {token && (
                         <button onClick={toggle} className="relative">
-                            <BagIcon className="w-6 h-6 text-[#edf0f1] hover:text-[#0088a9] transition-colors"/>
+                            <BagIcon className="w-6 h-6 text-[#edf0f1] hover:text-[#0088a9] transition-colors"   data-testid="open-cart"
+                            />
                             {items.length > 0 && (
                                 <span
                                     className="absolute -top-1 -right-2 bg-red-600 text-xs rounded-full

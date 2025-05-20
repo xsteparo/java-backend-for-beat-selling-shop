@@ -42,7 +42,7 @@ export const TrackRow: FC<TrackRowProps> = ({
 
             {/* Название и продюсер */}
             <div className="flex-1 min-w-0 flex flex-col">
-                <span className="text-white font-semibold truncate">
+                <span data-testid="track-name" className="text-white font-semibold truncate">
                     {track.name}
                 </span>
                 <span className="text-gray-400 text-sm truncate">
@@ -74,26 +74,28 @@ export const TrackRow: FC<TrackRowProps> = ({
             {(role !== 'producer' && role !== 'guest') && (
                 <div className="flex-none w-24 flex items-center justify-end space-x-3">
                     {/* Лайк */}
-                    <button onClick={() => onToggleLike(idStr)} className="p-1">
-                        <HeartIcon filled={liked} className="w-5 h-5 text-red-500" />
-                    </button>
+                    <button onClick={() => onToggleLike(idStr)} className="p-1" data-testid="like-button">
+                        <HeartIcon
+                            filled={liked}
+                            className={`w-5 h-5 ${liked ? 'text-red-500' : 'text-gray-400'}`}
+                        />                    </button>
 
                     {/* Скачивание / покупка / удаление */}
                     {role === 'admin' ? (
                         <>
-                            <a href={`/api/v1/tracks/${track.id}/download`} className="p-1 hover:text-blue-400">
+                            <a href={`/api/v1/tracks/${track.id}/download`} className="p-1 hover:text-blue-400" data-testid="buy-button">
                                 <BagIcon className="w-5 h-5 text-blue-500" />
                             </a>
-                            <button onClick={() => onRemove(idStr)} className="text-red-500 hover:text-red-400">
+                            <button onClick={() => onRemove(idStr)} className="text-red-500 hover:text-red-400" data-testid="delete-button">
                                 ✕
                             </button>
                         </>
                     ) : track.purchased ? (
-                        <a href={`/api/v1/tracks/${track.id}/download`} className="p-1 hover:text-blue-400">
+                        <a href={`/api/v1/tracks/${track.id}/download`} className="p-1 hover:text-blue-400" data-testid="buy-button">
                             <BagIcon className="w-5 h-5 text-blue-500" />
                         </a>
                     ) : (
-                        <button onClick={() => onBuy(idStr)} className="p-1 hover:text-blue-400">
+                        <button onClick={() => onBuy(idStr)} className="p-1 hover:text-blue-400" data-testid="buy-button">
                             <BagIcon className="w-5 h-5 text-blue-500" />
                         </button>
                     )}
