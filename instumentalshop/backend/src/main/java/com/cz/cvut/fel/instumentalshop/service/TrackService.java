@@ -1,5 +1,6 @@
 package com.cz.cvut.fel.instumentalshop.service;
 
+import com.cz.cvut.fel.instumentalshop.domain.enums.GenreType;
 import com.cz.cvut.fel.instumentalshop.dto.newDto.TrackFilterDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.in.TrackRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.out.ProducerTrackInfoDto;
@@ -11,8 +12,10 @@ import org.springframework.core.io.support.ResourceRegion;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpRange;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -30,6 +33,8 @@ import java.util.List;
  * </ul>
  */
 public interface TrackService {
+
+    TrackDto updateTrack(Long trackId, TrackRequestDto dto) throws IOException;
 
     void incrementPlays(Long trackId);
 

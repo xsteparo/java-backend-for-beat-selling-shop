@@ -95,4 +95,32 @@ export class TrackController {
         const contentType = res.headers.get('Content-Type') || 'application/octet-stream'
         return { data, contentType, headers: res.headers }
     }
+
+    static async getMyTracks(): Promise<TrackDto[]> {
+        const res = await fetch(`/api/v1/producers/me/tracks`, {
+            headers: this.getAuthHeader(),
+        });
+        if (!res.ok) throw new Error(`Failed to fetch producer tracks: ${res.status}`);
+        return res.json();
+    }
+
+    static async updateTrack(id: number, dto: TrackRequestDto): Promise<TrackDto> {
+        const form = new FormData();
+        form.append('name', dto.name);
+        form.append('genreType', dto.genreType.toUpperCase().replace(/-/g, '_'));
+        form.append('bpm', String(dto.bpm));
+        if (dto.key) form.append('key', dto.key);
+        if (dto.price != null) form.append('price', String(dto.price));
+        if (dto.nonExclusiveFile) form.append('nonExclusiveFile', dto.nonExclusiveFile);
+        if (dto.premiumFile) form.append('premiumFile', dto.premiumFile);
+        if (dto.exclusiveFile) form.append('exclusiveFile', dto.exclusiveFile);
+
+        const res = await fetch(`${this.BASE}/${id}`, {
+            method: 'PUT',
+            headers: this.getAuthHeader(), // FormData сам выставляет content-type
+            body: form,
+        });
+        if (!res.ok) throw new Error(`Update track failed: ${res.status}`);
+        return res.json();
+    }
 }

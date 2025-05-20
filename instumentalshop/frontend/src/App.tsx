@@ -22,6 +22,7 @@ import {ProfilePage} from "./pages/ProfilePage.tsx";
 import {SalesPage} from "./pages/SalesPage.tsx";
 import {AdminPurchasesPage} from "./pages/AdminPurchases.tsx";
 import {AdminUsersPage} from "./pages/AdminUsersPage.tsx";
+import {ProducerTracksPage} from "./pages/ProducerTracksPage.tsx";
 
 export const App = () => (
     <BrowserRouter>
@@ -58,6 +59,7 @@ export const App = () => (
                         <Route element={<RequireAuth allowedRoles={['producer']}/>}>
                             <Route path="upload" element={<Upload/>}/>
                             <Route path="sales"  element={<SalesPage />}  />
+                            <Route path="/producer/tracks" element={<ProducerTracksPage />} />
                         </Route>
 
                         {/* только для admin */}

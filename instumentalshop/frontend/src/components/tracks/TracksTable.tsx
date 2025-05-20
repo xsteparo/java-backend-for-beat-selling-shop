@@ -34,7 +34,7 @@ export const TracksTable: FC<TracksTableProps> = ({
             <div className="flex-none w-16 text-center">BPM</div>
 
             {/* Столбец под действия только если не guest */}
-            {role !== 'guest' && <div className="flex-none w-24" />}
+            {(role !== 'producer' && role !== 'guest') && <div className="flex-none w-24" />}
         </div>
 
         {/* ─── строки ─── */}

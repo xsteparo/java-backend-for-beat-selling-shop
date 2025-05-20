@@ -87,4 +87,14 @@ public class TrackController {
                 .header(HttpHeaders.ACCEPT_RANGES, "bytes")
                 .body(region);
     }
+
+    @PutMapping("/{trackId}")
+    @PreAuthorize("hasAuthority('PRODUCER')")
+    public ResponseEntity<TrackDto> updateTrack(
+            @PathVariable Long trackId,
+            @ModelAttribute TrackRequestDto dto
+    ) throws IOException {
+        TrackDto updated = trackService.updateTrack(trackId, dto);
+        return ResponseEntity.ok(updated);
+    }
 }

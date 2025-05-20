@@ -3,6 +3,7 @@ package com.cz.cvut.fel.instumentalshop.service.impl;
 import com.cz.cvut.fel.instumentalshop.domain.LicenceTemplate;
 import com.cz.cvut.fel.instumentalshop.domain.Producer;
 import com.cz.cvut.fel.instumentalshop.domain.Track;
+import com.cz.cvut.fel.instumentalshop.domain.enums.GenreType;
 import com.cz.cvut.fel.instumentalshop.domain.enums.KeyType;
 import com.cz.cvut.fel.instumentalshop.domain.enums.LicenceType;
 import com.cz.cvut.fel.instumentalshop.dto.mapper.TrackMapper;
@@ -27,11 +28,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpRange;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -44,6 +47,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com.cz.cvut.fel.instumentalshop.domain.enums.LicenceType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -224,6 +229,50 @@ public class TrackServiceImpl implements TrackService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional
+    public TrackDto updateTrack(Long trackId, TrackRequestDto dto) throws IOException {
+        Producer producer = authenticationService.getRequestingProducerFromSecurityContext();
+
+        Track track = trackRepository.findById(trackId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Track not found"));
+
+        if (!track.getProducer().getId().equals(producer.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
+        }
+
+        track.setName(dto.getName());
+        track.setGenre(dto.getGenreType());
+        track.setBpm(dto.getBpm());
+        track.setKeyType(dto.getKey() != null ? KeyType.valueOf(dto.getKey()) : null);
+        track.setCreatedAt(LocalDateTime.now());
+
+        if (dto.getNonExclusiveFile() != null && !dto.getNonExclusiveFile().isEmpty()) {
+            String urlMp3 = storeFile(dto.getNonExclusiveFile(), "mp3");
+            track.setUrlNonExclusive(urlMp3);
+        }
+
+        if (dto.getPremiumFile() != null && !dto.getPremiumFile().isEmpty()) {
+            String urlWav = storeFile(dto.getPremiumFile(), "wav");
+            track.setUrlPremium(urlWav);
+        }
+
+        if (dto.getExclusiveFile() != null && !dto.getExclusiveFile().isEmpty()) {
+            String urlZip = storeFile(dto.getExclusiveFile(), "zip");
+            track.setUrlExclusive(urlZip);
+        }
+
+        if (dto.getPrice() != null) {
+            for (LicenceTemplate template : track.getLicenceTemplates()) {
+                if (template.getLicenceType() == LicenceType.NON_EXCLUSIVE) {
+                    template.setPrice(BigDecimal.valueOf(dto.getPrice()));
+                }
+            }
+        }
+
+        trackRepository.save(track);
+        return trackMapper.toResponseDto(track);
+    }
     @Transactional
     public void incrementPlays(Long trackId) {
         Track track = trackRepository.findById(trackId)
@@ -285,21 +334,21 @@ public class TrackServiceImpl implements TrackService {
     private void createDefaultLicenceTemplates(Track track, int basePrice) {
         tplRepo.save(LicenceTemplate.builder()
                 .track(track)
-                .licenceType(LicenceType.NON_EXCLUSIVE)
+                .licenceType(NON_EXCLUSIVE)
                 .price(BigDecimal.valueOf(basePrice))
                 .validityPeriodDays(30)
                 .build());
 
         tplRepo.save(LicenceTemplate.builder()
                 .track(track)
-                .licenceType(LicenceType.PREMIUM)
+                .licenceType(PREMIUM)
                 .price(BigDecimal.valueOf(basePrice * 2))
                 .validityPeriodDays(90)
                 .build());
 
         tplRepo.save(LicenceTemplate.builder()
                 .track(track)
-                .licenceType(LicenceType.EXCLUSIVE)
+                .licenceType(EXCLUSIVE)
                 .price(BigDecimal.valueOf(basePrice * 10))
                 .validityPeriodDays(null)
                 .build());

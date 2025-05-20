@@ -73,6 +73,12 @@ export const Header: FC = () => {
                                         Sales
                                     </Link>
                                 </li>
+                                <li>
+                                    <Link to="/producer/tracks"
+                                          className="text-[#edf0f1] text-base font-medium hover:text-[#0088a9] transition-colors">
+                                        My tracks
+                                    </Link>
+                                </li>
                             </>
                         )}
 
