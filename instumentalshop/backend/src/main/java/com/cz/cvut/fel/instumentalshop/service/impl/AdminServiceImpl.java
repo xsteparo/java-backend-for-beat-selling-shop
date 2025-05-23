@@ -42,7 +42,7 @@ public class AdminServiceImpl implements AdminService {
         user.setRole(newRole);
         userRepo.save(user);
 
-        return userMapper.toDto(user); // или вручную, если без маппера
+        return userMapper.toDto(user);
     }
 
     @Override

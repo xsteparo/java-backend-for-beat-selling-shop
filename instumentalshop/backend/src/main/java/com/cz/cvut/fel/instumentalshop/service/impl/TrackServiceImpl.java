@@ -86,9 +86,6 @@ public class TrackServiceImpl implements TrackService {
         // Vytvoření specifikace na základě filtračního DTO
         Specification<Track> spec = TrackSpecificationBuilder.fromFilter(filter);
 
-        // Специальная логика для "trending"
-        //Сначала мы добавляем фильтр по среднему (rating > avgRating),
-        //затем уже применяем Sort.by(DESC, "lastRatingDelta") из determineSort().
         if ("trending".equalsIgnoreCase(filter.getTab())) {
             Double avgRating = trackRepository.findAverageRating();
             if (avgRating != null) {
@@ -119,7 +116,6 @@ public class TrackServiceImpl implements TrackService {
 
         List<Order> orders = new ArrayList<>();
 
-        // 1) Табовая сортировка (первичный ключ)
         switch (tab) {
             case "trending":
                 orders.add(Order.desc("lastRatingDelta"));
@@ -134,7 +130,6 @@ public class TrackServiceImpl implements TrackService {
                 break;
         }
 
-        // 2) Ручная сортировка (вторичный ключ)
         if (!sortParam.isEmpty()) {
             Sort.Direction dir  = sortParam.startsWith("-")
                     ? Sort.Direction.DESC
@@ -143,7 +138,6 @@ public class TrackServiceImpl implements TrackService {
             orders.add(new Order(dir, prop));
         }
 
-        // 3) Фолбэк — если до сих пор нет ни одного Order, сортируем по дате создания
         if (orders.isEmpty()) {
             orders.add(Order.desc("createdAt"));
         }

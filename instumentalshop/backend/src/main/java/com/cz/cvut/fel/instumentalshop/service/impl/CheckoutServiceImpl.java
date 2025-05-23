@@ -29,7 +29,6 @@ public class CheckoutServiceImpl implements CheckoutService {
 
         for (PurchaseItemDto item : req.items()) {
 
-            /* ваш старый метод — одна покупка = один запрос в сервис */
             PurchaseRequestDto pr = new PurchaseRequestDto();
             pr.setLicenceType(item.licenceType());
             PurchaseDto pd = licencePurchaseService

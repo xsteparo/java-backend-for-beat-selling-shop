@@ -9,7 +9,6 @@ import {useParams} from "react-router-dom";
 const wsService = new ChatWebSocketService();
 
 const Chats: FC = () => {
-    // 1) Теперь захватываем именно username, а не role
     const {user} = useAuth();
     const {roomId} = useParams<{ roomId: string }>();
     const [rooms, setRooms] = useState<ChatRoomDto[]>([]);
@@ -18,18 +17,15 @@ const Chats: FC = () => {
     const [input, setInput] = useState<string>('');
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    // 1. WS-коннект при монтировании
     useEffect(() => {
         wsService.connect();
         return () => wsService.disconnect();
     }, []);
 
-    // 2. Список комнат
     useEffect(() => {
         ChatController.listRooms().then(setRooms).catch(console.error);
     }, []);
 
-    // 3. Открываем комнату по URL
     useEffect(() => {
         if (!roomId) return;
         const id = Number(roomId);
@@ -46,7 +42,6 @@ const Chats: FC = () => {
         }
     }, [roomId, rooms]);
 
-    // 4. При смене activeRoom: отписка, загрузка истории и подписка
     useEffect(() => {
         if (!activeRoom) return;
         wsService.unsubscribe(activeRoom.id);
@@ -62,24 +57,20 @@ const Chats: FC = () => {
 
         wsService.subscribe(activeRoom.id, incoming => {
             setMessages(prev => {
-                // 2) фильтруем по id, чтобы не было дубликатов
                 if (prev.some(m => m.id === incoming.id)) return prev;
                 return [...prev, incoming];
             });
-            // скроллим в следующий тик
             setTimeout(() => {
                 scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
             }, 0);
         });
     }, [activeRoom]);
 
-    // 5. Отправка по WS — без REST
     const sendMessage = () => {
         if (!activeRoom || !input.trim()) return;
         const content = input.trim();
         setInput('');
         wsService.send(activeRoom.id, content);
-        // локально не пушим — ждём прихода по WS
     };
 
     return (
@@ -87,7 +78,6 @@ const Chats: FC = () => {
             <aside className="w-1/4 border-r border-gray-700 p-4 overflow-y-auto">
                 <h2 className="text-xl mb-4">Chats</h2>
                 {rooms.map(room => {
-                    // 3) Находим «другого» участника корректно
                     const other = room.participants.find(p => p.username !== user?.username)
                         ?? room.participants[0];
                     return (
@@ -109,7 +99,6 @@ const Chats: FC = () => {
                     <>
                         <header className="p-4 border-b border-gray-700">
                             <h3 className="text-lg">
-                                {/* тоже исправлено: сравниваем на username */}
                                 Conversation
                                 with {activeRoom.participants.find(p => p.username !== user?.username)?.username}
                             </h3>
@@ -132,8 +121,8 @@ const Chats: FC = () => {
                                     <div
                                         className={`text-xs mt-1 ${
                                             msg.senderUsername === user?.username
-                                                ? 'text-gray-200'   /* на зелёном фоне — светлее */
-                                                : 'text-gray-400'   /* на сером — как было */
+                                                ? 'text-gray-200'   
+                                                : 'text-gray-400'   
                                         }`}
                                     >
                                         {new Date(msg.sentAt).toLocaleString()}

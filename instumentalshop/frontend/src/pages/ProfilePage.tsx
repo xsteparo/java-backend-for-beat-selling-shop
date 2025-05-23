@@ -19,7 +19,6 @@ export const ProfilePage = () => {
         try {
             await ProfileController.updateProfile({ username, email, bio });
             setStatus("saved");
-            // обновим данные юзера (если нужно — из нового запроса)
             user.username = username;
             user.email = email;
             user.bio = bio;
@@ -32,7 +31,6 @@ export const ProfilePage = () => {
         <div className="max-w-2xl mx-auto p-6 text-white">
             <h1 className="text-3xl font-semibold mb-6">Your Profile</h1>
 
-            {/* Аватарка */}
             <div className="flex items-center space-x-6 mb-6">
                 <img
                     src={user.avatarUrl ? import.meta.env.VITE_API_URL + user.avatarUrl : '/images/default-avatar.png'}
@@ -47,7 +45,6 @@ export const ProfilePage = () => {
                 </div>
             </div>
 
-            {/* 💾 Форма обновления профиля */}
             <form onSubmit={handleSubmit} className="space-y-4 mb-8">
                 <div>
                     <label className="block text-sm text-gray-300 mb-1">Username</label>
@@ -86,7 +83,6 @@ export const ProfilePage = () => {
                 {status === "error" && <p className="text-red-400 text-sm mt-2">Failed to update profile.</p>}
             </form>
 
-            {/* Баланс и пополнение */}
             <div className="mb-6">
                 <p className="mt-2"><span className="font-medium">Balance:</span> ${user.balance?.toFixed(2) ?? '0.00'}</p>
             </div>

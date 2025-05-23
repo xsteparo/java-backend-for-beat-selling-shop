@@ -98,10 +98,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public UserDto register(UserCreationRequestDto requestDto) throws IOException {
-        // 1) validate uniqueness
         userValidator.validateUserCreationRequest(userRepository, requestDto.getUsername());
 
-        // 2) instantiate correct subclass
         User user;
         if (requestDto.getRole() == Role.CUSTOMER) {
             user = Customer.builder().build();
@@ -115,7 +113,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new IllegalArgumentException("Unsupported role: " + requestDto.getRole());
         }
 
-        // 3) set common fields
         user.setUsername(requestDto.getUsername());
         user.setEmail(requestDto.getEmail());
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
@@ -123,32 +120,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setRegistrationDate(LocalDateTime.now());
         user.setBalance(BigDecimal.ZERO);
 
-        // 4) handle avatar upload
         MultipartFile avatar = requestDto.getAvatar();
         if (avatar != null && !avatar.isEmpty()) {
-            // а) формируем уникальное имя файла с расширением
             String ext = StringUtils.getFilenameExtension(avatar.getOriginalFilename());
             String filename = UUID.randomUUID().toString() + (ext != null ? "." + ext : "");
 
-            // б) находим рабочую директорию приложения
             String userDir = System.getProperty("user.dir");
-            // добавляем к ней путь из настроек
             Path avatarsDir = Paths.get(userDir, uploadPath);
 
-            // в) создаём каталоги, если их ещё нет
             Files.createDirectories(avatarsDir);
 
-            // г) сохраняем файл
             Path destinationFile = avatarsDir.resolve(filename);
             avatar.transferTo(destinationFile.toFile());
 
-            // д) сохраняем в БД относительный URL для отдачи статики
             user.setAvatarUrl("/uploads/avatars/" + filename);
         }
-        // 5) save to DB (JPA handles JOINED inheritance)
         User saved = userRepository.save(user);
 
-        // 6) map to DTO
         return new UserDto(
                 saved.getId(),
                 saved.getUsername(),

@@ -100,10 +100,8 @@ public class LicencePurchaseServiceImpl implements LicencePurchaseService {
                 ? null
                 : now.plusDays(tpl.getValidityPeriodDays());
 
-        // 1) Списываем со счёта покупателя
         customer.setBalance(customer.getBalance().subtract(tpl.getPrice()));
 
-        // 2) Создаём запись о покупке
         PurchasedLicence lic = PurchasedLicence.builder()
                 .track(track)
                 .licenceTemplate(tpl)
@@ -115,7 +113,6 @@ public class LicencePurchaseServiceImpl implements LicencePurchaseService {
 
         lic = licRepo.save(lic);
 
-        // 3) Распределяем доход
         Producer producer = track.getProducer();
         BigDecimal balance = producer.getBalance();
         producer.setBalance(balance.add(tpl.getPrice()));

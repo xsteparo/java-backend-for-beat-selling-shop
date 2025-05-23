@@ -4,7 +4,6 @@ import {CheckoutResponseDto} from "../dto/CheckoutResponseDto.tsx";
 export default class PurchaseController {
     private static readonly BASE = '/api/v1/licence-purchases';
 
-    /** оплатить корзину */
     static async checkout(items: CheckoutItemDto[]): Promise<CheckoutResponseDto> {
         const res = await fetch(`${this.BASE}/checkout`, {
             method: 'POST',

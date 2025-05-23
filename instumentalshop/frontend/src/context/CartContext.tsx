@@ -22,13 +22,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     const addItem = (item: CartItem) => {
         setItems(i => [...i, item]);
-        setOpen(true);                // авто-открытие
+        setOpen(true);
     };
 
     const removeIdx = (idx: number) =>
         setItems(i => i.filter((_, i2) => i2 !== idx));
 
-    const clear  = () => setItems([]);   // ← очистить корзину
+    const clear  = () => setItems([]);
 
     const toggle = () => setOpen(o => !o);
     const close  = () => setOpen(false);

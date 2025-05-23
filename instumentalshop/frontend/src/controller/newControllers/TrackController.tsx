@@ -11,7 +11,6 @@ export class TrackController {
         return token ? { Authorization: `Bearer ${token}` } : {}
     }
 
-    /** Producer only: create track (multipart/form-data) */
     static async createTrack(dto: TrackRequestDto): Promise<TrackDto> {
         const form = new FormData()
         form.append('name', dto.name)

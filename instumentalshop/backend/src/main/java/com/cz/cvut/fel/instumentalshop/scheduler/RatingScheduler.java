@@ -13,8 +13,8 @@ public class RatingScheduler {
 
     private final RatingService ratingService;
 
-//    @Scheduled(cron = "0 0 2 * * *")
-    @Scheduled(fixedRate = 15_000)
+    @Scheduled(cron = "0 0 4 * * *")
+//    @Scheduled(fixedRate = 15_000)
     public void scheduledUpdateRatings() {
         log.info("Starting daily rating update...");
 

@@ -5,24 +5,12 @@ import {ProducerTrackInfoDto} from "../dto/ProducerTrackInfoDto.ts";
 export class TrackController {
     private static BASE = '/api/v1/tracks'
 
-    /**
-     * Всегда возвращает объект string→string,
-     * даже если токена нет — просто пустой.
-     */
-    // private static getAuthHeader(): Record<string, string> {
-    //     const token = localStorage.getItem('beatshop_jwt')
-    //     if (!token) {
-    //         return {}
-    //     }
-    //     return {Authorization: `Bearer ${token}`}
-    // }
 
     private static getAuthHeader(): Record<string, string> {
         const token = localStorage.getItem('beatshop_jwt');
         return token ? { Authorization: `Bearer ${token}` } : {};
     }
 
-    /** Универсальный list: таб, поиск, фильтры, пагинация */
     static async listTracks(params: {
         tab: 'top' | 'trending' | 'new';
         search: string;
@@ -41,7 +29,7 @@ export class TrackController {
             tempoRange,
             key,
             sort,
-            page: String(page - 1),  // преобразуем в 0-based
+            page: String(page - 1),
             size: String(size),
         });
         const res = await fetch(`${this.BASE}?${query}`, {
@@ -54,7 +42,6 @@ export class TrackController {
     }
 
 
-    /** Producer only: create (multipart/form-data) */
     static async createTrack(
         dto: TrackRequestDto
     ): Promise<TrackDto> {

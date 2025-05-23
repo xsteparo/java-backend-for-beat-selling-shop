@@ -28,31 +28,25 @@ export const App = () => (
     <BrowserRouter>
         <AuthProvider>
             <CartProvider>
-                {/* глобальная панель-корзина */}
                 <CartHost/>
                 <Routes>
                     <Route path="/" element={<MainLayout/>}>
-                        {/* публичная главная */}
                         <Route index element={<Home/>}/>
                         <Route path="/about" element={<About/>}/>
 
-                        {/* только для гостей */}
                         <Route element={<RequireGuest/>}>
                             <Route path="login" element={<Login/>}/>
                             <Route path="register" element={<Register/>}/>
                         </Route>
 
-                        {/* доступно всем (в том числе гостям) */}
                         <Route path="tracks" element={<Tracks/>}/>
 
-                        {/* только для залогиненных user или producer */}
                         <Route element={<RequireAuth allowedRoles={['customer', 'producer']}/>}>
                             <Route path="profile"   element={<ProfilePage />}   />
                             <Route path="chats"     element={<Chats />}     />
                             <Route path="/chats/:roomId" element={<Chats />} />
                         </Route>
 
-                        {/* только для producer */}
                         <Route element={<RequireAuth allowedRoles={['customer']}/>}>
                             <Route path="purchases" element={<Purchases/>}/>
                         </Route>
@@ -62,7 +56,6 @@ export const App = () => (
                             <Route path="/producer/tracks" element={<ProducerTracksPage />} />
                         </Route>
 
-                        {/* только для admin */}
                         <Route element={<RequireAuth allowedRoles={['admin']}/>}>
                             <Route path="admin/purchases" element={<AdminPurchasesPage />} />
                             <Route path="/admin/users" element={<AdminUsersPage />} />

@@ -32,7 +32,6 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional
     public ChatRoomDto openRoom(Long userId1, Long userId2) {
-        // существующая логика поиска/создания
         List<ChatRoom> existing = roomRepo.findAllByParticipant(userId1).stream().filter(r -> r.getParticipants().stream().anyMatch(u -> u.getId().equals(userId2))).toList();
         ChatRoom room;
         if (!existing.isEmpty()) {
@@ -47,7 +46,6 @@ public class ChatServiceImpl implements ChatService {
             room = roomRepo.save(room);
         }
 
-        // Маппим в DTO **пока сессия жива**
         return ChatRoomDto.fromEntity(room);
     }
 
@@ -63,16 +61,13 @@ public class ChatServiceImpl implements ChatService {
         ChatRoom room = roomRepo.findById(roomId).orElseThrow(() -> new EntityNotFoundException("Room not found: " + roomId));
         User sender = userRepo.findById(senderId).orElseThrow(() -> new EntityNotFoundException("User not found: " + senderId));
 
-        // Сохраняем новое сообщение
         ChatMessage msg = new ChatMessage();
         msg.setChatRoom(room);
         msg.setSender(sender);
         msg.setContent(content);
         msg = msgRepo.save(msg);
 
-        // Обновляем только lastMessage
         room.setLastMessage(msg);
-        // НЕ вызываем room.getMessages().add(msg) и НЕ сохраняем room целиком — чтобы не трогать коллекцию сообщений
         roomRepo.save(room);
 
         return msg;

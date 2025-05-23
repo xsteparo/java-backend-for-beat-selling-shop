@@ -10,7 +10,6 @@ function getAuthHeader(): Record<string, string> {
 }
 
 export class AdminController {
-    /** Получить все покупки */
     static async getAllPurchases(): Promise<PurchaseDto[]> {
         const res = await fetch(`${BASE}/purchases`, {
             headers: getAuthHeader(),
@@ -19,21 +18,6 @@ export class AdminController {
         return res.json();
     }
 
-    // /** Обновить покупку */
-    // static async updatePurchase(purchaseId: number, dto: PurchaseUpdateRequestDto): Promise<PurchaseDto> {
-    //     const res = await fetch(`${BASE}/purchases/${purchaseId}`, {
-    //         method: "PUT",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //             ...getAuthHeader(),
-    //         },
-    //         body: JSON.stringify(dto),
-    //     });
-    //     if (!res.ok) throw new Error(`Failed to update purchase: ${res.status}`);
-    //     return res.json();
-    // }
-
-    /** Удалить трек */
     static async deleteTrack(trackId: number): Promise<void> {
         const res = await fetch(`${BASE}/tracks/${trackId}`, {
             method: "DELETE",
@@ -42,7 +26,6 @@ export class AdminController {
         if (!res.ok) throw new Error(`Failed to delete track: ${res.status}`);
     }
 
-    /** Получить всех пользователей */
     static async getAllUsers(): Promise<UserDto[]> {
         const res = await fetch(`${BASE}/users`, {
             headers: getAuthHeader(),
@@ -51,7 +34,6 @@ export class AdminController {
         return res.json();
     }
 
-    /** Удалить пользователя */
     static async deleteUser(userId: number): Promise<void> {
         const res = await fetch(`${BASE}/users/${userId}`, {
             method: "DELETE",

@@ -7,7 +7,6 @@ export const Home: React.FC = () => {
 
     const handleSearch = (e: FormEvent) => {
         e.preventDefault()
-        // переходим на страницу треков с query-параметром ?search=...
         navigate(`/tracks?search=${encodeURIComponent(searchTerm)}`)
     }
 
@@ -74,7 +73,6 @@ export const Home: React.FC = () => {
                     </div>
                 </section>
 
-                {/* Первая контент-секция */}
                 <section className="home-section">
                     <div className="section-content">
                         <div className="text-content">
@@ -114,7 +112,6 @@ export const Home: React.FC = () => {
                     </div>
                 </section>
 
-                {/* Вторая контент-секция */}
                 <section className="home-section">
                     <div className="section-content">
                         <div className="image-content">

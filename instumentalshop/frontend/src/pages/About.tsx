@@ -32,8 +32,7 @@ const About: FC = () => (
                     and unlock their full potential.
                 </p>
 
-                {/* кнопки с увеличенным отступом */}
-                <div className="flex gap-4 mt-12">   {/* ← mt-12 вместо прежнего */}
+                <div className="flex gap-4 mt-12">
                     <a
                         href="#learn-more"
                         className="px-7 py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 text-gray-900 font-semibold transition"
@@ -81,7 +80,7 @@ const About: FC = () => (
                     <ul className="list-disc ml-5 space-y-1 text-gray-300 text-sm">
                         <li>Java 17 + Spring Boot 3 for REST backend</li>
                         <li>JWT security &amp; WebSocket chat</li>
-                        <li>PostgreSQL 15 for data storage</li> {/* обновлено */}
+                        <li>PostgreSQL 15 for data storage</li>
                         <li>React 18 + TypeScript frontend</li>
                         <li>Tailwind CSS for styling</li>
                     </ul>

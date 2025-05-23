@@ -68,7 +68,6 @@ export const TrackForm: FC<TrackFormProps> = ({ mode, initialTrack, onSuccess })
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Название */}
             <div>
                 <label className="block text-sm font-medium text-white mb-1">Name</label>
                 <input
@@ -80,7 +79,6 @@ export const TrackForm: FC<TrackFormProps> = ({ mode, initialTrack, onSuccess })
                 />
             </div>
 
-            {/* Жанр и Key */}
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <label className="block text-sm font-medium text-white mb-1">Genre</label>
@@ -112,7 +110,6 @@ export const TrackForm: FC<TrackFormProps> = ({ mode, initialTrack, onSuccess })
                 </div>
             </div>
 
-            {/* BPM и Price */}
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <label className="block text-sm font-medium text-white mb-1">BPM</label>
@@ -136,7 +133,6 @@ export const TrackForm: FC<TrackFormProps> = ({ mode, initialTrack, onSuccess })
                 </div>
             </div>
 
-            {/* Файлы */}
             <div className="space-y-4">
                 <div>
                     <label className="block text-sm font-medium text-white mb-1">Non-exclusive (MP3)</label>
@@ -167,7 +163,6 @@ export const TrackForm: FC<TrackFormProps> = ({ mode, initialTrack, onSuccess })
                 </div>
             </div>
 
-            {/* Кнопка */}
             <div className="text-right pt-4">
                 <button
                     type="submit"

@@ -16,7 +16,7 @@ export const DepositForm = () => {
 
         try {
             const updatedUser = await ProfileController.depositBalance(num);
-            window.location.reload(); // или обнови useAuth() через setUser
+            window.location.reload();
         } catch (e) {
             setError((e as Error).message);
         }

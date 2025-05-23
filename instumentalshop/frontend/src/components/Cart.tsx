@@ -3,9 +3,8 @@ import {FC, useState} from 'react';
 import {CartItem} from "../dto/CartItem.tsx";
 import BagIcon from "./icons/BagIcon.tsx";
 import {X} from "lucide-react";
-import { useCart } from '../context/CartContext.tsx';
-import {CheckoutItemDto} from "../dto/CheckoutItemDto.tsx";
-import { toast } from 'react-toastify';
+import {useCart} from '../context/CartContext.tsx';
+import {toast} from 'react-toastify';
 import {PurchaseRequestDto} from "../dto/newDto/purchase/PurchaseRequestDto.tsx";
 import {PurchaseController} from "../controller/newControllers/PurchaseController.tsx";
 import {LicenceType} from "../dto/newDto/enums/LicenceType.tsx";
@@ -18,23 +17,20 @@ interface CartProps {
     onClose: () => void;
 }
 
-export const Cart: FC<CartProps> = ({ open, items, onRemove, onClose }) => {
-    const { clear } = useCart()
+export const Cart: FC<CartProps> = ({open, items, onRemove, onClose}) => {
+    const {clear} = useCart()
     const [paying, setPaying] = useState(false)
 
-    // ───── расчёты ─────
     const subtotal = items.reduce((s, i) => s + i.price, 0)
     const fee = items.length * 3
     const grandTotal = subtotal + fee
 
-    // ───── маппинг лицензий (если приходит в lower-case) ─────
     const licenceMap: Record<string, LicenceType> = {
         nonexclusive: LicenceType.NON_EXCLUSIVE,
         exclusive: LicenceType.EXCLUSIVE,
         premium: LicenceType.PREMIUM,
     }
 
-    // ───── оплата ─────
     const handlePay = async () => {
         if (items.length === 0 || paying) return
         setPaying(true)
@@ -65,15 +61,13 @@ export const Cart: FC<CartProps> = ({ open, items, onRemove, onClose }) => {
             transform transition-transform duration-300
             ${open ? 'translate-x-0' : 'translate-x-full'}`}
         >
-            {/* Заголовок */}
             <div className="flex items-center justify-between p-5 border-b border-gray-700">
                 <h3 className="text-lg text-white">Souhrn košíku</h3>
                 <button onClick={onClose} className="text-gray-400 hover:text-red-500">
-                    <X size={20} />
+                    <X size={20}/>
                 </button>
             </div>
 
-            {/* Позиции */}
             <div className="h-[calc(100%-260px)] overflow-y-auto p-5 space-y-4">
                 {items.length === 0 && (
                     <p className="text-gray-400 text-sm">Košík je prázdný.</p>
@@ -85,7 +79,7 @@ export const Cart: FC<CartProps> = ({ open, items, onRemove, onClose }) => {
                         className="flex items-center border-b border-gray-700 pb-2"
                     >
                         <div className="w-10 h-10 bg-gray-600 rounded mr-3 flex items-center justify-center">
-                            <BagIcon className="w-6 h-6 text-white" />
+                            <BagIcon className="w-6 h-6 text-white"/>
                         </div>
 
                         <div className="flex-1 min-w-0">
@@ -107,7 +101,6 @@ export const Cart: FC<CartProps> = ({ open, items, onRemove, onClose }) => {
                 ))}
             </div>
 
-            {/* Итог + кнопка оплаты */}
             <div className="p-5 border-t border-gray-700 text-gray-300 space-y-2">
                 <div className="flex justify-between">
                     <span>Celková cena položek</span>
@@ -117,7 +110,7 @@ export const Cart: FC<CartProps> = ({ open, items, onRemove, onClose }) => {
                     <span>Poplatek za službu</span>
                     <span>${fee.toFixed(2)}</span>
                 </div>
-                <hr className="border-gray-700" />
+                <hr className="border-gray-700"/>
                 <div className="flex justify-between font-semibold text-white">
                     <span>Mezisoučet</span>
                     <span>${grandTotal.toFixed(2)}</span>

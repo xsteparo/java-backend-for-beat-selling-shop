@@ -7,13 +7,11 @@ interface PlayerBarProps {
 }
 
 const PlayerBar: React.FC<PlayerBarProps> = ({ audio, track }) => {
-    /* ─────── состояние ─────── */
-    const [progress, setProgress] = useState(0);   // %
-    const [current,  setCurrent]  = useState(0);   // сек
+    const [progress, setProgress] = useState(0);
+    const [current,  setCurrent]  = useState(0);
     const [duration, setDuration] = useState(0);
     const [volume,   setVolume]   = useState(1);
 
-    /* ─────── подписка audio ─────── */
     useEffect(() => {
         if (!audio) return;
 
@@ -31,7 +29,6 @@ const PlayerBar: React.FC<PlayerBarProps> = ({ audio, track }) => {
         };
     }, [audio]);
 
-    /* ─────── handlers ─────── */
     const toggle = () => {
         if (!audio) return;
         audio.paused ? audio.play() : audio.pause();
@@ -61,7 +58,6 @@ const PlayerBar: React.FC<PlayerBarProps> = ({ audio, track }) => {
                  backdrop-blur-md border-t border-slate-700/50"
         >
             <div className="mx-auto max-w-6xl px-4 sm:px-6 flex items-center gap-6 h-16">
-                {/* play / pause */}
                 <button
                     onClick={toggle}
                     className="p-2 rounded-full bg-[#00e5ff]/10 hover:bg-[#00e5ff]/20
@@ -70,7 +66,6 @@ const PlayerBar: React.FC<PlayerBarProps> = ({ audio, track }) => {
                     {audio?.paused ? <Play size={20} /> : <Pause size={20} />}
                 </button>
 
-                {/* title + producer */}
                 <div className="flex flex-col max-w-[320px] truncate">
           <span className="text-slate-50 font-semibold truncate">
             {track?.title || "—"}
@@ -80,7 +75,6 @@ const PlayerBar: React.FC<PlayerBarProps> = ({ audio, track }) => {
           </span>
                 </div>
 
-                {/* timeline */}
                 <span className="text-xs tabular-nums text-slate-400 w-12 text-right">
           {fmt(current)}
         </span>
@@ -102,7 +96,6 @@ const PlayerBar: React.FC<PlayerBarProps> = ({ audio, track }) => {
           {fmt(duration)}
         </span>
 
-                {/* volume */}
                 <Volume2 size={18} className="text-slate-400" />
                 <input
                     type="range"

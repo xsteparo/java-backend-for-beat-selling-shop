@@ -27,8 +27,8 @@ public class PdfGenerator {
             String logoPath = PdfGenerator.class.getClassLoader().getResource("logo.png").getPath();
             ImageData imageData = ImageDataFactory.create(logoPath);
             Image logo = new Image(imageData)
-                    .scaleToFit(100, 100)      // масштаб — можно уменьшить или увеличить
-                    .setFixedPosition(40, 750); // x: слева, y: сверху
+                    .scaleToFit(100, 100)
+                    .setFixedPosition(40, 750);
 
             document.add(logo);
             document.add(new Paragraph("Licence Certificate").setBold().setFontSize(20));

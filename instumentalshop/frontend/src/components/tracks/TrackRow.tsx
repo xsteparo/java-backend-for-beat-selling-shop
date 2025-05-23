@@ -25,7 +25,6 @@ export const TrackRow: FC<TrackRowProps> = ({
 
     return (
         <div className="flex w-full items-center bg-gray-800 rounded-xl px-6 py-4 space-x-2">
-            {/* ▶ Кнопка проигрывания */}
             <button
                 onClick={() => onPlay(idStr)}
                 className="flex-none w-10 h-10 mr-4 flex items-center justify-center text-teal-400 hover:text-teal-300"
@@ -33,14 +32,12 @@ export const TrackRow: FC<TrackRowProps> = ({
                 {isPlaying ? '❚❚' : '▶'}
             </button>
 
-            {/* Иконка */}
             <img
                 src="/images/note-icon.svg"
                 alt="icon"
                 className="flex-none w-10 h-10 rounded-full object-cover mr-4"
             />
 
-            {/* Название и продюсер */}
             <div className="flex-1 min-w-0 flex flex-col">
                 <span data-testid="track-name" className="text-white font-semibold truncate">
                     {track.name}
@@ -50,7 +47,6 @@ export const TrackRow: FC<TrackRowProps> = ({
                 </span>
             </div>
 
-            {/* Характеристики */}
             <div className="flex-none w-16 text-start text-gray-300">
                 {track.rating}
             </div>
@@ -70,17 +66,14 @@ export const TrackRow: FC<TrackRowProps> = ({
                 {track.bpm}
             </div>
 
-            {/* Кнопки (если не guest) */}
             {(role !== 'producer' && role !== 'guest') && (
                 <div className="flex-none w-24 flex items-center justify-end space-x-3">
-                    {/* Лайк */}
                     <button onClick={() => onToggleLike(idStr)} className="p-1" data-testid="like-button">
                         <HeartIcon
                             filled={liked}
                             className={`w-5 h-5 ${liked ? 'text-red-500' : 'text-gray-400'}`}
                         />                    </button>
 
-                    {/* Скачивание / покупка / удаление */}
                     {role === 'admin' ? (
                         <>
                             <a href={`/api/v1/tracks/${track.id}/download`} className="p-1 hover:text-blue-400" data-testid="buy-button">

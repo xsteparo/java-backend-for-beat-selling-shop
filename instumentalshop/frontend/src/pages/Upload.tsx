@@ -48,7 +48,6 @@ export const Upload: FC = () => {
             nonExclusiveFile: mp3File!,
             premiumFile: wavFile!,
             exclusiveFile: zipFile!,
-            // + mainProducerPercentage / producerShares, если нужно
         }
 
         try {
@@ -67,9 +66,7 @@ export const Upload: FC = () => {
                 onSubmit={handleSubmit}
                 className="max-w-4xl mx-auto bg-gray-800 p-6 rounded-lg shadow-md grid grid-cols-2 gap-x-6 gap-y-8"
             >
-                {/* ЛЕВАЯ КОЛОНКА: метаданные */}
                 <div className="space-y-10 ">
-                    {/* Название */}
                     <div>
                         <label className="block mb-2 text-sm font-medium">Name</label>
                         <input
@@ -80,7 +77,6 @@ export const Upload: FC = () => {
                             className="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
-                    {/* Жанр */}
                     <div>
                         <label className="block mb-2 text-sm font-medium">Genre</label>
                         <select
@@ -95,7 +91,6 @@ export const Upload: FC = () => {
                             ))}
                         </select>
                     </div>
-                    {/* BPM */}
                     <div>
                         <label className="block mb-2 text-sm font-medium">BPM</label>
                         <input
@@ -107,7 +102,6 @@ export const Upload: FC = () => {
                             className="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
-                    {/* Key */}
                     <div>
                         <label className="block mb-2 text-sm font-medium">Key</label>
                         <select
@@ -122,7 +116,6 @@ export const Upload: FC = () => {
                             ))}
                         </select>
                     </div>
-                    {/* Цена */}
                     <div>
                         <label className="block mb-2 text-sm font-medium">Price (USD)</label>
                         <input
@@ -137,9 +130,7 @@ export const Upload: FC = () => {
                     </div>
                 </div>
 
-                {/* ПРАВАЯ КОЛОНКА: загрузка файлов */}
                 <div className="space-y-6">
-                    {/* Неэксклюзивный */}
                     <div className="border border-gray-600 p-4 rounded-lg">
                         <h2 className="text-lg font-medium mb-3">Non-Exclusive (MP3)</h2>
                         <input
@@ -149,7 +140,6 @@ export const Upload: FC = () => {
                             className="block w-full text-gray-300 bg-gray-700 rounded cursor-pointer p-2"
                         />
                     </div>
-                    {/* Premium */}
                     <div className="border border-gray-600 p-4 rounded-lg">
                         <h2 className="text-lg font-medium mb-3">Premium (WAV)</h2>
                         <input
@@ -159,7 +149,6 @@ export const Upload: FC = () => {
                             className="block w-full text-gray-300 bg-gray-700 rounded cursor-pointer p-2"
                         />
                     </div>
-                    {/* Exclusive */}
                     <div className="border border-gray-600 p-4 rounded-lg">
                         <h2 className="text-lg font-medium mb-3">Exclusive (ZIP)</h2>
                         <input
@@ -171,7 +160,6 @@ export const Upload: FC = () => {
                     </div>
                 </div>
 
-                {/* Кнопка отправки */}
                 <div className="col-span-2 text-right ">
                     <button
                         type="submit"

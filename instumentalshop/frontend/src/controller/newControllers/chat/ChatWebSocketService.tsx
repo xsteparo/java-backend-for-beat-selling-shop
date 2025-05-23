@@ -8,11 +8,9 @@ export class ChatWebSocketService {
 
     constructor() {
         this.client = new Client({
-            // не используем brokerURL, а фабрику SockJS
             webSocketFactory: () => new SockJS(ChatWebSocketService.WS_ENDPOINT),
 
             reconnectDelay: 5000,
-            // вот тут добавляем JWT в заголовки
             connectHeaders: (() => {
                 const token = localStorage.getItem('beatshop_jwt');
                 const headers: Record<string, string> = {};
@@ -65,7 +63,6 @@ export class ChatWebSocketService {
     send(roomId: number, content: string): void {
         if (!this.client.active) {
             this.connect()
-            // можно дождаться onConnect, но для простоты активируем и шлём
         }
         this.client.publish({
             destination: `/app/chat/${roomId}/send`,
