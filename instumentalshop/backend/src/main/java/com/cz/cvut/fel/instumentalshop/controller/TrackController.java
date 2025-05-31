@@ -1,6 +1,7 @@
 package com.cz.cvut.fel.instumentalshop.controller;
 
 import com.cz.cvut.fel.instumentalshop.domain.Track;
+import com.cz.cvut.fel.instumentalshop.domain.enums.LicenceType;
 import com.cz.cvut.fel.instumentalshop.dto.newDto.TrackFilterDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.in.TrackRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.out.ProducerTrackInfoDto;
@@ -72,7 +73,7 @@ public class TrackController {
             @PathVariable Long id,
             @RequestHeader HttpHeaders headers
     ) throws IOException {
-        Resource audio = trackService.loadAsResource(id);
+        Resource audio = trackService.loadAsResource(id, LicenceType.NON_EXCLUSIVE);
         long length = audio.contentLength();
 
         ResourceRegion region = trackService.buildRegion(audio, headers.getRange(), length);

@@ -2,6 +2,7 @@ package com.cz.cvut.fel.instumentalshop.controller;
 
 import com.cz.cvut.fel.instumentalshop.domain.Customer;
 import com.cz.cvut.fel.instumentalshop.domain.PurchasedLicence;
+import com.cz.cvut.fel.instumentalshop.domain.enums.LicenceType;
 import com.cz.cvut.fel.instumentalshop.dto.licence.in.PurchaseRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.licence.out.PurchaseDto;
 import com.cz.cvut.fel.instumentalshop.repository.PurchasedLicenceRepository;
@@ -80,20 +81,44 @@ public class PurchaseController {
      * FR17: Stáhne audio soubor zakoupené skladby.
      */
     @GetMapping("/{purchaseId}/download")
-    public ResponseEntity<Resource> downloadTrack(
-            @PathVariable Long purchaseId
-    ) throws IOException {
-        // Najdeme entitu PurchasedLicence, abychom získali trackId
+    @PreAuthorize("hasAuthority('CUSTOMER')")
+    public ResponseEntity<Resource> downloadTrack(@PathVariable Long purchaseId) throws IOException {
         PurchasedLicence lic = licRepo.findById(purchaseId)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Purchase not found: " + purchaseId)
-                );
-        Resource audio = trackService.loadAsResource(lic.getTrack().getId());
-        String filename = audio.getFilename();
+                .orElseThrow(() -> new IllegalArgumentException("Purchase not found: " + purchaseId));
+
+        Long trackId = lic.getTrack().getId();
+        LicenceType licenceType = lic.getLicenceTemplate().getLicenceType();
+
+        // Загружаем ресурс в зависимости от типа лицензии
+        Resource resource = trackService.loadAsResource(trackId, licenceType);
+
+        // Определяем расширение и media type
+        String extension;
+        MediaType mediaType;
+        switch (licenceType) {
+            case NON_EXCLUSIVE:
+                extension = ".mp3";
+                mediaType = MediaType.parseMediaType("audio/mpeg");
+                break;
+            case PREMIUM:
+                extension = ".wav";
+                mediaType = MediaType.parseMediaType("audio/wav");
+                break;
+            case EXCLUSIVE:
+                extension = ".zip";
+                mediaType = MediaType.APPLICATION_OCTET_STREAM;
+                break;
+            default:
+                throw new IllegalStateException("Unknown licence type: " + licenceType);
+        }
+
+        // Собираем имя файла: можно брать track.getName() + extension, либо resource.getFilename()
+        String trackName = lic.getTrack().getName().replaceAll("\\s+", "_");
+        String filename = trackName + extension;
+
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + filename + "\"")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(audio);
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(mediaType)
+                .body(resource);
     }
 }

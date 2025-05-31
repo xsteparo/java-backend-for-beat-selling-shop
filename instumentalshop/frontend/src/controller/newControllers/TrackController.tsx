@@ -36,9 +36,11 @@ export class TrackController {
         }
 
         form.append('nonExclusiveFile', dto.nonExclusiveFile)
+
         if (dto.premiumFile) {
             form.append('premiumFile', dto.premiumFile)
         }
+
         if (dto.exclusiveFile) {
             form.append('exclusiveFile', dto.exclusiveFile)
         }
@@ -119,7 +121,9 @@ export class TrackController {
         form.append('genreType', dto.genreType.toUpperCase().replace(/-/g, '_'));
         form.append('bpm', String(dto.bpm));
         if (dto.key) form.append('key', dto.key);
-        if (dto.price != null) form.append('price', String(dto.price));
+        if (dto.priceNonExclusive != null) form.append('priceNonExclusive', String(dto.priceNonExclusive));
+        if (dto.pricePremium != null) form.append('pricePremium', String(dto.pricePremium));
+        if (dto.priceExclusive != null) form.append('priceExclusive', String(dto.priceExclusive));
         if (dto.nonExclusiveFile) form.append('nonExclusiveFile', dto.nonExclusiveFile);
         if (dto.premiumFile) form.append('premiumFile', dto.premiumFile);
         if (dto.exclusiveFile) form.append('exclusiveFile', dto.exclusiveFile);

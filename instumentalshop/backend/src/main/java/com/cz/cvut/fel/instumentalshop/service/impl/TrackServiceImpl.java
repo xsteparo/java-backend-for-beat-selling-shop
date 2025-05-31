@@ -154,16 +154,33 @@ public class TrackServiceImpl implements TrackService {
     }
 
     @Override
-    public Resource loadAsResource(Long trackId) throws IOException {
-        String relPath = trackRepository.findFilePathById(trackId);
-        if (relPath == null) {
-            throw new EntityNotFoundException("Track not found: " + trackId);
+    public Resource loadAsResource(Long trackId, LicenceType licenceType) throws IOException {
+
+        String relPath;
+        switch (licenceType) {
+            case NON_EXCLUSIVE:
+                relPath = trackRepository.findNonExclusivePathById(trackId);
+                break;
+            case PREMIUM:
+                relPath = trackRepository.findPremiumPathById(trackId);
+                break;
+            case EXCLUSIVE:
+                relPath = trackRepository.findExclusivePathById(trackId);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown licence type: " + licenceType);
         }
+
+        if (relPath == null) {
+            throw new EntityNotFoundException("File URL not found for track " + trackId + " and licence " + licenceType);
+        }
+
         if (relPath.startsWith("/")) relPath = relPath.substring(1);
         String prefix = "uploads/tracks/";
         if (relPath.startsWith(prefix)) {
             relPath = relPath.substring(prefix.length());
         }
+
         Path file = tracksUploadPath.resolve(relPath);
         Resource res = new UrlResource(file.toUri());
         if (!res.exists()) {

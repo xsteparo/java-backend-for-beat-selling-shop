@@ -158,7 +158,7 @@ export const Upload: FC = () => {
                             type="number"
                             required
                             min={0}
-                            step="0.01"
+                            step="1"
                             value={priceNonExclusive}
                             onChange={e => setPriceNonExclusive(e.target.valueAsNumber || '')}
                             className="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -170,12 +170,11 @@ export const Upload: FC = () => {
                         <input
                             type="number"
                             min={0}
-                            step="0.01"
+                            step="1"
                             value={pricePremium}
                             onChange={e => setPricePremium(e.target.valueAsNumber || '')}
                             className="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
-                        <p className="text-xs text-gray-400">Оставьте пустым, если не загружаете WAV.</p>
                     </div>
 
                     <div>
@@ -183,12 +182,11 @@ export const Upload: FC = () => {
                         <input
                             type="number"
                             min={0}
-                            step="0.01"
+                            step="1"
                             value={priceExclusive}
                             onChange={e => setPriceExclusive(e.target.valueAsNumber || '')}
                             className="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
-                        <p className="text-xs text-gray-400">Оставьте пустым, если не загружаете ZIP.</p>
                     </div>
                 </div>
 

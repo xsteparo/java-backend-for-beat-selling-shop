@@ -32,6 +32,15 @@ public interface TrackRepository extends JpaRepository<Track, Long>, JpaSpecific
     @Query("select t.urlNonExclusive from Track t where t.id = :id")
     String findFilePathById(@Param("id") Long id);
 
+    @Query("select t.urlNonExclusive from Track t where t.id = :id")
+    String findNonExclusivePathById(@Param("id") Long id);
+
+    @Query("select t.urlPremium from Track t where t.id = :id")
+    String findPremiumPathById(@Param("id") Long id);
+
+    @Query("select t.urlExclusive from Track t where t.id = :id")
+    String findExclusivePathById(@Param("id") Long id);
+
     @Query("""
     SELECT t FROM Track t
     WHERE NOT EXISTS (

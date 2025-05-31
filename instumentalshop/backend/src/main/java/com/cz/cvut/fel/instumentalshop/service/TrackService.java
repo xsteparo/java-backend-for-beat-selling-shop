@@ -1,6 +1,7 @@
 package com.cz.cvut.fel.instumentalshop.service;
 
 import com.cz.cvut.fel.instumentalshop.domain.enums.GenreType;
+import com.cz.cvut.fel.instumentalshop.domain.enums.LicenceType;
 import com.cz.cvut.fel.instumentalshop.dto.newDto.TrackFilterDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.in.TrackRequestDto;
 import com.cz.cvut.fel.instumentalshop.dto.track.out.ProducerTrackInfoDto;
@@ -63,7 +64,7 @@ public interface TrackService {
      * @return Resource reprezentující audio soubor
      * @throws IOException pokud nastane chyba při přístupu k souboru
      */
-    Resource loadAsResource(Long trackId) throws IOException;
+    Resource loadAsResource(Long trackId, LicenceType licenceType) throws IOException;
 
     /**
      * Vytvoří region pro HTTP Range streamování.
