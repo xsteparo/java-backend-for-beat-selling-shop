@@ -11,7 +11,6 @@ import java.util.List;
 
 @Data
 @Builder
-
 public class TrackRequestDto {
 
     @NotBlank(message = "Name is required")
@@ -29,7 +28,15 @@ public class TrackRequestDto {
 
     private String key;
 
-    private Integer price;
+    @NotNull(message = "Price for Non-Exclusive is required")
+    @Min(value = 0, message = "Price cannot be negative")
+    private Integer priceNonExclusive;
+
+    @Min(value = 0, message = "Price cannot be negative")
+    private Integer pricePremium;
+
+    @Min(value = 0, message = "Price cannot be negative")
+    private Integer priceExclusive;
 
     /**
      * Non-Exclusive license: mp3
@@ -46,5 +53,5 @@ public class TrackRequestDto {
      * Exclusive license: zip (mp3+wav+лицензия внутрь)
      */
     private MultipartFile exclusiveFile;
-
 }
+

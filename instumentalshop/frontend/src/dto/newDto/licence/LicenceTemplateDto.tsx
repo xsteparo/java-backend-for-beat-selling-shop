@@ -1,5 +1,8 @@
+export type LicenceType = 'NON_EXCLUSIVE' | 'PREMIUM' | 'EXCLUSIVE';
+
 export interface LicenceTemplateDto {
     id: number;
-    name: string;
-
+    licenceType: LicenceType;
+    price: number;
+    validityPeriodDays: number | null;
 }

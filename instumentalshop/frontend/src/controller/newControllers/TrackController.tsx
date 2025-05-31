@@ -13,18 +13,28 @@ export class TrackController {
 
     static async createTrack(dto: TrackRequestDto): Promise<TrackDto> {
         const form = new FormData()
+
         form.append('name', dto.name)
         form.append(
             'genreType',
             dto.genreType.toUpperCase().replace(/-/g, '_')
         )
         form.append('bpm', String(dto.bpm))
+
         if (dto.key) {
             form.append('key', dto.key)
         }
-        if (dto.price != null) {
-            form.append('price', String(dto.price))
+
+        if (dto.priceNonExclusive != null) {
+            form.append('priceNonExclusive', String(dto.priceNonExclusive))
         }
+        if (dto.pricePremium != null) {
+            form.append('pricePremium', String(dto.pricePremium))
+        }
+        if (dto.priceExclusive != null) {
+            form.append('priceExclusive', String(dto.priceExclusive))
+        }
+
         form.append('nonExclusiveFile', dto.nonExclusiveFile)
         if (dto.premiumFile) {
             form.append('premiumFile', dto.premiumFile)

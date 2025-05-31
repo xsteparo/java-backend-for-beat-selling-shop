@@ -79,7 +79,9 @@ public class DataInitializer implements CommandLineRunner {
                     .genreType(GenreType.HIPHOP)
                     .bpm(120)
                     .key(KeyType.A.name())
-                    .price(100)
+                    .priceNonExclusive(100)
+                    .pricePremium(200)
+                    .priceExclusive(100)
 
                     .nonExclusiveFile(dummyFile)
                     .premiumFile(dummyFile)

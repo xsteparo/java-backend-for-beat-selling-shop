@@ -38,8 +38,8 @@ export const Cart: FC<CartProps> = ({open, items, onRemove, onClose}) => {
         try {
             for (const item of items) {
                 const dto: PurchaseRequestDto = {
-                    licenceType: licenceMap[item.license], // маппим в enum
-                }
+                    licenceType: item.license as LicenceType,
+                };
                 await PurchaseController.purchase(item.track.id, dto)
             }
 

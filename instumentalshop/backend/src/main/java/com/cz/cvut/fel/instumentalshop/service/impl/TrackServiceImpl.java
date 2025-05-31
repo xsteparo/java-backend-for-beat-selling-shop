@@ -234,7 +234,6 @@ public class TrackServiceImpl implements TrackService {
         if (!track.getProducer().getId().equals(producer.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
         }
-
         track.setName(dto.getName());
         track.setGenre(dto.getGenreType());
         track.setBpm(dto.getBpm());
@@ -256,17 +255,37 @@ public class TrackServiceImpl implements TrackService {
             track.setUrlExclusive(urlZip);
         }
 
-        if (dto.getPrice() != null) {
-            for (LicenceTemplate template : track.getLicenceTemplates()) {
-                if (template.getLicenceType() == LicenceType.NON_EXCLUSIVE) {
-                    template.setPrice(BigDecimal.valueOf(dto.getPrice()));
-                }
+        for (LicenceTemplate template : track.getLicenceTemplates()) {
+            LicenceType type = template.getLicenceType();
+            switch (type) {
+                case NON_EXCLUSIVE:
+                    if (dto.getPriceNonExclusive() != null) {
+                        template.setPrice(BigDecimal.valueOf(dto.getPriceNonExclusive()));
+                    }
+                    break;
+
+                case PREMIUM:
+                    if (dto.getPricePremium() != null) {
+                        template.setPrice(BigDecimal.valueOf(dto.getPricePremium()));
+                    }
+                    break;
+
+                case EXCLUSIVE:
+                    if (dto.getPriceExclusive() != null) {
+                        template.setPrice(BigDecimal.valueOf(dto.getPriceExclusive()));
+                    }
+                    break;
+
+                default:
+                    break;
             }
         }
 
         trackRepository.save(track);
+
         return trackMapper.toResponseDto(track);
     }
+
     @Transactional
     public void incrementPlays(Long trackId) {
         Track track = trackRepository.findById(trackId)
@@ -314,7 +333,15 @@ public class TrackServiceImpl implements TrackService {
                 .build();
 
         Track saved = trackRepository.save(track);
-        createDefaultLicenceTemplates(saved, dto.getPrice());
+
+        // Вместо одного basePrice передаём три
+        createDefaultLicenceTemplates(
+                saved,
+                dto.getPriceNonExclusive(),
+                dto.getPricePremium(),
+                dto.getPriceExclusive()
+        );
+
         return trackMapper.toResponseDto(saved);
     }
 
@@ -325,26 +352,35 @@ public class TrackServiceImpl implements TrackService {
         return "/uploads/tracks/" + filename;
     }
 
-    private void createDefaultLicenceTemplates(Track track, int basePrice) {
+    private void createDefaultLicenceTemplates(
+            Track track,
+            Integer priceNonExclusive,
+            Integer pricePremium,
+            Integer priceExclusive
+    ) {
         tplRepo.save(LicenceTemplate.builder()
                 .track(track)
-                .licenceType(NON_EXCLUSIVE)
-                .price(BigDecimal.valueOf(basePrice))
+                .licenceType(LicenceType.NON_EXCLUSIVE)
+                .price(BigDecimal.valueOf(priceNonExclusive))
                 .validityPeriodDays(30)
                 .build());
 
-        tplRepo.save(LicenceTemplate.builder()
-                .track(track)
-                .licenceType(PREMIUM)
-                .price(BigDecimal.valueOf(basePrice * 2))
-                .validityPeriodDays(90)
-                .build());
+        if (pricePremium != null) {
+            tplRepo.save(LicenceTemplate.builder()
+                    .track(track)
+                    .licenceType(LicenceType.PREMIUM)
+                    .price(BigDecimal.valueOf(pricePremium))
+                    .validityPeriodDays(90)
+                    .build());
+        }
 
-        tplRepo.save(LicenceTemplate.builder()
-                .track(track)
-                .licenceType(EXCLUSIVE)
-                .price(BigDecimal.valueOf(basePrice * 10))
-                .validityPeriodDays(null)
-                .build());
+        if (priceExclusive != null) {
+            tplRepo.save(LicenceTemplate.builder()
+                    .track(track)
+                    .licenceType(LicenceType.EXCLUSIVE)
+                    .price(BigDecimal.valueOf(priceExclusive))
+                    .validityPeriodDays(null)
+                    .build());
+        }
     }
 }

@@ -1,15 +1,16 @@
-export type GenreType =
-    | 'hyperpop'
-    | 'rock'
-    | 'pop'
-    | 'hiphop'
-    | 'jazz'
-    | 'classical'
-    | 'drill'
-    | 'phonk'
-    | 'trap'
-    | 'edm'
-    | 'techno'
-    | 'ambient'
-    | 'lofi'
-    | 'synthwave';
+const GENRES: GenreType[] = [
+    'hyperpop',
+    'rock',
+    'pop',
+    'hiphop',
+    'jazz',
+    'classical',
+    'drill',
+    'phonk',
+    'trap',
+    'edm',
+    'techno',
+    'ambient',
+    'lofi',
+    'synthwave',
+];

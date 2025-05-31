@@ -14,18 +14,25 @@ const KEYS = [
 ]
 
 export const Upload: FC = () => {
-    const [name, setName]     = useState('')
-    const [genre, setGenre]   = useState<GenreType | ''>('')
-    const [bpm, setBpm]       = useState<number | ''>('')
-    const [key, setKey]       = useState('')
-    const [price, setPrice]   = useState<number | ''>('')
-    const [mp3File, setMp3File]   = useState<File | null>(null)
-    const [wavFile, setWavFile]   = useState<File | null>(null)
-    const [zipFile, setZipFile]   = useState<File | null>(null)
+    const [name, setName]                     = useState('')
+    const [genre, setGenre]                   = useState<GenreType | ''>('')
+    const [bpm, setBpm]                       = useState<number | ''>('')
+    const [key, setKey]                       = useState('')
+    const [priceNonExclusive, setPriceNonExclusive] = useState<number | ''>('')
+    const [pricePremium, setPricePremium]           = useState<number | ''>('')
+    const [priceExclusive, setPriceExclusive]       = useState<number | ''>('')
+
+    const [mp3File, setMp3File] = useState<File | null>(null)
+    const [wavFile, setWavFile] = useState<File | null>(null)
+    const [zipFile, setZipFile] = useState<File | null>(null)
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
+        if (!name.trim()) {
+            alert('Please enter a track name.')
+            return
+        }
         if (!genre) {
             alert('Please select a genre.')
             return
@@ -34,8 +41,24 @@ export const Upload: FC = () => {
             alert('Please enter a valid BPM.')
             return
         }
+        if (!key) {
+            alert('Please select a key.')
+            return
+        }
         if (!mp3File) {
             alert('Please upload an MP3 file for the non-exclusive license.')
+            return
+        }
+        if (priceNonExclusive === '' || priceNonExclusive < 0) {
+            alert('Please enter a valid price for Non-Exclusive license.')
+            return
+        }
+        if (wavFile && (pricePremium === '' || pricePremium < 0)) {
+            alert('Please enter a valid price for Premium license.')
+            return
+        }
+        if (zipFile && (priceExclusive === '' || priceExclusive < 0)) {
+            alert('Please enter a valid price for Exclusive license.')
             return
         }
 
@@ -44,10 +67,14 @@ export const Upload: FC = () => {
             genreType: genre as GenreType,
             bpm,
             key,
-            price: typeof price === 'number' ? price : 0,
+
+            priceNonExclusive: typeof priceNonExclusive === 'number' ? priceNonExclusive : 0,
+            pricePremium: typeof pricePremium === 'number' ? pricePremium : undefined,
+            priceExclusive: typeof priceExclusive === 'number' ? priceExclusive : undefined,
+
             nonExclusiveFile: mp3File!,
-            premiumFile: wavFile!,
-            exclusiveFile: zipFile!,
+            premiumFile: wavFile ?? undefined,
+            exclusiveFile: zipFile ?? undefined,
         }
 
         try {
@@ -65,7 +92,9 @@ export const Upload: FC = () => {
             <form
                 onSubmit={handleSubmit}
                 className="max-w-4xl mx-auto bg-gray-800 p-6 rounded-lg shadow-md grid grid-cols-2 gap-x-6 gap-y-8"
+                encType="multipart/form-data" // обязательно для файлов
             >
+                {/* Левый столбец: основные поля */}
                 <div className="space-y-10 ">
                     <div>
                         <label className="block mb-2 text-sm font-medium">Name</label>
@@ -77,6 +106,7 @@ export const Upload: FC = () => {
                             className="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
+
                     <div>
                         <label className="block mb-2 text-sm font-medium">Genre</label>
                         <select
@@ -87,21 +117,26 @@ export const Upload: FC = () => {
                         >
                             <option value="">Select genre…</option>
                             {GENRES.map(g => (
-                                <option key={g} value={g}>{g}</option>
+                                <option key={g} value={g}>
+                                    {g}
+                                </option>
                             ))}
                         </select>
                     </div>
+
                     <div>
                         <label className="block mb-2 text-sm font-medium">BPM</label>
                         <input
                             type="number"
                             required
-                            min={1}
+                            min={20}
+                            max={300}
                             value={bpm}
                             onChange={e => setBpm(e.target.valueAsNumber || '')}
                             className="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
+
                     <div>
                         <label className="block mb-2 text-sm font-medium">Key</label>
                         <select
@@ -116,17 +151,44 @@ export const Upload: FC = () => {
                             ))}
                         </select>
                     </div>
+
                     <div>
-                        <label className="block mb-2 text-sm font-medium">Price (USD)</label>
+                        <label className="block mb-2 text-sm font-medium">Price Non-Exclusive (USD) – MP3</label>
                         <input
                             type="number"
                             required
                             min={0}
                             step="0.01"
-                            value={price}
-                            onChange={e => setPrice(e.target.valueAsNumber || '')}
+                            value={priceNonExclusive}
+                            onChange={e => setPriceNonExclusive(e.target.valueAsNumber || '')}
                             className="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
+                    </div>
+
+                    <div>
+                        <label className="block mb-2 text-sm font-medium">Price Premium (USD) – WAV</label>
+                        <input
+                            type="number"
+                            min={0}
+                            step="0.01"
+                            value={pricePremium}
+                            onChange={e => setPricePremium(e.target.valueAsNumber || '')}
+                            className="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <p className="text-xs text-gray-400">Оставьте пустым, если не загружаете WAV.</p>
+                    </div>
+
+                    <div>
+                        <label className="block mb-2 text-sm font-medium">Price Exclusive (USD) – ZIP</label>
+                        <input
+                            type="number"
+                            min={0}
+                            step="0.01"
+                            value={priceExclusive}
+                            onChange={e => setPriceExclusive(e.target.valueAsNumber || '')}
+                            className="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <p className="text-xs text-gray-400">Оставьте пустым, если не загружаете ZIP.</p>
                     </div>
                 </div>
 
@@ -160,7 +222,7 @@ export const Upload: FC = () => {
                     </div>
                 </div>
 
-                <div className="col-span-2 text-right ">
+                <div className="col-span-2 text-right">
                     <button
                         type="submit"
                         className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded text-white font-medium transition"

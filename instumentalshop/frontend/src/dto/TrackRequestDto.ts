@@ -6,7 +6,9 @@ export interface TrackRequestDto {
     genreType: GenreType
     bpm: number
     key:String,
-    price: number;
+    priceNonExclusive: number
+    pricePremium?: number
+    priceExclusive?: number
     mainProducerPercentage?: number
     producerShares?: ProducerShareRequestDto[]
     nonExclusiveFile: File
