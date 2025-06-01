@@ -27,23 +27,18 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfiguration {
 
     private final JWTService jwtService;
     private final CustomUserDetailsService userService;
 
-    public SecurityConfiguration(JWTService jwtService,
-                                 CustomUserDetailsService userService) {
-        this.jwtService = jwtService;
-        this.userService = userService;
-    }
-
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        // создаём фильтр на лету, без инъекции SecurityConfiguration в него
         return new JwtAuthenticationFilter(jwtService, userService);
     }
 
@@ -51,10 +46,9 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(req -> req
-                        .requestMatchers("/api/v1/customers/register",
-                                "/api/v1/producers/register").anonymous()
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // added
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/customers/register", "/api/v1/producers/register").anonymous()
                         .requestMatchers(HttpMethod.GET, "/api/v1/tracks/*/stream").permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/api/v1/producers", "/api/v1/producers/*",
@@ -65,14 +59,10 @@ public class SecurityConfiguration {
                         ).permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/uploads/**", "/ws/**").permitAll()
-
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(mgr ->
-                        mgr.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
-                // вставляем фильтр, который создаём через @Bean
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -84,24 +74,25 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() { // added
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
-        config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
+        config.setAllowedOrigins(List.of("http://localhost:5173")); // added
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // added
+        config.setAllowedHeaders(List.of("*")); // added
+        config.setAllowCredentials(true); // added
+        config.setExposedHeaders(List.of("Content-Disposition")); // added
 
-        UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
-        src.registerCorsConfiguration("/**", config);
-        return src;
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config); // added
+        return source;
     }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider prov = new DaoAuthenticationProvider();
-        prov.setUserDetailsService(userService);
-        prov.setPasswordEncoder(passwordEncoder());
-        return prov;
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
     }
 
     @Bean
@@ -110,7 +101,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
-        return cfg.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }

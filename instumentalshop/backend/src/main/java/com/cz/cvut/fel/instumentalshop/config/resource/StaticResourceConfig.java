@@ -22,8 +22,14 @@ public class StaticResourceConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry
                 .addMapping("/uploads/**")
-                .allowedOrigins("http://localhost:5173")  // ваш фронт
+                .allowedOrigins("http://localhost:5173")
                 .allowedMethods("GET", "HEAD", "OPTIONS")
+                .allowedHeaders("*");
+
+        registry
+                .addMapping("/api/**")
+                .allowedOrigins("http://localhost:5173")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*");
     }
 }

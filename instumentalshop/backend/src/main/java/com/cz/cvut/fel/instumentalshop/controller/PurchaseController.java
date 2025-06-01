@@ -33,6 +33,7 @@ import java.util.List;
 @RequestMapping("/api/v1/purchases")
 @RequiredArgsConstructor
 @PreAuthorize("hasAuthority('CUSTOMER')")
+@CrossOrigin(origins = "http://localhost:5173")
 public class PurchaseController {
 
     private final LicencePurchaseService licenceService;
